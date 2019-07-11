@@ -1,0 +1,81 @@
+{
+    "id": "2f159376-316b-4652-a49c-392f9d534113",
+    "name": "CreatePullRequest",
+    "friendlyName": "Create Pull Request",
+    "description": "A Task to create a Pull Request",
+    "helpMarkDown": "",
+    "categories": "Utility",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "runsOn": [
+        "Agent",
+        "DeploymentGroup"
+    ],
+    "author": "Shayki Abramczyk",
+    "version": {
+        "Major": 1,
+        "Minor": 0,
+        "Patch": 0
+    },
+    "instanceNameFormat": "Create Pull Request",
+    "groups": [
+        {
+            "name": "advanced",
+            "displayName": "Advanced",
+            "isExpanded": false
+        }
+    ],
+    "inputs": [
+        {
+            "name": "sourceBranch",
+            "type": "string",
+            "label": "Source branch name",
+            "defaultValue": "$(Build.SourceBranch)",
+            "required": true,
+            "helpMarkDown": "The branch name that you will be merged (for exmaple - feature). the deafult is '$(Build.SourceBranch)'."
+        },
+        {
+            "name": "targetBranch",
+            "type": "string",
+            "label": "Target branch name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "The target branch name (for example - master)."
+        },
+        {
+            "name": "title",
+            "type": "string",
+            "label": "Title",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "The pull request title."
+        },
+        {
+            "name": "description",
+            "type": "string",
+            "label": "Description",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The pull request description (optional)."
+        },
+        {
+            "name": "reviewers",
+            "type": "string",
+            "label": "Reviewers (email address)",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The pull request reviewers - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com (optional)"
+        }
+    ],
+    "execution": {
+        "PowerShell3": {
+            "target": "createPullRequest.ps1",
+            "platforms": [
+                "windows"
+            ],
+            "workingDirectory": "$(currentDirectory)"
+        }
+    }
+}

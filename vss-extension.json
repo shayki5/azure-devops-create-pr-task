@@ -1,0 +1,36 @@
+{
+	"manifestVersion": 1,
+	"id": "CreatePullRequest",
+	"version": "1.0.0",
+	"name": "Create Pull Request",
+	"description": "Easy way to create a Pull Request from Build or Release pipeline",
+	"publisher": "ShaykiAbramczyk",
+	"targets": [
+		{
+			"id": "Microsoft.VisualStudio.Services"
+			}
+		],
+	"icons": {
+		"default": "icon.png"
+	 },
+	 "categories": [
+        "Azure Pipelines"
+    ],
+	"contributions": [
+		{
+			"id": "CreatePullRequest",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "task"
+			}
+		}
+	],
+	"files":[
+		{
+			"path": "task"			
+		}
+	]
+}
