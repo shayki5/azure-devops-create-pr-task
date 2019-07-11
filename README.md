@@ -28,7 +28,7 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
 
 **I the classic editor:**
 
-![Task](https://i.imgur.com/ngL16Iv.png)
+![Task](https://i.imgur.com/H2Cu67M.png)
 
 - **Source branch name:** The source branch that will be merged. The default value is the build source branch - `$(Build.SourceBranch)`.
 
