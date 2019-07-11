@@ -10,7 +10,7 @@ pool:
   vmImage: 'windows-2019'
 
 variables:
-  Version: '$[ counter('revision',0) ]'
+  version: $[ counter('revision',0) ]
 
 steps:
 - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@1
