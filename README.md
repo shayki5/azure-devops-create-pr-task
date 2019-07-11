@@ -3,9 +3,9 @@
 )](https://vsrm.dev.azure.com/shaykia/_apis/public/Release/badge/3372e1d4-189a-4d9e-aa4d-0cb86eff3c2e/1/2
 ) 
 
-## Azure DevOps Create Pull Request Task 
+## Azure DevOps Create Pull Request Task ![Imgur](https://i.imgur.com/kTLt8wo.png)
 
-Easy way to create a Pull Request from your Build or Release Pipeline. ![Imgur](https://i.imgur.com/5KC8jIk.png)
+Easy way to create a Pull Request from your Build or Release Pipeline. 
 
 ## Prerequisites before use the task
 
