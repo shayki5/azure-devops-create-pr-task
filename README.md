@@ -1,10 +1,9 @@
 ## Azure DevOps Create Pull Request Task
----
 
 Easy way to create a Pull Request from your Build or Release Pipeline.
 
 ## Prerequisites before use the task
----
+
 - **The task works currently only in Windows machines.**
 
 - You need to enable the "Allow scripts to access the OAuth token": 
@@ -21,7 +20,7 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
     ```
 
 ## Usage
----
+
 **I the classic editor:**
 
 ![Task](https://i.imgur.com/ngL16Iv.png)
@@ -51,7 +50,7 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
 ```
 
 ## Release Notes
----
+
 
 ### New in 1.0.0
 
