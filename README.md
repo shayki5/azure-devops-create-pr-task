@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_apis/build/status/shayki5.AzureDevOps-CreatePRTask?branchName=master)](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_build/latest?definitionId=34&branchName=master)
+
 ## Azure DevOps Create Pull Request Task
 
 Easy way to create a Pull Request from your Build or Release Pipeline.
