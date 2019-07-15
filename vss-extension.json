@@ -5,6 +5,28 @@
 	"name": "Create Pull Request",
 	"description": "Easy way to create a Pull Request from Build or Release pipeline",
 	"publisher": "ShaykiAbramczyk",
+	"repository": {
+	    "type": "git",
+      	    "url": "https://github.com/shayki5/azure-devops-create-pr-task"
+	},
+	"links":{
+	    "suuport": "https://shayki5/azure-devops-createa-pr-task"
+	},
+	"screenshots": [
+	    {
+		"path": "https://i.imgur.com/H2Cu67M.png"	
+	    }
+	],
+	"content": {
+	    "details": {
+		"path": "README.MD"    
+	    }
+	},
+	"tags":[
+	    "Azure Pipelines",
+	    "Pull Request",
+	    "Git"
+	],
 	"targets": [
 		{
 			"id": "Microsoft.VisualStudio.Services"
