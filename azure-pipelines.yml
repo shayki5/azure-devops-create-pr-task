@@ -17,6 +17,7 @@ steps:
     rootFolder: '$(Build.SourcesDirectory)'
     extensionVersion: '1.0.$(Version)'
     extensionVisibility: private
+    extensionId: CreatePullRequest_Dev
     extensionPricing: free
     extensionTag: Dev
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
@@ -29,10 +30,10 @@ steps:
     extensionVisibility: public
     extensionPricing: free
     updateTasksVersion: false
-    extensionTag: Prod
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix\*'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
+    
