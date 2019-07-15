@@ -8,16 +8,27 @@ variables:
   version: $[ counter('revision',0) ]
 
 steps:
-- task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@1
+- task: TfxInstaller@1
   displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.6.x'
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-  displayName: 'Package Extension'
+- task: PackageVSTSExtension@1
+  displayName: 'Package Extension - Private'
+  inputs:
+    rootFolder: '$(Build.SourcesDirectory)'
+    extensionVersion: '1.0.$(Version)'
+    extensionVisibility: private
+    extensionPricing: free
+    extensionTag: Dev
+
+- task: PackageVSTSExtension@1
+  displayName: 'Package Extension - Public'
   inputs:
     rootFolder: '$(Build.SourcesDirectory)'
     extensionVersion: '1.0.$(Version)'
     extensionVisibility: public
     extensionPricing: free
+    updateTasksVersion: false
+    extensionTag: Prod
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
