@@ -18,7 +18,7 @@ steps:
     extensionVersion: '1.0.$(Version)'
     extensionVisibility: private
     extensionPricing: free
-    extensionId: 'CreatePullRequest_Dev'
+    extensionId: 'CreatePullRequestDev'
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
 - task: PackageVSTSExtension@1
