@@ -9,11 +9,6 @@
 	    "type": "git",
       	    "url": "https://github.com/shayki5/azure-devops-create-pr-task"
 	},
-	"screenshots": [
-	    {
-		"path": "https://i.imgur.com/H2Cu67M.png"	
-	    }
-	],
 	"content": {
 	    "details": {
 		"path": "README.MD"    
