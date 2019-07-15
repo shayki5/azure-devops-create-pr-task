@@ -17,7 +17,6 @@ steps:
     rootFolder: '$(Build.SourcesDirectory)'
     extensionVersion: '1.0.$(Version)'
     extensionVisibility: private
-    extensionId: CreatePullRequest_Dev
     extensionPricing: free
     extensionTag: Dev
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
