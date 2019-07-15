@@ -19,6 +19,7 @@ steps:
     extensionVisibility: private
     extensionPricing: free
     extensionTag: Dev
+    outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
 - task: PackageVSTSExtension@1
   displayName: 'Package Extension - Public'
@@ -29,13 +30,9 @@ steps:
     extensionPricing: free
     updateTasksVersion: false
     extensionTag: Prod
-
-- task: CopyFiles@2
-  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)'
-    Contents: '*.vsix'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix\*'
