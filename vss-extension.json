@@ -17,7 +17,8 @@
 	"tags":[
 	    "Azure Pipelines",
 	    "Pull Request",
-	    "Git"
+	    "Git",
+	    "Azure Repos"
 	],
 	"targets": [
 		{
@@ -28,7 +29,8 @@
 		"default": "icon.png"
 	 },
 	 "categories": [
-        "Azure Pipelines"
+               "Azure Pipelines",
+	       "Azure Repos"
     ],
 	"contributions": [
 		{
