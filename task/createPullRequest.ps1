@@ -45,6 +45,7 @@ try {
              description = "$description"
              reviewers = @( $usersId )
          }
+         CreatePullRequest -body $body -reviewers $reviewers
     }
 
     else
@@ -55,16 +56,25 @@ try {
             title = "$title"
             description = "$description"
         }
+        CreatePullRequest -body $body
     }
 
-    Write-Host "The source branch is: $sourceBranch"
-    Write-Host "The target branch is: $targetBranch"
-    Write-Host "The title is: $title"
-    Write-Host "The description is: $description"
+
+} finally {
+    Trace-VstsLeavingInvocation $MyInvocation
+}
+
+function CreatePullRequest($body, $reviewers)
+{
+    Write-Host "The source branch is: $body.sourceRefName"
+    Write-Host "The target branch is: $body.targetRefName"
+    Write-Host "The title is: $body.title"
+    Write-Host "The description is: $body.description"
     Write-Host "The reviewers are: $($reviewers.Split(';'))"
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
+
 
     $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests?api-version=5.0"
     $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
@@ -77,16 +87,5 @@ try {
         Write-Host "Pull Request $($response.pullRequestId) created."
 
     }
-
-} finally {
-    Trace-VstsLeavingInvocation $MyInvocation
-}
-
-function CreatePullRequest($head, $body)
-{
-
-
-
-
 
 }
