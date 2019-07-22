@@ -1,5 +1,11 @@
 [CmdletBinding()]
-param()
+param(
+   [string] $sourceBranch,
+   [string] $targetBranch,
+   [string] $title,
+   [string] $description,
+   [string] $reviewers
+)
 
 Trace-VstsEnteringInvocation $MyInvocation
 try {
@@ -74,4 +80,13 @@ try {
 
 } finally {
     Trace-VstsLeavingInvocation $MyInvocation
+}
+
+function CreatePullRequest($head, $body)
+{
+
+
+
+
+
 }
