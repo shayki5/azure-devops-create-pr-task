@@ -70,11 +70,14 @@ function RunTask
 
 function CreatePullRequest($body, $reviewers)
 {
-    Write-Host "The source branch is: $body.sourceRefName"
-    Write-Host "The target branch is: $body.targetRefName"
-    Write-Host "The title is: $body.title"
-    Write-Host "The description is: $body.description"
-    Write-Host "The reviewers are: $($reviewers.Split(';'))"
+    Write-Host "The source branch is: $($body.sourceRefName)"
+    Write-Host "The target branch is: $($body.targetRefName)"
+    Write-Host "The title is: $($body.title)"
+    Write-Host "The description is: $($body.description)"
+    if($body.Keys -contains "reviewers")
+    {
+        Write-Host "The reviewers are: $($reviewers.Split(';'))"
+    }
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
