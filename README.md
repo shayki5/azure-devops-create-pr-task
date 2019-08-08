@@ -18,7 +18,7 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
 
   - If you use `yaml` build, you need to map the variable in the task:
 
-    ```
+    ```yaml
      env:
        System_AccessToken: $(System.AccessToken)
     ```
@@ -31,7 +31,7 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
 
 - **Source branch name:** The source branch that will be merged. The default value is the build source branch - `$(Build.SourceBranch)`.
 
-- **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`.
+- **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`. Supports also multi target branch with `*`, for example: `test/*`.
 
 - **Title:** The Pull Request title.
 
@@ -41,7 +41,7 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
 
 **In yaml piepline:**
 
-```
+```yaml
 - task: CreatePullRequest@1
   inputs:
     sourceBranch: '$(Build.SourceBranch)'
@@ -55,6 +55,9 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
 
 ## Release Notes
 
+### New in 1.0.0
+
+ - Multi target branch (For example: `feature/*`)
 
 ### New in 1.0.0
 

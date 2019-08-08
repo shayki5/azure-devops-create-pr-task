@@ -39,10 +39,10 @@
         {
             "name": "targetBranch",
             "type": "string",
-            "label": "Target branch name",
+            "label": "Target(s) branch name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "The target branch name (for example - master)."
+            "helpMarkDown": "The target branch name (for example - master). Supports also multi target branch with * (for example: test/*)."
         },
         {
             "name": "title",
