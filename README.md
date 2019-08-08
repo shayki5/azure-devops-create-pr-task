@@ -55,7 +55,7 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
 
 ## Release Notes
 
-### New in 1.0.0
+### New in 1.0.31
 
  - Multi target branch (For example: `feature/*`)
 
