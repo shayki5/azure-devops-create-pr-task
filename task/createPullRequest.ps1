@@ -33,6 +33,7 @@ function RunTask
        # If the target branch is like feature/*
        else
        {
+           Set-Location $env:Build_SourcesDirectory
            $branches = git branch -a
            $branches.ForEach({
            if($_.Contains($targetBranch.Split('/')[0]))
@@ -48,7 +49,6 @@ function RunTask
        Trace-VstsLeavingInvocation $MyInvocation
    }
 }
-
 function CreatePullRequest($body, $reviewers)
 {
     Write-Host "The source branch is: $($body.sourceRefName)"
@@ -71,8 +71,6 @@ function CreatePullRequest($body, $reviewers)
         Write-Host "Pull Request $($response.pullRequestId) created."
     }
 }
-
- 
 
 function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $description, $reviewers)
 {
