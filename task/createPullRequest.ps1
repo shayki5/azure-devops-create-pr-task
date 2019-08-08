@@ -1,5 +1,4 @@
 function RunTask
-
 {
    [CmdletBinding()]
    param(
@@ -49,6 +48,7 @@ function RunTask
        Trace-VstsLeavingInvocation $MyInvocation
    }
 }
+
 function CreatePullRequest($body, $reviewers)
 {
     Write-Host "The source branch is: $($body.sourceRefName)"
