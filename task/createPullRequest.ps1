@@ -79,13 +79,14 @@ function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $descri
 {
     if($reviewers -ne "")
     {
-        Write-Host "not null"
         $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=5.0-preview.2"
         $url = $url.Replace("//dev","//vsaex.dev")
         Write-Debug $url
         $head = @{ Authorization = "Bearer $env:System_AccessToken" }
         $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
         $reviewers = $reviewers.Split(';')
+        Write-Debug $reviewers
+        Write-Debug $users
         $usersId = @()
         ForEach($reviewer in $reviewers)
         {
