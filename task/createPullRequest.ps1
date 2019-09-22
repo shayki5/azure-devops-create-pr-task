@@ -34,6 +34,7 @@ function RunTask
        {
            Set-Location $env:Build_SourcesDirectory
            $branches = git branch -a
+           Write-Debug $branches
            $branches.ForEach({
            if($_.Contains($targetBranch.Split('/')[0]))
             {
@@ -61,7 +62,9 @@ function CreatePullRequest($body, $reviewers)
     }
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
+    Write-Debug $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests?api-version=5.0"
+    Write-Debug $url
     $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
     if($response -ne $Null)
     {
@@ -79,6 +82,7 @@ function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $descri
         Write-Host "not null"
         $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=5.0-preview.2"
         $url = $url.Replace("//dev","//vsaex.dev")
+        Write-Debug $url
         $head = @{ Authorization = "Bearer $env:System_AccessToken" }
         $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
         $reviewers = $reviewers.Split(';')
