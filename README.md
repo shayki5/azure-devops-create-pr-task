@@ -4,9 +4,9 @@ Build | Release | Extension
 
 ## Azure DevOps Create Pull Request Task
 
-Easy way to create a Pull Request from your Build or Release Pipeline. 
+An easy way to create a Pull Request from your Build or Release Pipeline. 
 
-## Prerequisites before use the task
+## Prerequisites
 
 - **The task works currently only in Windows machines.**
 
@@ -22,6 +22,9 @@ Easy way to create a Pull Request from your Build or Release Pipeline.
      env:
        System_AccessToken: $(System.AccessToken)
     ```
+- You need to give permissions to the build user (in Microaoft hosted agnet is "Build Serivce (user-name)"):
+
+    ![Permissions](https://i.imgur.com/Us401RM.png)
 
 ## Usage
 
