@@ -3,7 +3,7 @@
     "name": "CreatePullRequest",
     "friendlyName": "Create Pull Request",
     "description": "A Task to create a Pull Request",
-    "helpMarkDown": "",
+    "helpMarkDown": "[More Information](https://github.com/shayki5/azure-devops-create-pr-task/blob/master/README.md)",
     "categories": "Utility",
     "visibility": [
         "Build",

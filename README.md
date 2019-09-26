@@ -22,7 +22,7 @@ An easy way to create a Pull Request from your Build or Release Pipeline.
      env:
        System_AccessToken: $(System.AccessToken)
     ```
-- You need to give permissions to the build user (in Microaoft hosted agnet is "Build Serivce (user-name)"):
+- You need to give permissions to the build user (in Microaoft hosted agnet is "Build Service (user-name)"):
 
     ![Permissions](https://i.imgur.com/Us401RM.png)
 
@@ -56,7 +56,7 @@ An easy way to create a Pull Request from your Build or Release Pipeline.
      System_AccessToken: $(System.AccessToken)
 ```
 
-## Knowen Issues
+## Known issue(s)
 
  - In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.
 
