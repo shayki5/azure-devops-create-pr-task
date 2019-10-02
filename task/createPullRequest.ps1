@@ -64,11 +64,9 @@ function CreatePullRequest($body, $reviewers)
     Write-Debug $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests?api-version=5.0"
     Write-Debug $url
-    try {
+    try 
+    {
         $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
-    }
-    catch {
-        $errorMessage = ($_ | ConvertFrom-Json).message
         if($response -ne $Null) # If the response not null - the create PR succeeded
         {
             Write-Host "*************************"
@@ -76,6 +74,10 @@ function CreatePullRequest($body, $reviewers)
             Write-Host "*************************"
             Write-Host "Pull Request $($response.pullRequestId) created."
         }
+    }
+    catch 
+    {
+        $errorMessage = ($_ | ConvertFrom-Json).message
         # If the error contains TF401179 it's mean that there is alredy a PR for the branches, so I display a warning
         elseif($errorMessage -match "TF401179") 
         {
