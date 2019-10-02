@@ -65,14 +65,22 @@ function CreatePullRequest($body, $reviewers)
     Write-Debug $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests?api-version=5.0"
     Write-Debug $url
-    $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
-    if($response -ne $Null)
-    {
-        Write-Host "*************************"
-        Write-Host "******** Success ********"
-        Write-Host "*************************"
-        Write-Host "Pull Request $($response.pullRequestId) created."
+    try {
+        $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
     }
+    catch {
+        if($response -ne $Null)
+        {
+            Write-Host "*************************"
+            Write-Host "******** Success ********"
+            Write-Host "*************************"
+            Write-Host "Pull Request $($response.pullRequestId) created."
+        }
+        else {
+            Write-Warning $_
+        }
+    }
+
 }
 
 function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $description, $reviewers)
