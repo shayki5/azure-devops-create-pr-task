@@ -69,6 +69,7 @@ function CreatePullRequest($body, $reviewers)
         $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
     }
     catch {
+        $errorMessage = ($_ | ConvertFrom-Json).message
         if($response -ne $Null)
         {
             Write-Host "*************************"
@@ -76,11 +77,14 @@ function CreatePullRequest($body, $reviewers)
             Write-Host "*************************"
             Write-Host "Pull Request $($response.pullRequestId) created."
         }
+        elseif($errorMessage -match "TF401179") {
+            Write-Warning $errorMessage
+        }
         else {
-            Write-Warning $_.Exception.Message
+            Write-Error $_.Exception.Message
+            Write-Error $errorMessage
         }
     }
-
 }
 
 function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $description, $reviewers)
