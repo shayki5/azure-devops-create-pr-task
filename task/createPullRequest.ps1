@@ -22,7 +22,7 @@ function RunTask
            $sourceBranch = "refs/heads/$sourceBranch"
        }
 
-       # If the tagert branch is only one branch
+       # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
        {
            $targetBranch = "refs/heads/$targetBranch"     
@@ -36,12 +36,12 @@ function RunTask
            $branches = git branch -a
            Write-Debug $branches
            $branches.ForEach({
-           if($_.Contains($targetBranch.Split('/')[0]))
-            {
-                $newTargetBranch = $_.Split('/')[2]
-                $newTargetBranch = "refs/heads/$newTargetBranch"
-                CheckReviewersAndCreatePR -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers
-            }
+                if($_ -match ($targetBranch.Split('/')[0]))
+                {
+                        $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
+                        $newTargetBranch = "refs/heads/$newTargetBranch"
+                        CheckReviewersAndCreatePR -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers
+                }
            })
        }
 
@@ -70,17 +70,20 @@ function CreatePullRequest($body, $reviewers)
     }
     catch {
         $errorMessage = ($_ | ConvertFrom-Json).message
-        if($response -ne $Null)
+        if($response -ne $Null) # If the response not null - the create PR succeeded
         {
             Write-Host "*************************"
             Write-Host "******** Success ********"
             Write-Host "*************************"
             Write-Host "Pull Request $($response.pullRequestId) created."
         }
-        elseif($errorMessage -match "TF401179") {
+        # If the error contains TF401179 it's mean that there is alredy a PR for the branches, so I display a warning
+        elseif($errorMessage -match "TF401179") 
+        {
             Write-Warning $errorMessage
         }
-        else {
+        else # If there is an error - fail the task
+        {
             Write-Warning $errorMessage
             Write-Error $_.Exception.Message
         }
