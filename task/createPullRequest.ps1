@@ -77,7 +77,7 @@ function CreatePullRequest($body, $reviewers)
             Write-Host "Pull Request $($response.pullRequestId) created."
         }
         else {
-            Write-Warning $_
+            Write-Warning $_.Exception.Message
         }
     }
 
