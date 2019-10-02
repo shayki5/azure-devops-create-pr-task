@@ -81,8 +81,8 @@ function CreatePullRequest($body, $reviewers)
             Write-Warning $errorMessage
         }
         else {
+            Write-Warning $errorMessage
             Write-Error $_.Exception.Message
-            Write-Error $errorMessage
         }
     }
 }
