@@ -34,7 +34,6 @@ function RunTask
        {
            Set-Location $env:Build_SourcesDirectory
            $branches = git branch -a
-           Write-Debug $branches
            $branches.ForEach({
                 if($_ -match ($targetBranch.Split('/')[0]))
                 {
