@@ -79,7 +79,7 @@ function CreatePullRequest($body, $reviewers)
     {
         $errorMessage = ($_ | ConvertFrom-Json).message
         # If the error contains TF401179 it's mean that there is alredy a PR for the branches, so I display a warning
-        elseif($errorMessage -match "TF401179") 
+        if($errorMessage -match "TF401179") 
         {
             Write-Warning $errorMessage
         }
@@ -101,8 +101,6 @@ function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $descri
         $head = @{ Authorization = "Bearer $env:System_AccessToken" }
         $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
         $reviewers = $reviewers.Split(';')
-        Write-Debug $reviewers
-        Write-Debug $users
         $usersId = @()
         ForEach($reviewer in $reviewers)
         {
