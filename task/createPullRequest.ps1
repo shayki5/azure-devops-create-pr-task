@@ -77,7 +77,8 @@ function CreatePullRequest($body, $reviewers)
     }
     catch 
     {
-        $errorMessage = ($_ | ConvertFrom-Json).message
+        try { $errorMessage = ($_ | ConvertFrom-Json).message }
+        catch { }
         # If the error contains TF401179 it's mean that there is alredy a PR for the branches, so I display a warning
         if($errorMessage -match "TF401179") 
         {
@@ -85,7 +86,9 @@ function CreatePullRequest($body, $reviewers)
         }
         else # If there is an error - fail the task
         {
-            Write-Warning $errorMessage
+            try { Write-Warning $errorMessage }
+            catch { }
+            Write-Error $_
             Write-Error $_.Exception.Message
         }
     }
