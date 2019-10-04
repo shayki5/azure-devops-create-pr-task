@@ -14,6 +14,33 @@ function RunTask
        # Get inputs
        $sourceBranch = Get-VstsInput -Name 'sourceBranch' -Require
        $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
+       $Name = 'githubEndpoint'
+       $github =  Get-Endpoint -Name $Name
+
+        # Get the URL.
+        $description = Get-LocString -Key PSLIB_EndpointUrl0 -ArgumentList $Name
+        $key = "ENDPOINT_URL_$Name"
+        $url = Get-VaultValue -Description $description -Key $key -Require:$Require
+        Write-host $url
+
+        # Get the auth object.
+        $description = Get-LocString -Key PSLIB_EndpointAuth0 -ArgumentList $Name
+        $key = "ENDPOINT_AUTH_$Name"
+        if ($auth = (Get-VaultValue -Description $description -Key $key -Require:$Require)) {
+            $auth = ConvertFrom-Json -InputObject $auth
+        }
+        Write-host $auth
+
+        # Get the data.
+        $description = "'$Name' service endpoint data"
+        $key = "ENDPOINT_DATA_$Name"
+        if ($data = (Get-VaultValue -Description $description -Key $key)) {
+            $data = ConvertFrom-Json -InputObject $data
+        }
+        Write-host $data
+
+       
+       
        $title = Get-VstsInput -Name 'title' -Require
        $description = Get-VstsInput -Name 'description'
        $reviewers = Get-VstsInput -Name 'reviewers'

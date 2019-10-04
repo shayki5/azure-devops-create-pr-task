@@ -29,6 +29,14 @@
     ],
     "inputs": [
         {
+            "name": "githubEndpoint",
+            "type": "connectedService:github",
+            "label": "GitHub Connection",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Select the service endpoint for your GitHub connection. <br>To create one, click the Manage link and create a new service endpoint."
+        },
+        {
             "name": "sourceBranch",
             "type": "string",
             "label": "Source branch name",

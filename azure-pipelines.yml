@@ -1,5 +1,5 @@
 trigger:
-- master
+- github
 
 pool:
   vmImage: 'windows-2019'
@@ -18,17 +18,7 @@ steps:
     extensionVersion: '1.0.$(Version)'
     extensionVisibility: private
     extensionPricing: free
-    extensionId: 'CreatePullRequestDev'
-    outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
-
-- task: PackageVSTSExtension@1
-  displayName: 'Package Extension - Public'
-  inputs:
-    rootFolder: '$(Build.SourcesDirectory)'
-    extensionVersion: '1.0.$(Version)'
-    extensionVisibility: public
-    extensionPricing: free
-    updateTasksVersion: false
+    extensionId: 'CreatePullRequestGitDev'
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
 - task: PublishBuildArtifacts@1

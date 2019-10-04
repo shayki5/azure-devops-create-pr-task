@@ -1,6 +1,6 @@
 {
 	"manifestVersion": 1,
-	"id": "CreatePullRequest",
+	"id": "CreatePullRequestGitHub",
 	"version": "1.0.0",
 	"name": "Create Pull Request",
 	"description": "Automatically create a Pull Request from Build or Release pipeline, supports also multi target branch",
