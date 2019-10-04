@@ -15,7 +15,6 @@ function RunTask
        $sourceBranch = Get-VstsInput -Name 'sourceBranch' -Require
        $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
        $Name = 'githubEndpoint'
-       $github =  Get-Endpoint -Name $Name
 
         # Get the URL.
         $description = Get-LocString -Key PSLIB_EndpointUrl0 -ArgumentList $Name
