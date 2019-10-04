@@ -29,6 +29,27 @@
     ],
     "inputs": [
         {
+            "name": "repoType",
+            "type": "radio",
+            "label": "Git repository type",
+            "required": true,
+            "defaultValue": "Azure DevOps",
+            "helpMarkDown": "Choose the git repository type, Azure DevOps (Azure Repos) or GitHub",
+            "options": {
+              "Azure DevOps": "Azure DevOps",
+              "GitHub": "GitHub"
+            }
+        },
+        {
+            "name": "githubPat",
+            "type": "string",
+            "label": "GitHub PAT (Personal Access Token)",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Sepcify your GiHub PAT (Personal Access Token)",
+            "visibleRule": "repoType=GitHub"
+        },
+        {
             "name": "githubEndpoint",
             "type": "connectedService:github",
             "label": "GitHub Connection",
@@ -74,8 +95,9 @@
             "label": "Reviewers (email address)",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "The pull request reviewers - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com (optional)"
-        }
+            "helpMarkDown": "The pull request reviewers - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com (optional)",
+            "visibleRule": "repoType=Azure DevOps"
+        },
     ],
     "execution": {
         "PowerShell3": {

@@ -15,7 +15,7 @@ function RunTask
        $sourceBranch = Get-VstsInput -Name 'sourceBranch' -Require
        $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
        
-       $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
+<#        $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
        Write-Host $serviceNameInput
        $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
 
@@ -32,6 +32,10 @@ function RunTask
         Write-Host $endpoint.Auth.Parameters
         Write-Host $endpoint.Auth.Parameters.accessToken
         Write-Host $endpoint.Auth.Parameters.TenantId.IdToken
+
+        $url = "https://api.github.com/users/shayki5"
+        $header = @{Authorization=("token 7ea99658b7f6489e5cd76bd9a17dae2367c31f2c")}
+        Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $header #>
 
        $title = Get-VstsInput -Name 'title' -Require
        $description = Get-VstsInput -Name 'description'
