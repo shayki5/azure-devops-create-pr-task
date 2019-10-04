@@ -14,6 +14,23 @@ function RunTask
        # Get inputs
        $sourceBranch = Get-VstsInput -Name 'sourceBranch' -Require
        $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
+       
+       $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
+ Write-Host $serviceNameInput
+ $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
+
+ Write-Host $serviceName
+        if (!$serviceName) {
+            # Let the task SDK throw an error message if the input isn't defined.
+            Get-VstsInput -Name $serviceNameInput -Require
+        }
+
+        $endpoint = Get-VstsEndpoint -Name $serviceName -Require
+        Write-Host $endpoint.Auth
+Write-Host $endpoint.Auth.Parameters
+        Write-Host $endpoint.Auth.Parameters.TenantId
+
+
        $Name = 'githubEndpoint'
 
         # Get the URL.
