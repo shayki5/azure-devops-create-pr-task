@@ -16,47 +16,23 @@ function RunTask
        $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
        
        $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
- Write-Host $serviceNameInput
- $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
+       Write-Host $serviceNameInput
+       $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
 
- Write-Host $serviceName
-        if (!$serviceName) {
+       Write-Host $serviceName
+                if (!$serviceName) {
             # Let the task SDK throw an error message if the input isn't defined.
             Get-VstsInput -Name $serviceNameInput -Require
         }
 
         $endpoint = Get-VstsEndpoint -Name $serviceName -Require
+        
+        Write-Host $endpoint
         Write-Host $endpoint.Auth
-Write-Host $endpoint.Auth.Parameters
-        Write-Host $endpoint.Auth.Parameters.TenantId
+        Write-Host $endpoint.Auth.Parameters
+        Write-Host $endpoint.Auth.Parameters.accessToken
+        Write-Host $endpoint.Auth.Parameters.TenantId.IdToken
 
-
-       $Name = 'githubEndpoint'
-
-        # Get the URL.
-        $description = Get-LocString -Key PSLIB_EndpointUrl0 -ArgumentList $Name
-        $key = "ENDPOINT_URL_$Name"
-        $url = Get-VaultValue -Description $description -Key $key -Require:$Require
-        Write-host $url
-
-        # Get the auth object.
-        $description = Get-LocString -Key PSLIB_EndpointAuth0 -ArgumentList $Name
-        $key = "ENDPOINT_AUTH_$Name"
-        if ($auth = (Get-VaultValue -Description $description -Key $key -Require:$Require)) {
-            $auth = ConvertFrom-Json -InputObject $auth
-        }
-        Write-host $auth
-
-        # Get the data.
-        $description = "'$Name' service endpoint data"
-        $key = "ENDPOINT_DATA_$Name"
-        if ($data = (Get-VaultValue -Description $description -Key $key)) {
-            $data = ConvertFrom-Json -InputObject $data
-        }
-        Write-host $data
-
-       
-       
        $title = Get-VstsInput -Name 'title' -Require
        $description = Get-VstsInput -Name 'description'
        $reviewers = Get-VstsInput -Name 'reviewers'
