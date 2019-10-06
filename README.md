@@ -50,6 +50,8 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 - **Git repository type**: Azure DevOps (Repos) or GitHub. When you choose GitHub you need to choose from the list the GitHub service connection (that use PAT authorization.)
 
+- **GitHub Connection (authorized with PAT)**: When you choose GitHub in `Git repository type` you need to specify here the GitHub service connection.
+
 - **Source branch name:** The source branch that will be merged. The default value is the build source branch - `$(Build.SourceBranchName)`.
 
 - **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`. Supports also multi target branch with `*`, for example: `test/*`.
@@ -66,7 +68,7 @@ Supports also multi target branch (PR from one source branch to many target bran
 - task: CreatePullRequest@1
   inputs:
     repoType: Azure DevOps / GitHub
-    githubEndpoint: 'my-github' # When you choose GitHub in `repoType` you need to speicfy here the GitHub service connection
+    githubEndpoint: 'my-github' # When you choose GitHub in `repoType` you need to specify here the GitHub service connection
     sourceBranch: '$(Build.SourceBranchName)'
     targetBranch: 'master'
     title: 'Test'
