@@ -5,7 +5,7 @@ pool:
   vmImage: 'windows-2019'
 
 variables:
-  version: $[ counter('revision',0) ]
+  version: $[ counter('revision-new',0) ]
 
 steps:
 - task: TfxInstaller@1
@@ -15,7 +15,7 @@ steps:
   displayName: 'Package Extension - Private'
   inputs:
     rootFolder: '$(Build.SourcesDirectory)'
-    extensionVersion: '1.0.$(Version)'
+    extensionVersion: '1.2.$(Version)'
     extensionVisibility: private
     extensionPricing: free
     extensionId: 'CreatePullRequestDev'
@@ -25,7 +25,7 @@ steps:
   displayName: 'Package Extension - Public'
   inputs:
     rootFolder: '$(Build.SourcesDirectory)'
-    extensionVersion: '1.0.$(Version)'
+    extensionVersion: '1.2.$(Version)'
     extensionVisibility: public
     extensionPricing: free
     updateTasksVersion: false
@@ -35,4 +35,3 @@ steps:
   displayName: 'Publish Artifact: drop'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
-    

@@ -2,7 +2,7 @@
     "id": "2f159376-316b-4652-a49c-392f9d534113",
     "name": "CreatePullRequest",
     "friendlyName": "Create Pull Request",
-    "description": "Automatically create a Pull Request from Build or Release pipeline",
+    "description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline, supports also multi target branch.",
     "helpMarkDown": "[More Information](https://github.com/shayki5/azure-devops-create-pr-task/blob/master/README.md)",
     "categories": "Utility",
     "visibility": [
@@ -16,7 +16,7 @@
     "author": "Shayki Abramczyk",
     "version": {
         "Major": 1,
-        "Minor": 0,
+        "Minor": 2,
         "Patch": 0
     },
     "instanceNameFormat": "Create Pull Request",
@@ -29,12 +29,33 @@
     ],
     "inputs": [
         {
+            "name": "repoType",
+            "type": "radio",
+            "label": "Git repository type",
+            "required": true,
+            "defaultValue": "Azure DevOps",
+            "helpMarkDown": "Choose the git repository type, Azure DevOps (Azure Repos) or GitHub",
+            "options": {
+              "Azure DevOps": "Azure DevOps",
+              "GitHub": "GitHub"
+            }
+        },
+        {
+            "name": "githubEndpoint",
+            "type": "connectedService:github",
+            "label": "GitHub Connection (authorized with PAT)",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Select the service endpoint for your GitHub connection. must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
+            "visibleRule": "repoType=GitHub"
+        },
+        {
             "name": "sourceBranch",
             "type": "string",
             "label": "Source branch name",
-            "defaultValue": "$(Build.SourceBranch)",
+            "defaultValue": "$(Build.SourceBranchName)",
             "required": true,
-            "helpMarkDown": "The branch name that you will be merged (for exmaple - feature). the deafult is '$(Build.SourceBranch)'."
+            "helpMarkDown": "The branch name that you will be merged (for exmaple - feature). the deafult is '$(Build.SourceBranchName)'."
         },
         {
             "name": "targetBranch",
@@ -63,10 +84,10 @@
         {
             "name": "reviewers",
             "type": "string",
-            "label": "Reviewers (email address)",
+            "label": "Reviewers (Azure DevOps: email address, GitHub: username)",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "The pull request reviewers - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com (optional)"
+            "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com <br> For GitHub - one or more usernames separated by semicolon. for example: username;testuser"
         }
     ],
     "execution": {
