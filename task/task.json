@@ -2,7 +2,7 @@
     "id": "2f159376-316b-4652-a49c-392f9d534113",
     "name": "CreatePullRequest",
     "friendlyName": "Create Pull Request",
-    "description": "Automatically create a Pull Request from Build or Release pipeline",
+    "description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline",
     "helpMarkDown": "[More Information](https://github.com/shayki5/azure-devops-create-pr-task/blob/master/README.md)",
     "categories": "Utility",
     "visibility": [
@@ -16,7 +16,7 @@
     "author": "Shayki Abramczyk",
     "version": {
         "Major": 1,
-        "Minor": 0,
+        "Minor": 2,
         "Patch": 0
     },
     "instanceNameFormat": "Create Pull Request",
