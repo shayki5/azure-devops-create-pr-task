@@ -84,12 +84,11 @@
         {
             "name": "reviewers",
             "type": "string",
-            "label": "Reviewers (email address)",
+            "label": "Reviewers (Azure DevOps: email address, GitHub: username)",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "The pull request reviewers - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com (optional)",
-            "visibleRule": "repoType=Azure DevOps"
-        },
+            "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com <br> For GitHub - one or more usernames separated by semicolon. for example: username;testuser"
+        }
     ],
     "execution": {
         "PowerShell3": {

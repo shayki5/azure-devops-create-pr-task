@@ -29,7 +29,7 @@ function RunTask
            }
            else # Is GitHub repository 
            {
-               CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description
+               CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers
            } 
        }
 
@@ -49,7 +49,7 @@ function RunTask
                         }
                         else # Is GitHub repository 
                         {
-                            CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description
+                            CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers
                         }
                 }
            })
@@ -100,7 +100,7 @@ function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $descri
     }
 }
 
-function CreateGitHubPullRequest($sourceBranch, $targetBranch, $title, $description)
+function CreateGitHubPullRequest($sourceBranch, $targetBranch, $title, $description, $reviewers)
 {
     Write-Host "The source branch is: $sourceBranch"
     Write-Host "The target branch is: $targetBranch"
@@ -130,7 +130,6 @@ function CreateGitHubPullRequest($sourceBranch, $targetBranch, $title, $descript
         base = "$targetBranch"
         title = "$title"
         body = "$description"
-        requested_reviewers = @(@{ login = "shayki-test" })
     }
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
@@ -145,6 +144,44 @@ function CreateGitHubPullRequest($sourceBranch, $targetBranch, $title, $descript
             Write-Host "******** Success ********"
             Write-Host "*************************"
             Write-Host "Pull Request $($response.number) created."
+            if($reviewers -ne "")
+            {
+                CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number
+            }
+        }
+    }
+    catch 
+    {
+        Write-Error $_
+        Write-Error $_.Exception.Message
+    }
+}
+
+function CreateGitHubReviewers($reviewers, $token, $prNumber)
+{
+    $reviewers = $reviewers.Split(';')
+    $repoUrl = $env:BUILD_REPOSITORY_URI
+    $owner = $repoUrl.Split('/')[3]
+    $repo = $repoUrl.Split('/')[4]
+    $url = "https://api.github.com/repos/$owner/$repo/pulls/$prNumber/requested_reviewers"
+    $body = @{
+        reviewers = @()
+    }
+    ForEach($reviewer in $reviewers)
+    {
+        $body.reviewers += $reviewer
+    }
+    $jsonBody = $body | ConvertTo-Json
+    Write-Debug $jsonBody
+    $header = @{Authorization=("token $token")}
+    try 
+    {
+        Write-Host "Add reviewers the the Pull Request..."
+        $response =  Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
+        if($response -ne $Null) # If the response not null - the create PR succeeded
+        {
+            Write-Host "******** Success ********"
+            Write-Host "Reviewrs area ddedd to PR #$prNumber"
         }
     }
     catch 
