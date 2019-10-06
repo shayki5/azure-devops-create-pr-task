@@ -41,29 +41,21 @@
             }
         },
         {
-            "name": "githubPat",
-            "type": "string",
-            "label": "GitHub PAT (Personal Access Token)",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Sepcify your GiHub PAT (Personal Access Token)",
-            "visibleRule": "repoType=GitHub"
-        },
-        {
             "name": "githubEndpoint",
             "type": "connectedService:github",
             "label": "GitHub Connection",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Select the service endpoint for your GitHub connection. <br>To create one, click the Manage link and create a new service endpoint."
+            "helpMarkDown": "Select the service endpoint for your GitHub connection. <br>To create one, click the Manage link and create a new service endpoint.",
+            "visibleRule": "repoType=GitHub"
         },
         {
             "name": "sourceBranch",
             "type": "string",
             "label": "Source branch name",
-            "defaultValue": "$(Build.SourceBranch)",
+            "defaultValue": "$(Build.SourceBranchName)",
             "required": true,
-            "helpMarkDown": "The branch name that you will be merged (for exmaple - feature). the deafult is '$(Build.SourceBranch)'."
+            "helpMarkDown": "The branch name that you will be merged (for exmaple - feature). the deafult is '$(Build.SourceBranchName)'."
         },
         {
             "name": "targetBranch",

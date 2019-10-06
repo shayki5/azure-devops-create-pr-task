@@ -14,43 +14,25 @@ function RunTask
        # Get inputs
        $sourceBranch = Get-VstsInput -Name 'sourceBranch' -Require
        $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
-       
-       $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
-       Write-Host $serviceNameInput
-       $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
-
-       Write-Host $serviceName
-                if (!$serviceName) {
-            # Let the task SDK throw an error message if the input isn't defined.
-            Get-VstsInput -Name $serviceNameInput -Require
-        }
-
-        $endpoint = Get-VstsEndpoint -Name $serviceName -Require
-        
-        Write-Host $endpoint
-        Write-Host $endpoint.Auth
-        Write-Host $endpoint.Auth.Parameters
-        $token = $endpoint.Auth.Parameters.accessToken
-        $token2 = $endpoint.Auth.Parameters.TenantId.IdToken
-         
-        $url = "https://api.github.com/users/shayki5"
-        $header = @{Authorization=("token $token")}
-        Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $header 
-
        $title = Get-VstsInput -Name 'title' -Require
        $description = Get-VstsInput -Name 'description'
        $reviewers = Get-VstsInput -Name 'reviewers'
-       if(!$sourceBranch.Contains("refs"))
-       {
-           $sourceBranch = "refs/heads/$sourceBranch"
-       }
+       $repoType = Get-VstsInput -Name 'repoType' -Require
+       
 
        # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
        {
-           $targetBranch = "refs/heads/$targetBranch"     
-           CheckReviewersAndCreatePR -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers
-        }
+           $targetBranch = "refs/heads/$targetBranch"    
+           if($repoType -eq "Azure DevOps")
+           {
+               CheckReviewersAndCreatePR -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers    
+           }
+           else # Is GitHub repository 
+           {
+               CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description
+           } 
+       }
 
        # If the target branch is like feature/*
        else
@@ -72,6 +54,43 @@ function RunTask
    }
 }
 
+function CreateGitHubPullRequest($sourceBranch, $targetBranch, $title, $description)
+{
+    Write-Host "The source branch is: $sourceBranch"
+    Write-Host "The target branch is: $targetBranch"
+    Write-Host "The title is: $title"
+    Write-Host "The description is: $description"
+
+    $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
+    Write-Host $serviceNameInput
+    $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
+
+    Write-Host $serviceName
+    if (!$serviceName) {
+        # Let the task SDK throw an error message if the input isn't defined.
+        Get-VstsInput -Name $serviceNameInput -Require
+    }
+
+    $endpoint = Get-VstsEndpoint -Name $serviceName -Require
+    $token = $endpoint.Auth.Parameters.accessToken
+    
+    $repoUrl = $env:BUILD_REPOSITORY_URI
+    $owner = $repoUrl.Split('/')[3]
+    $repo = $repoUrl.Split('/')[4]
+    $url = "https://api.github.com//repos/$owner/$repo/pulls"
+
+    $body = @{
+        head = "$sourceBranch"
+        base = "$targetBranch"
+        title = "$title"
+        body = "$description"
+    }
+    $jsonBody = ConvertTo-Json $body
+    Write-Debug $jsonBody
+
+    $header = @{Authorization=("token $token")}
+    Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
+}
 function CreatePullRequest($body, $reviewers)
 {
     Write-Host "The source branch is: $($body.sourceRefName)"
@@ -119,6 +138,7 @@ function CreatePullRequest($body, $reviewers)
 
 function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $description, $reviewers)
 {
+    $sourceBranch = "refs/heads/$sourceBranch"
     if($reviewers -ne "")
     {
         $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=5.0-preview.2"
