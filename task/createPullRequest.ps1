@@ -30,9 +30,9 @@ function RunTask
         Write-Host $endpoint
         Write-Host $endpoint.Auth
         Write-Host $endpoint.Auth.Parameters
-        Write-Host $endpoint.Auth.Parameters.accessToken
-        $token =  $endpoint.Auth.Parameters.TenantId.IdToken
-
+        $token = $endpoint.Auth.Parameters.accessToken
+        $token2 = $endpoint.Auth.Parameters.TenantId.IdToken
+         
         $url = "https://api.github.com/users/shayki5"
         $header = @{Authorization=("token $token")}
         Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $header 
