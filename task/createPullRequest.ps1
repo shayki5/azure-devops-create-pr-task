@@ -130,7 +130,7 @@ function CreateGitHubPullRequest($sourceBranch, $targetBranch, $title, $descript
         base = "$targetBranch"
         title = "$title"
         body = "$description"
-        requested_reviewers = @{ login = "shayki-test" }
+        requested_reviewers = @(@{ login = "shayki-test" })
     }
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
