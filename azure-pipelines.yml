@@ -1,11 +1,11 @@
 trigger:
-- github
+- master
 
 pool:
   vmImage: 'windows-2019'
 
 variables:
-  version: $[ counter('revision2',0) ]
+  version: $[ counter('revision-new',0) ]
 
 steps:
 - task: TfxInstaller@1
@@ -15,14 +15,23 @@ steps:
   displayName: 'Package Extension - Private'
   inputs:
     rootFolder: '$(Build.SourcesDirectory)'
-    extensionVersion: '1.0.$(Version)'
+    extensionVersion: '1.2.$(Version)'
     extensionVisibility: private
     extensionPricing: free
-    extensionId: 'CreatePullRequestGitDev'
+    extensionId: 'CreatePullRequestDev'
+    outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
+
+- task: PackageVSTSExtension@1
+  displayName: 'Package Extension - Public'
+  inputs:
+    rootFolder: '$(Build.SourcesDirectory)'
+    extensionVersion: '1.2.$(Version)'
+    extensionVisibility: public
+    extensionPricing: free
+    updateTasksVersion: false
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
-    
