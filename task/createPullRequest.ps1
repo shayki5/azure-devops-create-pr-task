@@ -23,9 +23,8 @@ function RunTask
        # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
        {
-           $targetBranch = "refs/heads/$targetBranch"    
            if($repoType -eq "Azure DevOps")
-           {
+           {  
                CheckReviewersAndCreatePR -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers    
            }
            else # Is GitHub repository 
@@ -77,7 +76,7 @@ function CreateGitHubPullRequest($sourceBranch, $targetBranch, $title, $descript
     $repoUrl = $env:BUILD_REPOSITORY_URI
     $owner = $repoUrl.Split('/')[3]
     $repo = $repoUrl.Split('/')[4]
-    $url = "https://api.github.com//repos/$owner/$repo/pulls"
+    $url = "https://api.github.com/repos/$owner/$repo/pulls"
 
     $body = @{
         head = "$sourceBranch"
@@ -139,6 +138,7 @@ function CreatePullRequest($body, $reviewers)
 function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $description, $reviewers)
 {
     $sourceBranch = "refs/heads/$sourceBranch"
+    $targetBranch = "refs/heads/$targetBranch"    
     if($reviewers -ne "")
     {
         $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=5.0-preview.2"

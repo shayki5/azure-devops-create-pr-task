@@ -43,10 +43,10 @@
         {
             "name": "githubEndpoint",
             "type": "connectedService:github",
-            "label": "GitHub Connection",
+            "label": "GitHub Connection (authorized with PAT)",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Select the service endpoint for your GitHub connection. <br>To create one, click the Manage link and create a new service endpoint.",
+            "helpMarkDown": "Select the service endpoint for your GitHub connection. must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
             "visibleRule": "repoType=GitHub"
         },
         {
