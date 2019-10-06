@@ -53,9 +53,9 @@
             "name": "sourceBranch",
             "type": "string",
             "label": "Source branch name",
-            "defaultValue": "$(Build.SourceBranchName)",
+            "defaultValue": "$(Build.SourceBranch)",
             "required": true,
-            "helpMarkDown": "The branch name that you will be merged (for exmaple - feature). the deafult is '$(Build.SourceBranchName)'."
+            "helpMarkDown": "The branch name that you will be merged (for exmaple - feature). the deafult is '$(Build.SourceBranch)'."
         },
         {
             "name": "targetBranch",

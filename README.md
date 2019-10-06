@@ -46,13 +46,13 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 **In the classic editor:**
 
-![Task](https://i.imgur.com/9XUeShD.png)
+![Task](https://i.imgur.com/Dm4I2Af.png)
 
 - **Git repository type**: Azure DevOps (Repos) or GitHub. When you choose GitHub you need to choose from the list the GitHub service connection (that use PAT authorization.)
 
 - **GitHub Connection (authorized with PAT)**: When you choose GitHub in `Git repository type` you need to specify here the GitHub service connection.
 
-- **Source branch name:** The source branch that will be merged. The default value is the build source branch - `$(Build.SourceBranchName)`.
+- **Source branch name:** The source branch that will be merged. The default value is the build source branch - `$(Build.SourceBranch)`.
 
 - **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`. Supports also multi target branch with `*`, for example: `test/*`.
 
@@ -69,7 +69,7 @@ Supports also multi target branch (PR from one source branch to many target bran
   inputs:
     repoType: Azure DevOps / GitHub
     githubEndpoint: 'my-github' # When you choose GitHub in `repoType` you need to specify here the GitHub service connection
-    sourceBranch: '$(Build.SourceBranchName)'
+    sourceBranch: '$(Build.SourceBranch)'
     targetBranch: 'master'
     title: 'Test'
     description: 'Test' # Optional
@@ -86,7 +86,7 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 ### New in 1.2.0
 
-- Supprots also GitHub repositories!
+- Supports also GitHub repositories!
 
 ### New in 1.0.31
 

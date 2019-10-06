@@ -62,7 +62,10 @@ function RunTask
 
 function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $description, $reviewers)
 {
-    $sourceBranch = "refs/heads/$sourceBranch"
+    if(!$sourceBranch.Contains("refs")
+    {
+        $sourceBranch = "refs/heads/$sourceBranch"
+    }
     $targetBranch = "refs/heads/$targetBranch"    
     if($reviewers -ne "")
     {
@@ -108,10 +111,8 @@ function CreateGitHubPullRequest($sourceBranch, $targetBranch, $title, $descript
     Write-Host "The description is: $description"
 
     $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
-    Write-Host $serviceNameInput
     $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
 
-    Write-Host $serviceName
     if (!$serviceName) {
         # Let the task SDK throw an error message if the input isn't defined.
         Get-VstsInput -Name $serviceNameInput -Require
