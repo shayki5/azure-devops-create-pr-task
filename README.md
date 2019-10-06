@@ -34,11 +34,13 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 ### For GitHub Repository:
 
-- You need to create a GitHub service connection with Personal Access Token (PAT) - with `repos` permissions: 
-
-
+- You need to create a GitHub service connection with Personal Access Token (PAT) - with `repo` permissions: 
 
     ![GithubConnection](https://i.imgur.com/imWdnT7.png)
+
+- To create the GitHub PAT go to https://github.com/settings/tokens/new
+
+    ![PAT](https://i.imgur.com/AmKuY7d.png)
 
 ## Usage
 
