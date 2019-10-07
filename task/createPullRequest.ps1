@@ -62,7 +62,7 @@ function RunTask
 
 function CheckReviewersAndCreatePR($sourceBranch, $targetBranch, $title, $description, $reviewers)
 {
-    if(!$sourceBranch.Contains("refs")
+    if(!$sourceBranch.Contains("refs"))
     {
         $sourceBranch = "refs/heads/$sourceBranch"
     }
