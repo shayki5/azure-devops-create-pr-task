@@ -24,7 +24,7 @@ function RunTask
        # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
        {
-          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoTyoe 
+          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType 
        }
 
        # If is multi-target branch, like feature/*
@@ -37,7 +37,7 @@ function RunTask
                 {
                     $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
                     $newTargetBranch = "$newTargetBranch"
-                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoTyoe 
+                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType 
                 }
            })
        }
@@ -61,16 +61,14 @@ function CreatePullRequest()
        [string]$description,
        [string]$reviewers
     )
-    Write-Host $repoType
+
     if($repoType -eq "Azure DevOps")
     { 
-        Write-Host "run azure deopb"
         CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers 
     }
 
     else # Is GitHub repository
     {
-        Write-Host "run github"
         CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers
     }
 }
@@ -170,7 +168,7 @@ function CreateGitHubReviewers()
         if($response -ne $Null) # If the response not null - the create PR succeeded
         {
             Write-Host "******** Success ********"
-            Write-Host "Reviewrs area ddedd to PR #$prNumber"
+            Write-Host "Reviewrs are addedd to PR #$prNumber"
         }
     }
 
