@@ -61,14 +61,16 @@ function CreatePullRequest()
        [string]$description,
        [string]$reviewers
     )
-
+    Write-Host $repoType
     if($repoType -eq "Azure DevOps")
     { 
+        Write-Host "run azure deopb"
         CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers 
     }
 
     else # Is GitHub repository
     {
+        Write-Host "run github"
         CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers
     }
 }
