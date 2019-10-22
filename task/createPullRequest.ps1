@@ -22,6 +22,7 @@ function RunTask
        $reviewers = Get-VstsInput -Name 'reviewers'
        $repoType = Get-VstsInput -Name 'repoType' -Require
        $isDraft = Get-VstsInput -Name 'isDraft'
+       Write-Host $isDraft
       
        # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
@@ -64,7 +65,7 @@ function CreatePullRequest()
        [string]$reviewers,
        [bool]$isDraft
     )
-
+    Write-Host $isDraft
     if($repoType -eq "Azure DevOps")
     { 
         CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft
@@ -196,6 +197,9 @@ function CreateAzureDevOpsPullRequest()
        [string]$reviewers,
        [bool]$isDraft
     )
+
+    Write-Host $isDraft
+    
     if(!$sourceBranch.Contains("refs"))
     {
         $sourceBranch = "refs/heads/$sourceBranch"
