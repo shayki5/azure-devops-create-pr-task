@@ -93,7 +93,7 @@
             "name": "idDraft",
             "type": "boolean",
             "label": "Create Draft Pull Request",
-            "defaultValue": "",
+            "defaultValue": false,
             "required": false,
             "helpMarkDown": "If checekd the pull request will be a Draft Pull Request. <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info."
         }

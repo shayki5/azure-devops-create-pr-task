@@ -201,10 +201,12 @@ function CreateAzureDevOpsPullRequest()
     }
 
     $targetBranch = "refs/heads/$targetBranch"  
-    Write-Host "The source branch is: $($body.sourceRefName)"
-    Write-Host "The target branch is: $($body.targetRefName)"
-    Write-Host "The title is: $($body.title)"
-    Write-Host "The description is: $($body.description)"
+    Write-Host "The Source Branch is: $sourceRefName"
+    Write-Host "The Darget Branch is: $targetRefName"
+    Write-Host "The Title is: $title"
+    Write-Host "The Description is: $description"
+    Write-Host "Is Draft Pull Request: $isDraft"
+
     $body = @{
         sourceRefName = "$sourceBranch"
         targetRefName = "$targetBranch"
