@@ -88,6 +88,14 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com <br> For GitHub - one or more usernames separated by semicolon. for example: username;testuser"
+        },
+        {
+            "name": "idDraft",
+            "type": "boolean",
+            "label": "Create draft PR",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "If checekd the pull request will be a draft pr. <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info."
         }
     ],
     "execution": {
