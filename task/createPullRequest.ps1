@@ -7,7 +7,8 @@ function RunTask
       [string]$targetBranch,
       [string]$title,
       [string]$description,
-      [string]$reviewers
+      [string]$reviewers,
+      [string]$isDraft
    )
 
    Trace-VstsEnteringInvocation $MyInvocation
@@ -20,11 +21,12 @@ function RunTask
        $description = Get-VstsInput -Name 'description'
        $reviewers = Get-VstsInput -Name 'reviewers'
        $repoType = Get-VstsInput -Name 'repoType' -Require
+       $isDraft = Get-VstsInput -Name 'isDraft'
       
        # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
        {
-          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType 
+          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft
        }
 
        # If is multi-target branch, like feature/*
@@ -37,7 +39,7 @@ function RunTask
                 {
                     $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
                     $newTargetBranch = "$newTargetBranch"
-                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType 
+                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft
                 }
            })
        }
@@ -59,17 +61,18 @@ function CreatePullRequest()
        [string]$targetBranch,
        [string]$title,
        [string]$description,
-       [string]$reviewers
+       [string]$reviewers,
+       [string]$isDraft
     )
 
     if($repoType -eq "Azure DevOps")
     { 
-        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers 
+        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft
     }
 
     else # Is GitHub repository
     {
-        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers
+        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft
     }
 }
 
@@ -83,7 +86,8 @@ function CreateGitHubPullRequest()
        [string]$targetBranch,
        [string]$title,
        [string]$description,
-       [string]$reviewers
+       [string]$reviewers,
+       [string]$isDraft
     )
 
     Write-Host "The source branch is: $sourceBranch"
@@ -188,7 +192,8 @@ function CreateAzureDevOpsPullRequest()
        [string]$targetBranch,
        [string]$title,
        [string]$description,
-       [string]$reviewers
+       [string]$reviewers,
+       [string]$isDraft
     )
     if(!$sourceBranch.Contains("refs"))
     {
@@ -206,6 +211,7 @@ function CreateAzureDevOpsPullRequest()
         title = "$title"
         description = "$description"
         reviewers = ""
+        isDraft = "$isDraft"
     }
 
     if($reviewers -ne "")
