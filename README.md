@@ -46,7 +46,7 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 **In the classic editor:**
 
-![Task](https://i.imgur.com/Dm4I2Af.png)
+![Task](https://i.imgur.com/M4x8HIv.png)
 
 - **Git repository type**: Azure DevOps (Repos) or GitHub. When you choose GitHub you need to choose from the list the GitHub service connection (that use PAT authorization.)
 
@@ -60,7 +60,11 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 - **Description:** The Pull Request description. *(Optional)*.
 
-- **Reviewers:** The Pull Request reviewers *(Optional)* . For Azure DevOps - one or more email addresses separated by semicolon. For example: `test@test.com;pr@pr.com`. For GitHub:  one or more usernames separated by semicolon. For example: `test;user`.
+- **Reviewers:** The Pull Request reviewers *(Optional)* . 
+  <br> For Azure DevOps - one or more email addresses separated by semicolon. For example: `test@test.com;pr@pr.com`. 
+  <br> For GitHub:  one or more usernames separated by semicolon. For example: `test;user`.
+
+- **Create Draft Pull Request**: If checekd the pull request will be a Draft Pull Request. (Default: false) <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info.
 
 **In yaml piepline:**
 
@@ -74,6 +78,7 @@ Supports also multi target branch (PR from one source branch to many target bran
     title: 'Test'
     description: 'Test' # Optional
     reviewers: For Azure DevOps: 'test@test.com'. For GitHub: `username` # Optional
+    isDraft: false / true (Default: false)
   env:
     System_AccessToken: $(System.AccessToken)
 ```
@@ -84,9 +89,13 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 ## Release Notes
 
+### New in 1.2.15
+
+- Draft Pull Request option. 
+
 ### New in 1.2.0
 
-- Supports also GitHub repositories!
+- Support also GitHub repositories!
 
 ### New in 1.0.31
 

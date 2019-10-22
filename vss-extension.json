@@ -1,7 +1,7 @@
 {
 	"manifestVersion": 1,
 	"id": "CreatePullRequest",
-	"version": "1.2.0",
+	"version": "1.2.15",
 	"name": "Create Pull Request",
 	"description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline, supports also multi target branch.",
 	"publisher": "ShaykiAbramczyk",
