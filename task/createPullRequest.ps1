@@ -8,7 +8,7 @@ function RunTask
       [string]$title,
       [string]$description,
       [string]$reviewers,
-      [string]$isDraft
+      [bool]$isDraft
    )
 
    Trace-VstsEnteringInvocation $MyInvocation
@@ -62,7 +62,7 @@ function CreatePullRequest()
        [string]$title,
        [string]$description,
        [string]$reviewers,
-       [string]$isDraft
+       [bool]$isDraft
     )
 
     if($repoType -eq "Azure DevOps")
@@ -87,7 +87,7 @@ function CreateGitHubPullRequest()
        [string]$title,
        [string]$description,
        [string]$reviewers,
-       [string]$isDraft
+       [bool]$isDraft
     )
 
     Write-Host "The source branch is: $sourceBranch"
@@ -193,7 +193,7 @@ function CreateAzureDevOpsPullRequest()
        [string]$title,
        [string]$description,
        [string]$reviewers,
-       [string]$isDraft
+       [bool]$isDraft
     )
     if(!$sourceBranch.Contains("refs"))
     {
@@ -201,8 +201,8 @@ function CreateAzureDevOpsPullRequest()
     }
 
     $targetBranch = "refs/heads/$targetBranch"  
-    Write-Host "The Source Branch is: $sourceRefName"
-    Write-Host "The Darget Branch is: $targetRefName"
+    Write-Host "The Source Branch is: $sourceBranch"
+    Write-Host "The Darget Branch is: $targetBranch"
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
     Write-Host "Is Draft Pull Request: $isDraft"
