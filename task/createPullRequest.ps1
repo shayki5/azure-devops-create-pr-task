@@ -242,7 +242,7 @@ function CreateAzureDevOpsPullRequest()
     catch
     {
         # If the error contains TF401179 it's mean that there is alredy a PR for the branches, so I display a warning
-        if($errorMessage -match "TF401179")
+        if($_ -match "TF401179")
         {
             Write-Warning $_
         }
