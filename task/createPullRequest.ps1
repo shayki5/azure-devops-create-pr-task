@@ -112,11 +112,12 @@ function CreateGitHubPullRequest()
         base = "$targetBranch"
         title = "$title"
         body = "$description"
+        draft = "$isDraft"
     }
 
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
-    $header = @{Authorization=("token $token")}
+    $header = @{ Authorization=("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
     try
     {
         $response =  Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
@@ -164,7 +165,7 @@ function CreateGitHubReviewers()
     }
     $jsonBody = $body | ConvertTo-Json
     Write-Debug $jsonBody
-    $header = @{Authorization=("token $token")}
+    $header = @{ Authorization=("token $token")}
     try
     {
         Write-Host "Add reviewers the the Pull Request..."
