@@ -21,7 +21,7 @@ function RunTask
        $description = Get-VstsInput -Name 'description'
        $reviewers = Get-VstsInput -Name 'reviewers'
        $repoType = Get-VstsInput -Name 'repoType' -Require
-       $isDraft = Get-VstsInput -Name 'isDraft'
+       $isDraft = Get-VstsInput -Name 'isDraft' -AsBool
        Write-Host $isDraft
       
        # If the target branch is only one branch
@@ -91,10 +91,12 @@ function CreateGitHubPullRequest()
        [bool]$isDraft
     )
 
-    Write-Host "The source branch is: $sourceBranch"
-    Write-Host "The target branch is: $targetBranch"
+    Write-Host "The Source Branch is: $sourceBranch"
+    Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The title is: $title"
-    Write-Host "The description is: $description"
+    Write-Host "The Description is: $description"
+    Write-Host "Is Draft Pull Request: $isDraft"
+
     $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
     $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
     if (!$serviceName) {
@@ -199,7 +201,7 @@ function CreateAzureDevOpsPullRequest()
     )
 
     Write-Host $isDraft
-    
+
     if(!$sourceBranch.Contains("refs"))
     {
         $sourceBranch = "refs/heads/$sourceBranch"
