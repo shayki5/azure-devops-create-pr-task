@@ -279,7 +279,7 @@ function GetUsersId()
     $usersId = @()
     ForEach($reviewer in $reviewers)
     {
-        $userId = $users.items.Where({ $_.user.mailAddress -eq $reviewer }).id
+        $userId = $users.value.Where({ $_.user.mailAddress -eq $reviewer }).id
         $usersId += @{ id = "$userId" }
 
     }
