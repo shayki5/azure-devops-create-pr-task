@@ -85,9 +85,13 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 ## Known issue(s)
 
- - In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.
+ -  ~~In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.~~ [Fixed in version 1.2.18]
 
 ## Release Notes
+
+### New in 1.2.18
+
+- Bug fix: Now you can add reviewers also in TFS 2018 and Azure DevOps Server 2019. 
 
 ### New in 1.2.15
 
