@@ -242,15 +242,16 @@ function CreateAzureDevOpsPullRequest()
         $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
         if($response -ne $Null) # If the response not null - the create PR succeeded
         {
+            $pullRequestId = $response.pullRequestId
             Write-Host "*************************"
             Write-Host "******** Success ********"
             Write-Host "*************************"
-            Write-Host "Pull Request $($response.pullRequestId) created."
+            Write-Host "Pull Request $pullRequestId created."
 
             # If set auto aomplete is true 
             if($autoComplete)
             {
-                SetAutoComplete -pullRequestId "$response.pullRequestId"
+                SetAutoComplete -pullRequestId $pullRequestId
             }
         }
     }
@@ -310,19 +311,19 @@ function SetAutoComplete
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
-    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests/$pullRequestId?api-version=5.0"
+    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests/$($pullRequestId)?api-version=5.0"
     Write-Debug $url
     try 
     {
         $response =  Invoke-RestMethod -Uri $url -Method Patch -Headers $head -Body $jsonBody -ContentType application/json
         if($Null -ne $response) # If the response not null - the create PR succeeded
         {
-            Write-Host "Set Auto Complete to PR $($response.pullRequestId)."
+            Write-Host "Set Auto Complete to PR $pullRequestId."
         }
     }
     catch 
     {
-        Write-Warning "Can't set Auto Complete to PR $($response.pullRequestId)."
+        Write-Warning "Can't set Auto Complete to PR $pullRequestId."
         Write-Warning $_
         Write-Warning $_.Exception.Message
     }
