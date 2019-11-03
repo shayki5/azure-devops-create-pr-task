@@ -321,7 +321,9 @@ function SetAutoComplete
     }
     catch 
     {
-        Write-Warning "ERROR - Can't set Auto Complete to PR $($response.pullRequestId)."
+        Write-Warning "Can't set Auto Complete to PR $($response.pullRequestId)."
+        Write-Warning $_
+        Write-Warning $_.Exception.Message
     }
 }
 
