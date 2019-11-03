@@ -46,7 +46,7 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 **In the classic editor:**
 
-![Task](https://i.imgur.com/M4x8HIv.png)
+![Task](https://i.imgur.com/qyUpeci.png)
 
 - **Git repository type**: Azure DevOps (Repos) or GitHub. When you choose GitHub you need to choose from the list the GitHub service connection (that use PAT authorization.)
 
@@ -66,6 +66,8 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 - **Create Draft Pull Request**: If checekd the pull request will be a Draft Pull Request. (Default: false) <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info.
 
+- **Set Auto Complete**: Only for Azure DevOps. If checekd the pull request will close once all branch policies are met.
+
 **In yaml piepline:**
 
 ```yaml
@@ -79,6 +81,7 @@ Supports also multi target branch (PR from one source branch to many target bran
     description: 'Test' # Optional
     reviewers: For Azure DevOps: 'test@test.com'. For GitHub: `username` # Optional
     isDraft: false / true (Default: false)
+    autoComplete: false / true (Default: false)
   env:
     System_AccessToken: $(System.AccessToken)
 ```
@@ -89,23 +92,27 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 ## Release Notes
 
-### New in 1.2.18
+#### 1.2.24
+
+- Set Auto Complete the Pull Request for Azure DevOps.
+
+#### 1.2.18
 
 - Bug fix: Now you can add reviewers also in TFS 2018 and Azure DevOps Server 2019. 
 
-### New in 1.2.15
+#### 1.2.15
 
 - Draft Pull Request option. 
 
-### New in 1.2.0
+#### 1.2.0
 
 - Support also GitHub repositories!
 
-### New in 1.0.31
+#### 1.0.31
 
- - Multi target branch (For example: `feature/*`)
+- Multi target branch (For example: `feature/*`)
 
-### New in 1.0.0
+#### 1.0.0
 
  - First version.
 
