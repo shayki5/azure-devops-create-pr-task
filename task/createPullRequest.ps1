@@ -311,6 +311,7 @@ function SetAutoComplete
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests/$pullRequestId?api-version=5.0"
+    Write-Debug $url
     try 
     {
         $response =  Invoke-RestMethod -Uri $url -Method Patch -Headers $head -Body $jsonBody -ContentType application/json
