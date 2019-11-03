@@ -96,6 +96,15 @@
             "defaultValue": false,
             "required": false,
             "helpMarkDown": "If checekd the pull request will be a Draft Pull Request. <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info."
+        },
+        {
+            "name": "autoComplete",
+            "type": "boolean",
+            "label": "Set Auto Compelete",
+            "defaultValue": false,
+            "required": false,
+            "helpMarkDown": "If checekd the pull request will close once all branch policies are met.",
+            "visibleRule": "repoType=Azure DevOps"
         }
     ],
     "execution": {

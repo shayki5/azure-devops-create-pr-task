@@ -8,7 +8,8 @@ function RunTask
       [string]$title,
       [string]$description,
       [string]$reviewers,
-      [bool]$isDraft
+      [bool]$isDraft,
+      [bool]$autoComplete
    )
 
    Trace-VstsEnteringInvocation $MyInvocation
@@ -22,11 +23,12 @@ function RunTask
        $reviewers = Get-VstsInput -Name 'reviewers'
        $repoType = Get-VstsInput -Name 'repoType' -Require
        $isDraft = Get-VstsInput -Name 'isDraft' -AsBool
+       $autoComplete = Get-VstsInput -Name 'autoComplete' -AsBool
       
        # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
        {
-          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft
+          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete
        }
 
        # If is multi-target branch, like feature/*
@@ -39,7 +41,7 @@ function RunTask
                 {
                     $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
                     $newTargetBranch = "$newTargetBranch"
-                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft
+                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete
                 }
            })
        }
@@ -62,12 +64,13 @@ function CreatePullRequest()
        [string]$title,
        [string]$description,
        [string]$reviewers,
-       [bool]$isDraft
+       [bool]$isDraft,
+       [bool]$autoComplete
     )
 
     if($repoType -eq "Azure DevOps")
     { 
-        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft
+        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete
     }
 
     else # Is GitHub repository
@@ -196,7 +199,8 @@ function CreateAzureDevOpsPullRequest()
        [string]$title,
        [string]$description,
        [string]$reviewers,
-       [bool]$isDraft
+       [bool]$isDraft,
+       [bool]$autoComplete
     )
 
     if(!$sourceBranch.Contains("refs"))
@@ -242,6 +246,12 @@ function CreateAzureDevOpsPullRequest()
             Write-Host "******** Success ********"
             Write-Host "*************************"
             Write-Host "Pull Request $($response.pullRequestId) created."
+
+            # If set auto aomplete is true 
+            if($autoComplete)
+            {
+                SetAutoComplete -pullRequestId "$response.pullRequestId"
+            }
         }
     }
 
@@ -262,7 +272,6 @@ function CreateAzureDevOpsPullRequest()
 }
 
 function GetUsersId()
-
 {
     [CmdletBinding()]
     Param
@@ -284,6 +293,49 @@ function GetUsersId()
 
     }
     return $usersId
+}
+
+function SetAutoComplete
+{
+    [CmdletBinding()]
+    Param
+    (
+       [string]$pullRequestId
+    )
+    $buildUserId = GetBuildUserId
+    $body = @{
+        autoCompleteSetBy= @{ id = "$buildUserId" }
+    }         
+
+    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $jsonBody = ConvertTo-Json $body
+    Write-Debug $jsonBody
+    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests/$pullRequestId?api-version=5.0"
+    try 
+    {
+        $response =  Invoke-RestMethod -Uri $url -Method Patch -Headers $head -Body $jsonBody -ContentType application/json
+        if($Null -ne $response) # If the response not null - the create PR succeeded
+        {
+            Write-Host "Set Auto Complete to PR $($response.pullRequestId)."
+        }
+    }
+    catch 
+    {
+        Write-Warning "ERROR - Can't set Auto Complete to PR $($response.pullRequestId)."
+    }
+}
+
+function GetBuildUserId
+{
+    [CmdletBinding()]
+
+    $url = "$($env:System_TeamFoundationCollectionUri)_apis/graph/users?api-version=4.1-preview.1"
+    $url = $url.Replace("//dev","//vssps.dev")
+    Write-Debug $url
+    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
+    $buildUserId = $users.value.Where({ $_.displayName -match "Project Collection Build Service" }).originId
+    return $buildUserId
 }
 
 RunTask

@@ -12,7 +12,9 @@
 	"content": {
 	    "details": {
 		"path": "README.MD"    
-	    }
+	    },
+        "license": {
+            "path": "LICENSE"
 	},
 	"tags":[
 	    "Azure Pipelines",
