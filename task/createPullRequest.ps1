@@ -226,7 +226,7 @@ function CreateAzureDevOpsPullRequest()
 
     if($reviewers -ne "")
     {
-        $usersId = GetUsersId -reviewers $reviewers
+        $usersId = GetReviewerId -reviewers $reviewers
         $body.reviewers = @( $usersId )
         Write-Host "The reviewers are: $($reviewers.Split(';'))"
     }
@@ -272,7 +272,7 @@ function CreateAzureDevOpsPullRequest()
     }
 }
 
-function GetUsersId()
+function GetReviewerId()
 {
     [CmdletBinding()]
     Param
@@ -285,15 +285,24 @@ function GetUsersId()
     Write-Debug $url
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
+    $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1-preview.1"
+    $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
     $reviewers = $reviewers.Split(';')
-    $usersId = @()
+    $reviewerId = @()
     ForEach($reviewer in $reviewers)
     {
-        $userId = $users.value.Where({ $_.user.mailAddress -eq $reviewer }).id
-        $usersId += @{ id = "$userId" }
-
+        if ($reviewer.Contains("@"))
+        {
+            $userId = $users.value.Where({ $_.user.mailAddress -eq $reviewer }).id
+            $usersId += @{ id = "$userId" }
+        }
+        else 
+        {
+            $teamId = $teams.value.Where({ $_.name -eq $reviewer }).id
+            $reviewerId += @{ id = "$teamId" }
+        }
     }
-    return $usersId
+    return $reviewerId
 }
 
 function SetAutoComplete
