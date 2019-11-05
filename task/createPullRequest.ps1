@@ -294,7 +294,7 @@ function GetReviewerId()
         if ($reviewer.Contains("@"))
         {
             $userId = $users.value.Where({ $_.user.mailAddress -eq $reviewer }).id
-            $usersId += @{ id = "$userId" }
+            $reviewerId += @{ id = "$userId" }
         }
         else 
         {
