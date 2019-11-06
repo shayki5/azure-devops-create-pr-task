@@ -288,10 +288,11 @@ function GetReviewerId()
     $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1-preview.1"
     $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
     Write-Host $reviewers
-    $reviewers = $reviewers.Split(';')
+    $split = $reviewers.Split(';')
+    Write-Host $split.GetType()
     Write-Host $reviewers
     $reviewersId = @()
-    ForEach($reviewer in $reviewers)
+    ForEach($reviewer in $split)
     {
         Write-Host "reviewer: $reviewer"
         if ($reviewer.Contains("@"))
