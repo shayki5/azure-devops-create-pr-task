@@ -287,29 +287,20 @@ function GetReviewerId()
     $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
     $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1-preview.1"
     $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
-    Write-Host $reviewers
+    Write-Debug $reviewers
     $split = $reviewers.Split(';')
-    Write-Host $split.GetType()
-    Write-Host $reviewers
     $reviewersId = @()
     ForEach($reviewer in $split)
     {
-        Write-Host "reviewer: $reviewer"
-        if ($reviewer.Contains("@"))
+        if ($reviewer.Contains("@")) # Is user
         {
-            Write-Host "is email"
             $userId = $users.value.Where({ $_.user.mailAddress -eq $reviewer }).id
-            Write-Host "user id: $userId"
             $reviewersId += @{ id = "$userId" }
-            Write-Host "reviewersId: $reviewersId"
         }
-        else 
+        else # Is team
         {
-            Write-Host "is team"
             $teamId = $teams.value.Where({ $_.name -eq $reviewer }).id
-            Write-Host "team id: $teamId"
             $reviewersId += @{ id = "$teamId" }
-            Write-Host "reviewersId: $reviewersId"
         }
     }
     Write-Host "final reviewersId: $reviewersId"

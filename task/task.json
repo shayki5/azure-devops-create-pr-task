@@ -17,7 +17,7 @@
     "version": {
         "Major": 1,
         "Minor": 2,
-        "Patch": 15
+        "Patch": 30
     },
     "instanceNameFormat": "Create Pull Request",
     "groups": [
@@ -84,10 +84,10 @@
         {
             "name": "reviewers",
             "type": "string",
-            "label": "Reviewers (Azure DevOps: email address, GitHub: username)",
+            "label": "Reviewers (Azure DevOps: email address or team name, GitHub: username)",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email addresses separated by semicolon. for example: test@test.com;pr@pr.com <br> For GitHub - one or more usernames separated by semicolon. for example: username;testuser"
+            "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email address or team name separated by semicolon. for example: test@test.com;MyTeamName <br> For GitHub - one or more usernames separated by semicolon. for example: username1;username2"
         },
         {
             "name": "isDraft",
