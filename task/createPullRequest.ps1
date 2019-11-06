@@ -287,7 +287,9 @@ function GetReviewerId()
     $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
     $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1-preview.1"
     $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
+    Write-Host $reviewers
     $reviewers = $reviewers.Split(';')
+    Write-Host $reviewers
     $reviewersId = @()
     ForEach($reviewer in $reviewers)
     {
