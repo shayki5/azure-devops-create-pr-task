@@ -288,21 +288,29 @@ function GetReviewerId()
     $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1-preview.1"
     $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
     $reviewers = $reviewers.Split(';')
-    $reviewerId = @()
+    $reviewersId = @()
     ForEach($reviewer in $reviewers)
     {
+        Write-Host "reviewer: $reviewer"
         if ($reviewer.Contains("@"))
         {
+            Write-Host "is email"
             $userId = $users.value.Where({ $_.user.mailAddress -eq $reviewer }).id
-            $reviewerId += @{ id = "$userId" }
+            Write-Host "user id: $userId"
+            $reviewersId += @{ id = "$userId" }
+            Write-Host "reviewersId: $reviewersId"
         }
         else 
         {
+            Write-Host "is team"
             $teamId = $teams.value.Where({ $_.name -eq $reviewer }).id
-            $reviewerId += @{ id = "$teamId" }
+            Write-Host "team id: $teamId"
+            $reviewersId += @{ id = "$teamId" }
+            Write-Host "reviewersId: $reviewersId"
         }
     }
-    return $reviewerId
+    Write-Host "final reviewersId: $reviewersId"
+    return $reviewersId
 }
 
 function SetAutoComplete
