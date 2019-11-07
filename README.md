@@ -8,7 +8,9 @@ An easy way to create automatically a Pull Request from your Build or Release Pi
 
 You can create a Pull Request to a Azure DevOps (Repos) repository or to a GitHub repository.
 
-Supports also multi target branch (PR from one source branch to many target branches).
+Support multi target branch (PR from one source branch to many target branches) and Draft Pull Request.
+
+Choose title, description, reviewers and more.
 
 ## Prerequisites
 
@@ -46,7 +48,7 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 **In the classic editor:**
 
-![Task](https://i.imgur.com/VHS1i6h.png)
+![Task](https://i.imgur.com/XC8bYHO.png)
 
 - **Git repository type**: Azure DevOps (Repos) or GitHub. When you choose GitHub you need to choose from the list the GitHub service connection (that use PAT authorization.)
 
@@ -92,9 +94,9 @@ Supports also multi target branch (PR from one source branch to many target bran
 
 ## Release Notes
 
-#### 1.2.24
+#### 1.2.30
 
-- Can add a Team as reviewers (for Azure DevOps).
+- Support also a Team as reviewers (for Azure DevOps).
 
 #### 1.2.24
 
