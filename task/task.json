@@ -132,6 +132,25 @@
             "helpMarkDown": "If true, the source branch of the pull request will be deleted after completion.",
             "groupName": "completion",
             "visibleRule": "autoComplete=true"
+        },
+        {
+            "name": "commitMessage",
+            "type": "string",
+            "label": "Commit Message",
+            "required": false,
+            "helpMarkDown": "If set, this will be used as the commit message of the merge commit. if empty the default will be used.",
+            "groupName": "completion",
+            "visibleRule": "autoComplete=true"
+        },
+        {
+            "name": "transitionWorkItems",
+            "type": "boolean",
+            "label": "Complete Associated Work Items",
+            "defaultValue": false,
+            "required": false,
+            "helpMarkDown": "If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).",
+            "groupName": "completion",
+            "visibleRule": "autoComplete=true"
         }
     ],
     "execution": {
