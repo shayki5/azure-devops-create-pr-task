@@ -48,7 +48,7 @@ Choose title, description, reviewers and more.
 
 **In the classic editor:**
 
-![Task](https://i.imgur.com/XC8bYHO.png)
+![Task](https://i.imgur.com/bNp3deV.png)
 
 - **Git repository type**: Azure DevOps (Repos) or GitHub. When you choose GitHub you need to choose from the list the GitHub service connection (that use PAT authorization.)
 
@@ -70,6 +70,17 @@ Choose title, description, reviewers and more.
 
 - **Set Auto Complete**: Only for Azure DevOps. If checekd the pull request will close once all branch policies are met.
 
+    Complete options:
+      
+  - **Merge Strateg**: Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.
+    - Merge (No fast-forward)
+    - Squash commit
+    - Rebase and fast-forward
+    - Rebase and not fast-forward
+  - **Delete Sourch Branch**: If true, the source branch of the pull request will be deleted after completion.
+  - **Commit Message**: If set, this will be used as the commit message of the merge commit. if empty the default will be used.
+  - **Complete Associated Work Items**: If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).
+  
 **In yaml piepline:**
 
 ```yaml
@@ -82,8 +93,12 @@ Choose title, description, reviewers and more.
     title: 'Test'
     description: 'Test' # Optional
     reviewers: For Azure DevOps: 'test@test.com;MyTeam'. For GitHub: `username;username2` # Optional
-    isDraft: false / true (Default: false)
-    autoComplete: false / true (Default: false)
+    isDraft: false / true (Default: false) # Optional
+    autoComplete: false / true (Default: false) # Optional
+    mergeStrategy: 'merge (default) / squash / rebase-ff / rebase-noff'
+    deleteSourch:  false / true (Default: false) # Optional
+    commitMessage: 'Test Comment' # Optional
+    transitionWorkItems:  false / true (Default: false) # Optional
   env:
     System_AccessToken: $(System.AccessToken)
 ```
@@ -93,6 +108,10 @@ Choose title, description, reviewers and more.
  -  ~~In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.~~ [Fixed in version 1.2.18]
 
 ## Release Notes
+
+#### 1.2.36
+
+- Add complete options like Merge Strategy and more in auto completion (for Azure DevOps).
 
 #### 1.2.30
 
