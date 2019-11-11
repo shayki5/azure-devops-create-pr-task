@@ -101,20 +101,37 @@
         {
             "name": "autoComplete",
             "type": "boolean",
-            "label": "Set Auto Compelete",
+            "label": "Set Auto Complete",
             "defaultValue": false,
             "required": false,
             "helpMarkDown": "If checekd the pull request will close once all branch policies are met.",
             "groupName": "completion"
         },
         {
-            "name": "squashMerge",
-            "type": "boolean",
-            "label": "Squash merge",
+            "name": "mergeStrategy",
+            "type": "picklist",
+            "label": "Merge Strategy",
             "defaultValue": false,
             "required": false,
-            "helpMarkDown": "Squash changes when merging.",
-            "groupName": "completion"
+            "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.",
+            "options": {
+                "Merge (No fast-forward)": "merge",
+                "Squash commit": "squash",
+                "Rebase and fast-forward": "rebase-ff",
+                "Rebase and not fast-forward": "rebase-noff"
+              },
+            "groupName": "completion",
+            "visibleRule": "autoComplete=true"
+        },
+        {
+            "name": "deleteSourch",
+            "type": "boolean",
+            "label": "Delete Sourch Branch",
+            "defaultValue": false,
+            "required": false,
+            "helpMarkDown": "If true, the source branch of the pull request will be deleted after completion.",
+            "groupName": "completion",
+            "visibleRule": "autoComplete=true"
         }
     ],
     "execution": {
