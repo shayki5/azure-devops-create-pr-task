@@ -111,14 +111,14 @@
             "name": "mergeStrategy",
             "type": "picklist",
             "label": "Merge Strategy",
-            "defaultValue": false,
+            "defaultValue": "Merge (No fast-forward)",
             "required": false,
             "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.",
             "options": {
-                "Merge (No fast-forward)": "merge",
-                "Squash commit": "squash",
-                "Rebase and fast-forward": "rebase-ff",
-                "Rebase and not fast-forward": "rebase-noff"
+                "merge": "Merge (No fast-forward)",
+                "squash": "Squash commit",
+                "rebase-ff": "Rebase and fast-forward",
+                "rebase-noff": "Rebase and not fast-forward"
               },
             "groupName": "completion",
             "visibleRule": "autoComplete=true"

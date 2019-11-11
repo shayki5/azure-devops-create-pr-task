@@ -9,7 +9,9 @@ function RunTask
       [string]$description,
       [string]$reviewers,
       [bool]$isDraft,
-      [bool]$autoComplete
+      [bool]$autoComplete,
+      [string]$mergeStrategy,
+      [bool]$deleteSourch
    )
 
    Trace-VstsEnteringInvocation $MyInvocation
@@ -24,11 +26,13 @@ function RunTask
        $repoType = Get-VstsInput -Name 'repoType' -Require
        $isDraft = Get-VstsInput -Name 'isDraft' -AsBool
        $autoComplete = Get-VstsInput -Name 'autoComplete' -AsBool
+       $mergeStrategy = Get-VstsInput -Name 'mergeStrategy' 
+       $deleteSourch = Get-VstsInput -Name 'deleteSourch' -AsBool
       
        # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
        {
-          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete
+          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch
        }
 
        # If is multi-target branch, like feature/*
@@ -41,7 +45,7 @@ function RunTask
                 {
                     $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
                     $newTargetBranch = "$newTargetBranch"
-                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete
+                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch
                 }
            })
        }
@@ -65,12 +69,14 @@ function CreatePullRequest()
        [string]$description,
        [string]$reviewers,
        [bool]$isDraft,
-       [bool]$autoComplete
+       [bool]$autoComplete,
+       [string]$mergeStrategy,
+       [bool]$deleteSourch
     )
 
     if($repoType -eq "Azure DevOps")
     { 
-        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete
+        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch
     }
 
     else # Is GitHub repository
@@ -200,7 +206,9 @@ function CreateAzureDevOpsPullRequest()
        [string]$description,
        [string]$reviewers,
        [bool]$isDraft,
-       [bool]$autoComplete
+       [bool]$autoComplete,
+       [string]$mergeStrategy,
+       [bool]$deleteSourch
     )
 
     if(!$sourceBranch.Contains("refs"))
@@ -251,7 +259,7 @@ function CreateAzureDevOpsPullRequest()
             # If set auto aomplete is true 
             if($autoComplete)
             {
-                SetAutoComplete -pullRequestId $pullRequestId
+                SetAutoComplete -pullRequestId $pullRequestId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch
             }
         }
     }
@@ -312,12 +320,21 @@ function SetAutoComplete
     [CmdletBinding()]
     Param
     (
-       [string]$pullRequestId
+       [string]$pullRequestId,
+       [string]$mergeStrategy,
+       [bool]$deleteSourch
+       
     )
     $buildUserId = GetBuildUserId
     $body = @{
-        autoCompleteSetBy= @{ id = "$buildUserId" }
+        autoCompleteSetBy = @{ id = "$buildUserId" }
+        completionOptions = ""
     }         
+    $options = @{ 
+        mergeStrategy = "$mergeStrategy" 
+        deleteSourceBranch = "$deleteSourch"
+    }
+    $body.completionOptions = $options
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
