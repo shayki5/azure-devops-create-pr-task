@@ -22,9 +22,10 @@
     "instanceNameFormat": "Create Pull Request",
     "groups": [
         {
-            "name": "advanced",
-            "displayName": "Advanced",
-            "isExpanded": false
+            "name": "completion",
+            "displayName": "Complete options",
+            "isExpanded": true,
+            "visibleRule": "repoType=Azure DevOps"
         }
     ],
     "inputs": [
@@ -100,11 +101,56 @@
         {
             "name": "autoComplete",
             "type": "boolean",
-            "label": "Set Auto Compelete",
+            "label": "Set Auto Complete",
             "defaultValue": false,
             "required": false,
             "helpMarkDown": "If checekd the pull request will close once all branch policies are met.",
-            "visibleRule": "repoType=Azure DevOps"
+            "groupName": "completion"
+        },
+        {
+            "name": "mergeStrategy",
+            "type": "picklist",
+            "label": "Merge Strategy",
+            "defaultValue": "Merge (No fast-forward)",
+            "required": false,
+            "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.",
+            "options": {
+                "merge": "Merge (No fast-forward)",
+                "squash": "Squash commit",
+                "rebase-ff": "Rebase and fast-forward",
+                "rebase-noff": "Rebase and not fast-forward"
+              },
+            "groupName": "completion",
+            "visibleRule": "autoComplete=true"
+        },
+        {
+            "name": "deleteSourch",
+            "type": "boolean",
+            "label": "Delete Sourch Branch",
+            "defaultValue": false,
+            "required": false,
+            "helpMarkDown": "If true, the source branch of the pull request will be deleted after completion.",
+            "groupName": "completion",
+            "visibleRule": "autoComplete=true"
+        },
+        {
+            "name": "commitMessage",
+            "type": "string",
+            "label": "Commit Message",
+            "required": false,
+            "helpMarkDown": "If set, this will be used as the commit message of the merge commit. if empty the default will be used.",
+            "groupName": "completion",
+            "visibleRule": "autoComplete=true"
+        },
+        {
+            "name": "transitionWorkItems",
+            "type": "boolean",
+            "label": "Complete Associated Work Items",
+            "defaultValue": false,
+            "required": false,
+            "helpMarkDown": "If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).",
+            "groupName": "completion",
+            "visibleRule": "autoComplete=true"
         }
     ],
     "execution": {

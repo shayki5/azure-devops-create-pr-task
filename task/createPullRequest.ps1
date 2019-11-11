@@ -9,7 +9,11 @@ function RunTask
       [string]$description,
       [string]$reviewers,
       [bool]$isDraft,
-      [bool]$autoComplete
+      [bool]$autoComplete,
+      [string]$mergeStrategy,
+      [bool]$deleteSourch,
+      [string]$commitMessage,
+      [bool]$transitionWorkItems
    )
 
    Trace-VstsEnteringInvocation $MyInvocation
@@ -24,11 +28,15 @@ function RunTask
        $repoType = Get-VstsInput -Name 'repoType' -Require
        $isDraft = Get-VstsInput -Name 'isDraft' -AsBool
        $autoComplete = Get-VstsInput -Name 'autoComplete' -AsBool
+       $mergeStrategy = Get-VstsInput -Name 'mergeStrategy' 
+       $deleteSourch = Get-VstsInput -Name 'deleteSourch' -AsBool
+       $commitMessage = Get-VstsInput -Name 'commitMessage' 
+       $transitionWorkItems = Get-VstsInput -Name 'transitionWorkItems' -AsBool
       
        # If the target branch is only one branch
        if(!$targetBranch.Contains('*'))
        {
-          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete
+          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
        }
 
        # If is multi-target branch, like feature/*
@@ -41,7 +49,7 @@ function RunTask
                 {
                     $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
                     $newTargetBranch = "$newTargetBranch"
-                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete
+                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
                 }
            })
        }
@@ -65,12 +73,16 @@ function CreatePullRequest()
        [string]$description,
        [string]$reviewers,
        [bool]$isDraft,
-       [bool]$autoComplete
+       [bool]$autoComplete,
+       [string]$mergeStrategy,
+       [bool]$deleteSourch,
+       [string]$commitMessage,
+       [bool]$transitionWorkItems
     )
 
     if($repoType -eq "Azure DevOps")
     { 
-        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete
+        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
     }
 
     else # Is GitHub repository
@@ -200,7 +212,11 @@ function CreateAzureDevOpsPullRequest()
        [string]$description,
        [string]$reviewers,
        [bool]$isDraft,
-       [bool]$autoComplete
+       [bool]$autoComplete,
+       [string]$mergeStrategy,
+       [bool]$deleteSourch,
+       [string]$commitMessage,
+       [bool]$transitionWorkItems
     )
 
     if(!$sourceBranch.Contains("refs"))
@@ -251,7 +267,7 @@ function CreateAzureDevOpsPullRequest()
             # If set auto aomplete is true 
             if($autoComplete)
             {
-                SetAutoComplete -pullRequestId $pullRequestId
+                SetAutoComplete -pullRequestId $pullRequestId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
             }
         }
     }
@@ -312,12 +328,24 @@ function SetAutoComplete
     [CmdletBinding()]
     Param
     (
-       [string]$pullRequestId
+       [string]$pullRequestId,
+       [string]$mergeStrategy,
+       [bool]$deleteSourch,
+       [string]$commitMessage,
+       [bool]$transitionWorkItems
     )
     $buildUserId = GetBuildUserId
     $body = @{
-        autoCompleteSetBy= @{ id = "$buildUserId" }
+        autoCompleteSetBy = @{ id = "$buildUserId" }
+        completionOptions = ""
     }         
+    $options = @{ 
+        mergeStrategy = "$mergeStrategy" 
+        deleteSourceBranch = "$deleteSourch"
+        transitionWorkItems = "$transitionWorkItems"
+        commitMessage = "$commitMessage"
+    }
+    $body.completionOptions = $options
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
