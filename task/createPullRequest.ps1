@@ -107,7 +107,7 @@ function CreateGitHubPullRequest()
 
     Write-Host "The Source Branch is: $sourceBranch"
     Write-Host "The Target Branch is: $targetBranch"
-    Write-Host "The title is: $title"
+    Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
     Write-Host "Is Draft Pull Request: $isDraft"
 
@@ -185,12 +185,12 @@ function CreateGitHubReviewers()
     $header = @{ Authorization=("token $token")}
     try
     {
-        Write-Host "Add reviewers the the Pull Request..."
+        Write-Host "Add reviewers to the Pull Request..."
         $response =  Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
         if($response -ne $Null) # If the response not null - the create PR succeeded
         {
             Write-Host "******** Success ********"
-            Write-Host "Reviewrs are addedd to PR #$prNumber"
+            Write-Host "Reviewers were added to PR #$prNumber"
         }
     }
 
@@ -226,7 +226,7 @@ function CreateAzureDevOpsPullRequest()
 
     $targetBranch = "refs/heads/$targetBranch"  
     Write-Host "The Source Branch is: $sourceBranch"
-    Write-Host "The Darget Branch is: $targetBranch"
+    Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
     Write-Host "Is Draft Pull Request: $isDraft"
