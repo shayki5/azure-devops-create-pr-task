@@ -47,7 +47,7 @@
             "label": "GitHub Connection (authorized with PAT)",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Select the service endpoint for your GitHub connection. must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
+            "helpMarkDown": "Select the service endpoint for your GitHub connection, must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
             "visibleRule": "repoType=GitHub"
         },
         {
@@ -56,7 +56,7 @@
             "label": "Source branch name",
             "defaultValue": "$(Build.SourceBranch)",
             "required": true,
-            "helpMarkDown": "The branch name that you will be merged (for exmaple - feature). the deafult is '$(Build.SourceBranch)'."
+            "helpMarkDown": "The branch name that will be merged (for example - feature). the default is '$(Build.SourceBranch)'."
         },
         {
             "name": "targetBranch",
@@ -64,7 +64,7 @@
             "label": "Target(s) branch name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "The target branch name (for example - master). Supports also multi target branch with * (for example: test/*)."
+            "helpMarkDown": "The target branch name (for example - master). Also supports multi target branch with * (for example: test/*)."
         },
         {
             "name": "title",
@@ -96,7 +96,7 @@
             "label": "Create Draft Pull Request",
             "defaultValue": false,
             "required": false,
-            "helpMarkDown": "If checekd the pull request will be a Draft Pull Request. <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info."
+            "helpMarkDown": "If checked, the pull request will be a Draft Pull Request. <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info."
         },
         {
             "name": "autoComplete",
@@ -104,7 +104,7 @@
             "label": "Set Auto Complete",
             "defaultValue": false,
             "required": false,
-            "helpMarkDown": "If checekd the pull request will close once all branch policies are met.",
+            "helpMarkDown": "If checked the pull request will close once all branch policies are met.",
             "groupName": "completion"
         },
         {
@@ -138,7 +138,7 @@
             "type": "string",
             "label": "Commit Message",
             "required": false,
-            "helpMarkDown": "If set, this will be used as the commit message of the merge commit. if empty the default will be used.",
+            "helpMarkDown": "If set, this will be used as the commit message of the merge commit.  If empty the default will be used.",
             "groupName": "completion",
             "visibleRule": "autoComplete=true"
         },

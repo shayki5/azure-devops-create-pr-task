@@ -4,9 +4,9 @@ Build | Release | Extension
 
 ## Azure DevOps Create Pull Request Task
 
-An easy way to create automatically a Pull Request from your Build or Release Pipeline.
+An easy way to automatically create a Pull Request from your Build or Release Pipeline.
 
-You can create a Pull Request to a Azure DevOps (Repos) repository or to a GitHub repository.
+You can create a Pull Request to an Azure DevOps (Repos) repository or to a GitHub repository.
 
 Support multi target branch (PR from one source branch to many target branches) and Draft Pull Request.
 
@@ -14,7 +14,7 @@ Choose title, description, reviewers and more.
 
 ## Prerequisites
 
-- **The task works currently only in Windows machines.**
+- **The task currently only works on Windows machines.**
 
 ### For Azure DevOps Repository:
 
