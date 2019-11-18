@@ -17,7 +17,7 @@
     "version": {
         "Major": 1,
         "Minor": 2,
-        "Patch": 30
+        "Patch": 40
     },
     "instanceNameFormat": "Create Pull Request",
     "groups": [
