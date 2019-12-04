@@ -129,7 +129,12 @@ function CreateGitHubPullRequest()
         base = "$targetBranch"
         title = "$title"
         body = "$description"
-        draft = "$isDraft"
+    }
+
+    # Add the draft property only if is true and not add draft=false when it's false because there are github repos that doesn't support draft PR. see github issue #13
+    if($isDraft -eq $True)
+    {
+        $body.Add("draft" , $isDraft)
     }
 
     $jsonBody = ConvertTo-Json $body
@@ -138,7 +143,7 @@ function CreateGitHubPullRequest()
     try
     {
         $response =  Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
-        if($response -ne $Null) # If the response not null - the create PR succeeded
+        if($Null -ne $response) # If the response not null - the create PR succeeded
         {
             Write-Host "*************************"
             Write-Host "******** Success ********"
@@ -187,7 +192,7 @@ function CreateGitHubReviewers()
     {
         Write-Host "Add reviewers to the Pull Request..."
         $response =  Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
-        if($response -ne $Null) # If the response not null - the create PR succeeded
+        if($Null -ne $response) # If the response not null - the create PR succeeded
         {
             Write-Host "******** Success ********"
             Write-Host "Reviewers were added to PR #$prNumber"
@@ -256,7 +261,7 @@ function CreateAzureDevOpsPullRequest()
     try
     {
         $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
-        if($response -ne $Null) # If the response not null - the create PR succeeded
+        if($Null -ne $response) # If the response not null - the create PR succeeded
         {
             $pullRequestId = $response.pullRequestId
             Write-Host "*************************"
