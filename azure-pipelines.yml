@@ -11,6 +11,17 @@ steps:
 - task: TfxInstaller@1
   displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.6.x'
 
+- task: PowerShell@2
+  displayName: 'Increment the task version in task.json'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $jsonPath = "$(Build.SourcesDirectory)/task/task.json"
+      $taskJson = Get-Content $jsonPath | ConvertFrom-Json
+      $taskJson.version.Patch = "$(Version)"
+      $taskJson = $taskJson | ConvertTo-Json -Depth 10
+      Set-Content -Path $jsonPath -Value $taskJson | ConvertTo-Json
+
 - task: PackageVSTSExtension@1
   displayName: 'Package Extension - Private'
   inputs:
