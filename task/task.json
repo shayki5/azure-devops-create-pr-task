@@ -1,165 +1,166 @@
 {
-    "id": "2f159376-316b-4652-a49c-392f9d534113",
-    "name": "CreatePullRequest",
-    "friendlyName": "Create Pull Request",
-    "description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline, supports also multi target branch.",
-    "helpMarkDown": "[More Information](https://github.com/shayki5/azure-devops-create-pr-task/blob/master/README.md)",
-    "categories": "Utility",
-    "visibility": [
-        "Build",
-        "Release"
-    ],
-    "runsOn": [
-        "Agent",
-        "DeploymentGroup"
-    ],
-    "author": "Shayki Abramczyk",
-    "version": {
-        "Major": 1,
-        "Minor": 2,
-        "Patch": 41
-    },
-    "instanceNameFormat": "Create Pull Request",
-    "groups": [
-        {
-            "name": "completion",
-            "displayName": "Complete options",
-            "isExpanded": true,
-            "visibleRule": "repoType=Azure DevOps"
-        }
-    ],
-    "inputs": [
-        {
-            "name": "repoType",
-            "type": "radio",
-            "label": "Git repository type",
-            "required": true,
-            "defaultValue": "Azure DevOps",
-            "helpMarkDown": "Choose the git repository type, Azure DevOps (Azure Repos) or GitHub",
-            "options": {
-              "Azure DevOps": "Azure DevOps",
-              "GitHub": "GitHub"
-            }
-        },
-        {
-            "name": "githubEndpoint",
-            "type": "connectedService:github",
-            "label": "GitHub Connection (authorized with PAT)",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Select the service endpoint for your GitHub connection, must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
-            "visibleRule": "repoType=GitHub"
-        },
-        {
-            "name": "sourceBranch",
-            "type": "string",
-            "label": "Source branch name",
-            "defaultValue": "$(Build.SourceBranch)",
-            "required": true,
-            "helpMarkDown": "The branch name that will be merged (for example - feature). the default is '$(Build.SourceBranch)'."
-        },
-        {
-            "name": "targetBranch",
-            "type": "string",
-            "label": "Target(s) branch name",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "The target branch name (for example - master). Also supports multi target branch with * (for example: test/*)."
-        },
-        {
-            "name": "title",
-            "type": "string",
-            "label": "Title",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "The pull request title."
-        },
-        {
-            "name": "description",
-            "type": "string",
-            "label": "Description",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "The pull request description (optional)."
-        },
-        {
-            "name": "reviewers",
-            "type": "string",
-            "label": "Reviewers (Azure DevOps: email address or team name, GitHub: username)",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email address or team name separated by semicolon. for example: test@test.com;MyTeamName <br> For GitHub - one or more usernames separated by semicolon. for example: username1;username2"
-        },
-        {
-            "name": "isDraft",
-            "type": "boolean",
-            "label": "Create Draft Pull Request",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "If checked, the pull request will be a Draft Pull Request. <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info."
-        },
-        {
-            "name": "autoComplete",
-            "type": "boolean",
-            "label": "Set Auto Complete",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "If checked the pull request will close once all branch policies are met.",
-            "groupName": "completion"
-        },
-        {
-            "name": "mergeStrategy",
-            "type": "picklist",
-            "label": "Merge Strategy",
-            "defaultValue": "Merge (No fast-forward)",
-            "required": false,
-            "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.",
-            "options": {
-                "merge": "Merge (No fast-forward)",
-                "squash": "Squash commit",
-                "rebase-ff": "Rebase and fast-forward",
-                "rebase-noff": "Rebase and not fast-forward"
-              },
-            "groupName": "completion",
-            "visibleRule": "autoComplete=true"
-        },
-        {
-            "name": "deleteSourch",
-            "type": "boolean",
-            "label": "Delete Sourch Branch",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "If true, the source branch of the pull request will be deleted after completion.",
-            "groupName": "completion",
-            "visibleRule": "autoComplete=true"
-        },
-        {
-            "name": "commitMessage",
-            "type": "string",
-            "label": "Commit Message",
-            "required": false,
-            "helpMarkDown": "If set, this will be used as the commit message of the merge commit.  If empty the default will be used.",
-            "groupName": "completion",
-            "visibleRule": "autoComplete=true"
-        },
-        {
-            "name": "transitionWorkItems",
-            "type": "boolean",
-            "label": "Complete Associated Work Items",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).",
-            "groupName": "completion",
-            "visibleRule": "autoComplete=true"
-        }
-    ],
-    "execution": {
-        "PowerShell3": {
-            "target": "createPullRequest.ps1",
-            "platforms": [
-                "windows"
-            ],
-            "workingDirectory": "$(currentDirectory)"
-        }
+  "id": "2f159376-316b-4652-a49c-392f9d534113",
+  "name": "CreatePullRequest",
+  "friendlyName": "Create Pull Request",
+  "description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline, supports also multi target branch.",
+  "helpMarkDown": "[More Information](https://github.com/shayki5/azure-devops-create-pr-task/blob/master/README.md)",
+  "categories": "Utility",
+  "visibility": ["Build", "Release"],
+  "runsOn": ["Agent", "DeploymentGroup"],
+  "author": "Shayki Abramczyk",
+  "version": {
+    "Major": 1,
+    "Minor": 2,
+    "Patch": 41
+  },
+  "instanceNameFormat": "Create Pull Request",
+  "groups": [
+    {
+      "name": "completion",
+      "displayName": "Complete options",
+      "isExpanded": true,
+      "visibleRule": "repoType=Azure DevOps"
     }
+  ],
+  "inputs": [
+    {
+      "name": "repoType",
+      "type": "radio",
+      "label": "Git repository type",
+      "required": true,
+      "defaultValue": "Azure DevOps",
+      "helpMarkDown": "Choose the git repository type, Azure DevOps (Azure Repos) or GitHub",
+      "options": {
+        "Azure DevOps": "Azure DevOps",
+        "GitHub": "GitHub"
+      }
+    },
+    {
+      "name": "githubEndpoint",
+      "type": "connectedService:github",
+      "label": "GitHub Connection (authorized with PAT)",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Select the service endpoint for your GitHub connection, must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
+      "visibleRule": "repoType=GitHub"
+    },
+    {
+      "name": "sourceBranch",
+      "type": "string",
+      "label": "Source branch name",
+      "defaultValue": "$(Build.SourceBranch)",
+      "required": true,
+      "helpMarkDown": "The branch name that will be merged (for example - feature). the default is '$(Build.SourceBranch)'."
+    },
+    {
+      "name": "targetBranch",
+      "type": "string",
+      "label": "Target(s) branch name",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The target branch name (for example - master). Also supports multi target branch with * (for example: test/*)."
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "label": "Title",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The pull request title."
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "label": "Description",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The pull request description (optional)."
+    },
+    {
+      "name": "reviewers",
+      "type": "string",
+      "label": "Reviewers (Azure DevOps: email address or team name, GitHub: username)",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email address or team name separated by semicolon. for example: test@test.com;MyTeamName <br> For GitHub - one or more usernames separated by semicolon. for example: username1;username2"
+    },
+    {
+      "name": "isDraft",
+      "type": "boolean",
+      "label": "Create Draft Pull Request",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked, the pull request will be a Draft Pull Request. <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info."
+    },
+    {
+      "name": "linkWorkItems",
+      "type": "boolean",
+      "label": "Link Work Items",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked, all the work items that linked to the commits will be linked also to the PullRequest.",
+      "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "autoComplete",
+      "type": "boolean",
+      "label": "Set Auto Complete",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked the pull request will close once all branch policies are met.",
+      "groupName": "completion"
+    },
+    {
+      "name": "mergeStrategy",
+      "type": "picklist",
+      "label": "Merge Strategy",
+      "defaultValue": "Merge (No fast-forward)",
+      "required": false,
+      "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.",
+      "options": {
+        "merge": "Merge (No fast-forward)",
+        "squash": "Squash commit",
+        "rebase-ff": "Rebase and fast-forward",
+        "rebase-noff": "Rebase and not fast-forward"
+      },
+      "groupName": "completion",
+      "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "deleteSourch",
+      "type": "boolean",
+      "label": "Delete Sourch Branch",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If true, the source branch of the pull request will be deleted after completion.",
+      "groupName": "completion",
+      "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "commitMessage",
+      "type": "string",
+      "label": "Commit Message",
+      "required": false,
+      "helpMarkDown": "If set, this will be used as the commit message of the merge commit.  If empty the default will be used.",
+      "groupName": "completion",
+      "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "transitionWorkItems",
+      "type": "boolean",
+      "label": "Complete Associated Work Items",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).",
+      "groupName": "completion",
+      "visibleRule": "autoComplete=true"
+    }
+  ],
+  "execution": {
+    "PowerShell3": {
+      "target": "createPullRequest.ps1",
+      "platforms": ["windows"],
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
 }
