@@ -13,7 +13,7 @@ function RunTask {
         [bool]$deleteSourch,
         [string]$commitMessage,
         [bool]$transitionWorkItems,
-        [book]$linkWorkItems
+        [bool]$linkWorkItems
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -206,7 +206,7 @@ function CreateAzureDevOpsPullRequest() {
         [bool]$deleteSourch,
         [string]$commitMessage,
         [bool]$transitionWorkItems,
-        [book]$linkWorkItems
+        [bool]$linkWorkItems
     )
 
     if (!$sourceBranch.Contains("refs")) {
