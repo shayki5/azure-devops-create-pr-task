@@ -35,7 +35,7 @@ function RunTask {
       
         # If the target branch is only one branch
         if (!$targetBranch.Contains('*')) {
-            CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
+            CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
         }
 
         # If is multi-target branch, like feature/*
@@ -46,7 +46,7 @@ function RunTask {
                     if ($_ -match ($targetBranch.Split('/')[0])) {
                         $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
                         $newTargetBranch = "$newTargetBranch"
-                        CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
+                        CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
                     }
                 })
         }
@@ -72,11 +72,12 @@ function CreatePullRequest() {
         [string]$mergeStrategy,
         [bool]$deleteSourch,
         [string]$commitMessage,
-        [bool]$transitionWorkItems
+        [bool]$transitionWorkItems,
+        [bool]$linkWorkItems
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
+        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
     }
 
     else {
