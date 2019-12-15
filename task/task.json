@@ -14,16 +14,13 @@
     "Patch": 41
   },
   "instanceNameFormat": "Create Pull Request",
-  "groups": [
-    {
-      "name": "completion",
-      "displayName": "Complete options",
-      "isExpanded": true,
-      "visibleRule": "repoType=Azure DevOps"
-    }
-  ],
-  "inputs": [
-    {
+  "groups": [{
+    "name": "completion",
+    "displayName": "Complete options",
+    "isExpanded": true,
+    "visibleRule": "repoType=Azure DevOps"
+  }],
+  "inputs": [{
       "name": "repoType",
       "type": "radio",
       "label": "Git repository type",
@@ -96,7 +93,7 @@
       "name": "linkWorkItems",
       "type": "boolean",
       "label": "Link Work Items",
-      "defaultValue": false,
+      "defaultValue": true,
       "required": false,
       "helpMarkDown": "If checked, all the work items that linked to the commits will be linked also to the PullRequest.",
       "visibleRule": "repoType=Azure DevOps"

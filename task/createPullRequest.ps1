@@ -240,7 +240,6 @@ function CreateAzureDevOpsPullRequest() {
     if ($linkWorkItems -eq $True) {
         $workItems = GetLinkedWorkItems -sourceBranch $sourceBranch.Remove(0, 11) -targetBranch $targetBranch.Remove(0, 11)
         $body.WorkItemRefs = @( $workItems )
-        Write-Host "The linked work items are: $workItems"
     }
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
