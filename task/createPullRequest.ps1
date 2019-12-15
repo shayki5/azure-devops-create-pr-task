@@ -1,108 +1,102 @@
-function RunTask
-{
-   [CmdletBinding()]
-   Param
-   (
-      [string]$sourceBranch,
-      [string]$targetBranch,
-      [string]$title,
-      [string]$description,
-      [string]$reviewers,
-      [bool]$isDraft,
-      [bool]$autoComplete,
-      [string]$mergeStrategy,
-      [bool]$deleteSourch,
-      [string]$commitMessage,
-      [bool]$transitionWorkItems
-   )
-
-   Trace-VstsEnteringInvocation $MyInvocation
-   try
-   {
-       # Get inputs
-       $sourceBranch = Get-VstsInput -Name 'sourceBranch' -Require
-       $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
-       $title = Get-VstsInput -Name 'title' -Require
-       $description = Get-VstsInput -Name 'description'
-       $reviewers = Get-VstsInput -Name 'reviewers'
-       $repoType = Get-VstsInput -Name 'repoType' -Require
-       $isDraft = Get-VstsInput -Name 'isDraft' -AsBool
-       $autoComplete = Get-VstsInput -Name 'autoComplete' -AsBool
-       $mergeStrategy = Get-VstsInput -Name 'mergeStrategy' 
-       $deleteSourch = Get-VstsInput -Name 'deleteSourch' -AsBool
-       $commitMessage = Get-VstsInput -Name 'commitMessage' 
-       $transitionWorkItems = Get-VstsInput -Name 'transitionWorkItems' -AsBool
-      
-       # If the target branch is only one branch
-       if(!$targetBranch.Contains('*'))
-       {
-          CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
-       }
-
-       # If is multi-target branch, like feature/*
-       else
-       {
-           Set-Location $env:Build_SourcesDirectory
-           $branches = git branch -a
-           $branches.ForEach({
-                if($_ -match ($targetBranch.Split('/')[0]))
-                {
-                    $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
-                    $newTargetBranch = "$newTargetBranch"
-                    CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
-                }
-           })
-       }
-   }
-
-   finally
-   {
-       Trace-VstsLeavingInvocation $MyInvocation
-   }
-}
-
-function CreatePullRequest()
-{
+function RunTask {
     [CmdletBinding()]
     Param
     (
-       [string]$repoType,
-       [string]$sourceBranch,
-       [string]$targetBranch,
-       [string]$title,
-       [string]$description,
-       [string]$reviewers,
-       [bool]$isDraft,
-       [bool]$autoComplete,
-       [string]$mergeStrategy,
-       [bool]$deleteSourch,
-       [string]$commitMessage,
-       [bool]$transitionWorkItems
+        [string]$sourceBranch,
+        [string]$targetBranch,
+        [string]$title,
+        [string]$description,
+        [string]$reviewers,
+        [bool]$isDraft,
+        [bool]$autoComplete,
+        [string]$mergeStrategy,
+        [bool]$deleteSourch,
+        [string]$commitMessage,
+        [bool]$transitionWorkItems,
+        [bool]$linkWorkItems
     )
 
-    if($repoType -eq "Azure DevOps")
-    { 
-        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
+    Trace-VstsEnteringInvocation $MyInvocation
+    try {
+        # Get inputs
+        $sourceBranch = Get-VstsInput -Name 'sourceBranch' -Require
+        $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
+        $title = Get-VstsInput -Name 'title' -Require
+        $description = Get-VstsInput -Name 'description'
+        $reviewers = Get-VstsInput -Name 'reviewers'
+        $repoType = Get-VstsInput -Name 'repoType' -Require
+        $isDraft = Get-VstsInput -Name 'isDraft' -AsBool
+        $autoComplete = Get-VstsInput -Name 'autoComplete' -AsBool
+        $mergeStrategy = Get-VstsInput -Name 'mergeStrategy' 
+        $deleteSourch = Get-VstsInput -Name 'deleteSourch' -AsBool
+        $commitMessage = Get-VstsInput -Name 'commitMessage' 
+        $transitionWorkItems = Get-VstsInput -Name 'transitionWorkItems' -AsBool
+        $linkWorkItems = Get-VstsInput -Name 'linkWorkItems' -AsBool
+      
+        # If the target branch is only one branch
+        if (!$targetBranch.Contains('*')) {
+            CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+        }
+
+        # If is multi-target branch, like feature/*
+        else {
+            Set-Location $env:Build_SourcesDirectory
+            $branches = git branch -a
+            $branches.ForEach( {
+                    if ($_ -match ($targetBranch.Split('/')[0])) {
+                        $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
+                        $newTargetBranch = "$newTargetBranch"
+                        CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+                    }
+                })
+        }
     }
 
-    else # Is GitHub repository
-    {
+    finally {
+        Trace-VstsLeavingInvocation $MyInvocation
+    }
+}
+
+function CreatePullRequest() {
+    [CmdletBinding()]
+    Param
+    (
+        [string]$repoType,
+        [string]$sourceBranch,
+        [string]$targetBranch,
+        [string]$title,
+        [string]$description,
+        [string]$reviewers,
+        [bool]$isDraft,
+        [bool]$autoComplete,
+        [string]$mergeStrategy,
+        [bool]$deleteSourch,
+        [string]$commitMessage,
+        [bool]$transitionWorkItems,
+        [bool]$linkWorkItems
+    )
+
+    if ($repoType -eq "Azure DevOps") { 
+        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+    }
+
+    else {
+        # Is GitHub repository
         CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft
     }
 }
 
-function CreateGitHubPullRequest()
-{
+function CreateGitHubPullRequest() {
     [CmdletBinding()]
     Param
     (
-       [string]$repoType,
-       [string]$sourceBranch,
-       [string]$targetBranch,
-       [string]$title,
-       [string]$description,
-       [string]$reviewers,
-       [bool]$isDraft
+        [string]$repoType,
+        [string]$sourceBranch,
+        [string]$targetBranch,
+        [string]$title,
+        [string]$description,
+        [string]$reviewers,
+        [bool]$isDraft
     )
 
     Write-Host "The Source Branch is: $sourceBranch"
@@ -125,53 +119,48 @@ function CreateGitHubPullRequest()
     $repo = $repoUrl.Split('/')[4]
     $url = "https://api.github.com/repos/$owner/$repo/pulls"
     $body = @{
-        head = "$sourceBranch"
-        base = "$targetBranch"
+        head  = "$sourceBranch"
+        base  = "$targetBranch"
         title = "$title"
-        body = "$description"
+        body  = "$description"
     }
 
     # Add the draft property only if is true and not add draft=false when it's false because there are github repos that doesn't support draft PR. see github issue #13
-    if($isDraft -eq $True)
-    {
+    if ($isDraft -eq $True) {
         $body.Add("draft" , $isDraft)
     }
 
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
-    $header = @{ Authorization=("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
-    try
-    {
-        $response =  Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
-        if($Null -ne $response) # If the response not null - the create PR succeeded
-        {
+    $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
+    try {
+        $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
+        if ($Null -ne $response) {
+            # If the response not null - the create PR succeeded
             Write-Host "*************************"
             Write-Host "******** Success ********"
             Write-Host "*************************"
             Write-Host "Pull Request $($response.number) created."
             # If the reviewers not null so add the reviewers to the PR
-            if($reviewers -ne "")
-            {
+            if ($reviewers -ne "") {
                 CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number
             }
         }
     }
 
-    catch
-    {
+    catch {
         Write-Error $_
         Write-Error $_.Exception.Message
     }
 }
 
-function CreateGitHubReviewers()
-{
+function CreateGitHubReviewers() {
     [CmdletBinding()]
     Param
     (
-       [string]$reviewers,
-       [string]$token,
-       [string]$prNumber
+        [string]$reviewers,
+        [string]$token,
+        [string]$prNumber
     )
     $reviewers = $reviewers.Split(';')
     $repoUrl = $env:BUILD_REPOSITORY_URI
@@ -181,51 +170,47 @@ function CreateGitHubReviewers()
     $body = @{
         reviewers = @()
     }
-    ForEach($reviewer in $reviewers)
-    {
+    ForEach ($reviewer in $reviewers) {
         $body.reviewers += $reviewer
     }
     $jsonBody = $body | ConvertTo-Json
     Write-Debug $jsonBody
-    $header = @{ Authorization=("token $token")}
-    try
-    {
+    $header = @{ Authorization = ("token $token") }
+    try {
         Write-Host "Add reviewers to the Pull Request..."
-        $response =  Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
-        if($Null -ne $response) # If the response not null - the create PR succeeded
-        {
+        $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
+        if ($Null -ne $response) {
+            # If the response not null - the create PR succeeded
             Write-Host "******** Success ********"
             Write-Host "Reviewers were added to PR #$prNumber"
         }
     }
 
-    catch
-    {
+    catch {
         Write-Error $_
         Write-Error $_.Exception.Message
     }
 }
 
-function CreateAzureDevOpsPullRequest()
-{
+function CreateAzureDevOpsPullRequest() {
     [CmdletBinding()]
     Param
     (
-       [string]$sourceBranch,
-       [string]$targetBranch,
-       [string]$title,
-       [string]$description,
-       [string]$reviewers,
-       [bool]$isDraft,
-       [bool]$autoComplete,
-       [string]$mergeStrategy,
-       [bool]$deleteSourch,
-       [string]$commitMessage,
-       [bool]$transitionWorkItems
+        [string]$sourceBranch,
+        [string]$targetBranch,
+        [string]$title,
+        [string]$description,
+        [string]$reviewers,
+        [bool]$isDraft,
+        [bool]$autoComplete,
+        [string]$mergeStrategy,
+        [bool]$deleteSourch,
+        [string]$commitMessage,
+        [bool]$transitionWorkItems,
+        [bool]$linkWorkItems
     )
 
-    if(!$sourceBranch.Contains("refs"))
-    {
+    if (!$sourceBranch.Contains("refs")) {
         $sourceBranch = "refs/heads/$sourceBranch"
     }
 
@@ -239,17 +224,22 @@ function CreateAzureDevOpsPullRequest()
     $body = @{
         sourceRefName = "$sourceBranch"
         targetRefName = "$targetBranch"
-        title = "$title"
-        description = "$description"
-        reviewers = ""
-        isDraft = "$isDraft"
+        title         = "$title"
+        description   = "$description"
+        reviewers     = ""
+        isDraft       = "$isDraft"
+        WorkItemRefs  = ""
     }
 
-    if($reviewers -ne "")
-    {
+    if ($reviewers -ne "") {
         $usersId = GetReviewerId -reviewers $reviewers
         $body.reviewers = @( $usersId )
         Write-Host "The reviewers are: $($reviewers.Split(';'))"
+    }
+
+    if ($linkWorkItems -eq $True) {
+        $workItems = GetLinkedWorkItems -sourceBranch $sourceBranch.Remove(0, 11) -targetBranch $targetBranch.Remove(0, 11)
+        $body.WorkItemRefs = @( $workItems )
     }
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
@@ -258,11 +248,10 @@ function CreateAzureDevOpsPullRequest()
     $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests?api-version=5.0"
     Write-Debug $url
 
-    try
-    {
-        $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
-        if($Null -ne $response) # If the response not null - the create PR succeeded
-        {
+    try {
+        $response = Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
+        if ($Null -ne $response) {
+            # If the response not null - the create PR succeeded
             $pullRequestId = $response.pullRequestId
             Write-Host "*************************"
             Write-Host "******** Success ********"
@@ -270,39 +259,35 @@ function CreateAzureDevOpsPullRequest()
             Write-Host "Pull Request $pullRequestId created."
 
             # If set auto aomplete is true 
-            if($autoComplete)
-            {
+            if ($autoComplete) {
                 SetAutoComplete -pullRequestId $pullRequestId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
             }
         }
     }
 
-    catch
-    {
+    catch {
         # If the error contains TF401179 it's mean that there is alredy a PR for the branches, so I display a warning
-        if($_ -match "TF401179")
-        {
+        if ($_ -match "TF401179") {
             Write-Warning $_
         }
 
-        else # If there is an error - fail the task
-        {
+        else {
+            # If there is an error - fail the task
             Write-Error $_
             Write-Error $_.Exception.Message
         }
     }
 }
 
-function GetReviewerId()
-{
+function GetReviewerId() {
     [CmdletBinding()]
     Param
     (
-       [string]$reviewers
+        [string]$reviewers
     )
 
     $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=4.1-preview.1"
-    $url = $url.Replace("//dev","//vsaex.dev")
+    $url = $url.Replace("//dev", "//vsaex.dev")
     Write-Debug $url
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
@@ -311,16 +296,15 @@ function GetReviewerId()
     Write-Debug $reviewers
     $split = $reviewers.Split(';')
     $reviewersId = @()
-    ForEach($reviewer in $split)
-    {
-        if ($reviewer.Contains("@")) # Is user
-        {
-            $userId = $users.value.Where({ $_.user.mailAddress -eq $reviewer }).id
+    ForEach ($reviewer in $split) {
+        if ($reviewer.Contains("@")) {
+            # Is user
+            $userId = $users.value.Where( { $_.user.mailAddress -eq $reviewer }).id
             $reviewersId += @{ id = "$userId" }
         }
-        else # Is team
-        {
-            $teamId = $teams.value.Where({ $_.name -eq $reviewer }).id
+        else {
+            # Is team
+            $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
             $reviewersId += @{ id = "$teamId" }
         }
     }
@@ -328,16 +312,60 @@ function GetReviewerId()
     return $reviewersId
 }
 
-function SetAutoComplete
-{
+function GetLinkedWorkItems {
     [CmdletBinding()]
     Param
     (
-       [string]$pullRequestId,
-       [string]$mergeStrategy,
-       [bool]$deleteSourch,
-       [string]$commitMessage,
-       [bool]$transitionWorkItems
+        [string]$sourceBranch,
+        [string]$targetBranch
+    )
+    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/commitsBatch?api-version=4.1"
+    $header = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $body = @{
+        '$top'           = 101
+        includeWorkItems = "true"
+        itemVersion      = @{
+            versionOptions = 0
+            versionType    = 0
+            version        = "$targetBranch"
+        }
+        compareVersion   = @{
+            versionOptions = 0
+            versionType    = 0
+            version        = "$sourceBranch"
+        }
+    }
+    $jsonBody = $body | ConvertTo-Json
+    $commits = (Invoke-RestMethod -Method Post -Uri $url -Headers $header -Body $jsonBody -ContentType 'application/json').value
+    $workItemsId = @()
+    $commits.ForEach( { 
+    
+            if ($_.workItems.length -gt 0) {
+                $workItemsId += $_.workItems.url.split('/')[7]
+            }
+        })
+    if ($workItemsId.Count -gt 0) {
+        $workItems = @()
+        $workItemsId.ForEach( {
+                $workItem = @{
+                    id  = $_
+                    url = ""
+                }
+                $workItems += $workItem
+            })      
+    }
+    return $workItems
+}
+
+function SetAutoComplete {
+    [CmdletBinding()]
+    Param
+    (
+        [string]$pullRequestId,
+        [string]$mergeStrategy,
+        [bool]$deleteSourch,
+        [string]$commitMessage,
+        [bool]$transitionWorkItems
     )
     $buildUserId = GetBuildUserId
     $body = @{
@@ -345,10 +373,10 @@ function SetAutoComplete
         completionOptions = ""
     }         
     $options = @{ 
-        mergeStrategy = "$mergeStrategy" 
-        deleteSourceBranch = "$deleteSourch"
+        mergeStrategy       = "$mergeStrategy" 
+        deleteSourceBranch  = "$deleteSourch"
         transitionWorkItems = "$transitionWorkItems"
-        commitMessage = "$commitMessage"
+        commitMessage       = "$commitMessage"
     }
     $body.completionOptions = $options
 
@@ -357,32 +385,29 @@ function SetAutoComplete
     Write-Debug $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests/$($pullRequestId)?api-version=5.0"
     Write-Debug $url
-    try 
-    {
-        $response =  Invoke-RestMethod -Uri $url -Method Patch -Headers $head -Body $jsonBody -ContentType application/json
-        if($Null -ne $response) # If the response not null - the create PR succeeded
-        {
+    try {
+        $response = Invoke-RestMethod -Uri $url -Method Patch -Headers $head -Body $jsonBody -ContentType application/json
+        if ($Null -ne $response) {
+            # If the response not null - the create PR succeeded
             Write-Host "Set Auto Complete to PR $pullRequestId."
         }
     }
-    catch 
-    {
+    catch {
         Write-Warning "Can't set Auto Complete to PR $pullRequestId."
         Write-Warning $_
         Write-Warning $_.Exception.Message
     }
 }
 
-function GetBuildUserId
-{
+function GetBuildUserId {
     [CmdletBinding()]
 
     $url = "$($env:System_TeamFoundationCollectionUri)_apis/graph/users?api-version=4.1-preview.1"
-    $url = $url.Replace("//dev","//vssps.dev")
+    $url = $url.Replace("//dev", "//vssps.dev")
     Write-Debug $url
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
-    $buildUserId = $users.value.Where({ $_.displayName -match "Project Collection Build Service" }).originId
+    $buildUserId = $users.value.Where( { $_.displayName -match "Project Collection Build Service" }).originId
     return $buildUserId
 }
 

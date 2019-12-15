@@ -1,6 +1,6 @@
-Build | Release | Extension
-:-----| :-------| :--------
-[![Build Status](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_apis/build/status/shayki5.AzureDevOps-CreatePRTask?branchName=master)](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_build/latest?definitionId=34&branchName=master) | [![Release Status](https://vsrm.dev.azure.com/shaykia/_apis/public/Release/badge/3372e1d4-189a-4d9e-aa4d-0cb86eff3c2e/1/2)](https://vsrm.dev.azure.com/shaykia/_apis/public/Release/badge/3372e1d4-189a-4d9e-aa4d-0cb86eff3c2e/1/2) | [![Extnesion](https://vsmarketplacebadge.apphb.com/version/ShaykiAbramczyk.CreatePullRequest.svg)](https://vsmarketplacebadge.apphb.com/version/ShaykiAbramczyk.CreatePullRequest.svg)
+| Build                                                                                                                                                                                                                                             | Release                                                                                                                                                                                                                             | Extension                                                                                                                                                                              |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [![Build Status](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_apis/build/status/shayki5.AzureDevOps-CreatePRTask?branchName=master)](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_build/latest?definitionId=34&branchName=master) | [![Release Status](https://vsrm.dev.azure.com/shaykia/_apis/public/Release/badge/3372e1d4-189a-4d9e-aa4d-0cb86eff3c2e/1/2)](https://vsrm.dev.azure.com/shaykia/_apis/public/Release/badge/3372e1d4-189a-4d9e-aa4d-0cb86eff3c2e/1/2) | [![Extnesion](https://vsmarketplacebadge.apphb.com/version/ShaykiAbramczyk.CreatePullRequest.svg)](https://vsmarketplacebadge.apphb.com/version/ShaykiAbramczyk.CreatePullRequest.svg) |
 
 ## Azure DevOps Create Pull Request Task
 
@@ -48,7 +48,7 @@ Choose title, description, reviewers and more.
 
 **In the classic editor:**
 
-![Task](https://i.imgur.com/bNp3deV.png)
+![Task](https://i.imgur.com/QGnrON7.png)
 
 - **Git repository type**: Azure DevOps (Repos) or GitHub. When you choose GitHub you need to choose from the list the GitHub service connection (that use PAT authorization.)
 
@@ -67,6 +67,8 @@ Choose title, description, reviewers and more.
   <br> For GitHub:  one or more usernames separated by semicolon. For example: `user1;user2`.
 
 - **Create Draft Pull Request**: If checekd the pull request will be a Draft Pull Request. (Default: false) <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info.
+
+- **Link Work Items**: If checked, all the work items that linked to the commits will be linked also to the PullRequest.
 
 - **Set Auto Complete**: Only for Azure DevOps. If checekd the pull request will close once all branch policies are met.
 
@@ -93,8 +95,9 @@ Choose title, description, reviewers and more.
     title: 'Test'
     description: 'Test' # Optional
     reviewers: For Azure DevOps: 'test@test.com;MyTeam'. For GitHub: `username;username2` # Optional
-    isDraft: false / true (Default: false) # Optional
-    autoComplete: false / true (Default: false) # Optional
+    isDraft: false / true (Default: false) 
+    linkWorkItems: false / true (Default: true)
+    autoComplete: false / true (Default: false) 
     mergeStrategy: 'merge (default) / squash / rebase-ff / rebase-noff'
     deleteSourch:  false / true (Default: false) # Optional
     commitMessage: 'Test Comment' # Optional
@@ -108,6 +111,10 @@ Choose title, description, reviewers and more.
  -  ~~In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.~~ [Fixed in version 1.2.18]
 
 ## Release Notes
+
+#### 1.2.48
+
+- Link associated work items to the PR (for Azure DevOps)
 
 #### 1.2.36
 
