@@ -320,7 +320,7 @@ function GetLinkedWorkItems {
         [string]$sourceBranch,
         [string]$targetBranch
     )
-    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/commitsBatch&api-version=4.1"
+    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/commitsBatch?api-version=4.1"
     $header = @{ Authorization = "Bearer $env:System_AccessToken" }
     $body = @{
         '$top'           = 101
