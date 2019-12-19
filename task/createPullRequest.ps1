@@ -44,7 +44,7 @@ function RunTask {
             $branches = git branch -a
             $branches.ForEach( {
                     if ($_ -match ($targetBranch.Split('/')[0])) {
-                        $newTargetBranch = $_.Split('/')[2] + "/" + $_.Split('/')[3]
+                        $newTargetBranch = $_.Remove(0, 17)
                         $newTargetBranch = "$newTargetBranch"
                         CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
                     }
