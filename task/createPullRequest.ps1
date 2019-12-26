@@ -401,13 +401,18 @@ function SetAutoComplete {
 
 function GetBuildUserId {
     [CmdletBinding()]
-
     $url = "$($env:System_TeamFoundationCollectionUri)_apis/graph/users?api-version=4.1-preview.1"
     $url = $url.Replace("//dev", "//vssps.dev")
-    Write-Debug $url
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
-    $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
-    $buildUserId = $users.value.Where( { $_.displayName -match "Project Collection Build Service" }).originId
+    $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head
+    # If the results are more then 500 users and the Project Collection Build Service not exist in the first page
+    while ($response.Headers.Keys -contains "x-ms-continuationtoken" -and $response.Content -notmatch "Project Collection Build Service") {
+        $token = $response.Headers.'x-ms-continuationtoken'
+        $url = "$($env:System_TeamFoundationCollectionUri)_apis/graph/users?continuationToken=$($token)&api-version=4.1-preview.1"
+        $url = $url.Replace("//dev", "//vssps.dev")
+        $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head
+    }
+    $buildUserId = ($response.Content | Convertfrom-Json).value.Where( { $_.displayName -match "Project Collection Build Service" }).originId
     return $buildUserId
 }
 
