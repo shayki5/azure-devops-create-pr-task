@@ -75,10 +75,20 @@ Choose title, description, reviewers and more.
     Complete options:
       
   - **Merge Strateg**: Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.
-    - Merge (No fast-forward)
-    - Squash commit
-    - Rebase and fast-forward
-    - Rebase and not fast-forward
+    - Merge (No fast-forward) - `noFastForward` in yaml:
+  
+      A two-parent, no-fast-forward merge. The source branch is unchanged. This is the default behavior.
+    - Squash commit - `squash` in yaml:
+  
+      Put all changes from the pull request into a single-parent commit.
+    - Rebase and fast-forward - `rebase` in yaml:
+  
+      Rebase the source branch on top of the target branch HEAD commit, and fast-forward the target branch. 
+      The source branch is updated during the rebase operation.
+    - Rebase and not fast-forward - `rebaseMerge` in yaml:
+  
+      Rebase the source branch on top of the target branch HEAD commit, and create a two-parent, no-fast-forward merge. 
+      The source branch is updated during the rebase operation.
   - **Delete Sourch Branch**: If true, the source branch of the pull request will be deleted after completion.
   - **Commit Message**: If set, this will be used as the commit message of the merge commit. if empty the default will be used.
   - **Complete Associated Work Items**: If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).
@@ -98,7 +108,7 @@ Choose title, description, reviewers and more.
     isDraft: false / true (Default: false) 
     linkWorkItems: false / true (Default: true)
     autoComplete: false / true (Default: false) 
-    mergeStrategy: 'merge (default) / squash / rebase-ff / rebase-noff'
+    mergeStrategy: 'noFastForward (default) / squash / rebase / rebaseMerge'
     deleteSourch:  false / true (Default: false) # Optional
     commitMessage: 'Test Comment' # Optional
     transitionWorkItems:  false / true (Default: false) # Optional

@@ -115,10 +115,10 @@
       "required": false,
       "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.",
       "options": {
-        "merge": "Merge (No fast-forward)",
+        "noFastForward": "Merge (No fast-forward)",
         "squash": "Squash commit",
-        "rebase-ff": "Rebase and fast-forward",
-        "rebase-noff": "Rebase and not fast-forward"
+        "rebase": "Rebase and fast-forward",
+        "rebaseMerge": "Rebase and not fast-forward"
       },
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
