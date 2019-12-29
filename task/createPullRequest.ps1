@@ -336,7 +336,10 @@ function GetLinkedWorkItems {
         }
     }
     $jsonBody = $body | ConvertTo-Json
-    $commits = (Invoke-RestMethod -Method Post -Uri $url -Headers $header -Body $jsonBody -ContentType 'application/json').value
+    Write-Debug $jsonBody
+    $response = Invoke-RestMethod -Method Post -Uri $url -Headers $header -Body $jsonBody -ContentType 'application/json'
+    Write-Debug $response
+    $commits = $response.value
     $workItemsId = @()
     $commits.ForEach( { 
     
