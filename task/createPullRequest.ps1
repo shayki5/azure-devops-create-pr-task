@@ -340,7 +340,6 @@ function GetLinkedWorkItems {
     $response = Invoke-RestMethod -Method Post -Uri $url -Headers $header -Body $jsonBody -ContentType 'application/json'
     Write-Debug $response
     $commits = $response.value
-    Write-Debug $commits
     $workItemsId = @()
     $commits.ForEach( { 
             if ($_.workItems.length -gt 0) {
