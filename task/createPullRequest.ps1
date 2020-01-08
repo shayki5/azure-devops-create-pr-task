@@ -287,7 +287,14 @@ function GetReviewerId() {
     )
 
     $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=4.1-preview.1"
-    $url = $url.Replace("//dev", "//vsaex.dev")
+    # Check if it's the old url or the new url, reltaed to issue #21
+    # And add "vsaex" to the rest api url 
+    if ($url -match "visualstudio.com") {
+        $url = $url.Replace(".visualstudio", ".vsaex.visualstudio")
+    }
+    else {
+        $url = $url.Replace("//dev", "//vsaex.dev")
+    }
     Write-Debug $url
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
