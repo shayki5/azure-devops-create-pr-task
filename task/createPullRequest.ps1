@@ -355,7 +355,7 @@ function GetLinkedWorkItems {
         })
     if ($workItemsId.Count -gt 0) {
         $workItems = @()
-        $workItemsId.ForEach( {
+        ($workItemsId | Select-Object -Unique).ForEach( {
                 $workItem = @{
                     id  = $_
                     url = ""

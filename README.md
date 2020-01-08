@@ -30,7 +30,7 @@ Choose title, description, reviewers and more.
      env:
        System_AccessToken: $(System.AccessToken)
     ```
-- You need to give permissions to the build user (in Microaoft hosted agnet is "Build Service (user-name)"):
+- You need to give permissions to the build user (in Microsoft hosted agnet is "Build Service (user-name)"):
 
     ![Permissions](https://i.imgur.com/Us401RM.png)
 
