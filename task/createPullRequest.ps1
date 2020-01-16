@@ -420,8 +420,13 @@ function SetAutoComplete {
 
 function GetBuildUserId {
     [CmdletBinding()]
-    $url = "$($env:System_TeamFoundationCollectionUri)_apis/graph/users?api-version=4.1-preview.1"
-    $url = $url.Replace("//dev", "//vssps.dev")
+    $base_url = $env:System_TeamFoundationCollectionUri
+    if ($base_url -match "https://(.*)\.visualstudio\.com/$") {
+        $url = "https://vssps.dev.azure.com/$($Matches[1])/"
+    } else {
+        $url = $base_url.Replace("//dev", "//vssps.dev")
+    }
+    $url = "$($url)_apis/graph/users?api-version=4.1-preview.1"
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head
     # If the results are more then 500 users and the Project Collection Build Service not exist in the first page
