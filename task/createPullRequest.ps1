@@ -3,6 +3,7 @@ function RunTask {
     Param
     (
         [string]$sourceBranch,
+        [string]$targetRepo,
         [string]$targetBranch,
         [string]$title,
         [string]$description,
@@ -20,6 +21,7 @@ function RunTask {
     try {
         # Get inputs
         $sourceBranch = Get-VstsInput -Name 'sourceBranch' -Require
+		$targetRepo = Get-VSTSInput -Name 'targetRepo'
         $targetBranch = Get-VstsInput -Name 'targetBranch' -Require
         $title = Get-VstsInput -Name 'title' -Require
         $description = Get-VstsInput -Name 'description'
@@ -33,9 +35,17 @@ function RunTask {
         $transitionWorkItems = Get-VstsInput -Name 'transitionWorkItems' -AsBool
         $linkWorkItems = Get-VstsInput -Name 'linkWorkItems' -AsBool
       
+		#If targetRepo is left empty
+		if($targetRepo -eq ""){
+			$targetRepo = $env:Build_Repository_Name;
+		}
+	  
+		#remove spcaes out of Repo Name
+		$targetRepo = $targetRepo.Replace(" ", "%20")
+	  
         # If the target branch is only one branch
         if (!$targetBranch.Contains('*')) {
-            CreatePullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+            CreatePullRequest -sourceBranch $sourceBranch -targetRepo $targetRepo -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
         }
 
         # If is multi-target branch, like feature/*
@@ -46,7 +56,7 @@ function RunTask {
                     if ($_ -match ($targetBranch.Split('/')[0])) {
                         $newTargetBranch = $_.Remove(0, 17)
                         $newTargetBranch = "$newTargetBranch"
-                        CreatePullRequest -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+                        CreatePullRequest -sourceBranch $sourceBranch -targetRepo $targetRepo -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
                     }
                 })
         }
@@ -63,6 +73,7 @@ function CreatePullRequest() {
     (
         [string]$repoType,
         [string]$sourceBranch,
+        [string]$targetRepo,
         [string]$targetBranch,
         [string]$title,
         [string]$description,
@@ -77,7 +88,7 @@ function CreatePullRequest() {
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+        CreateAzureDevOpsPullRequest -sourceBranch $sourceBranch -targetRepo $targetRepo -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
     }
 
     else {
@@ -197,6 +208,7 @@ function CreateAzureDevOpsPullRequest() {
     Param
     (
         [string]$sourceBranch,
+        [string]$targetRepo,
         [string]$targetBranch,
         [string]$title,
         [string]$description,
@@ -216,6 +228,7 @@ function CreateAzureDevOpsPullRequest() {
 
     $targetBranch = "refs/heads/$targetBranch"  
     Write-Host "The Source Branch is: $sourceBranch"
+    Write-Host "The Target Repository is: $targetRepo"
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
@@ -238,14 +251,14 @@ function CreateAzureDevOpsPullRequest() {
     }
 
     if ($linkWorkItems -eq $True) {
-        $workItems = GetLinkedWorkItems -sourceBranch $sourceBranch.Remove(0, 11) -targetBranch $targetBranch.Remove(0, 11)
+        $workItems = GetLinkedWorkItems -sourceBranch $sourceBranch.Remove(0, 11) -targetRepo $targetRepo -targetBranch $targetBranch.Remove(0, 11)
         $body.WorkItemRefs = @( $workItems )
     }
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
-    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests?api-version=5.0"
+    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$($targetRepo)/pullrequests?api-version=5.0"
     Write-Debug $url
 
     try {
@@ -260,7 +273,7 @@ function CreateAzureDevOpsPullRequest() {
 
             # If set auto aomplete is true 
             if ($autoComplete) {
-                SetAutoComplete -pullRequestId $pullRequestId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
+                SetAutoComplete -targetRepo $targetRepo -pullRequestId $pullRequestId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
             }
         }
     }
@@ -324,9 +337,10 @@ function GetLinkedWorkItems {
     Param
     (
         [string]$sourceBranch,
+        [string]$targetRepo,
         [string]$targetBranch
     )
-    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/commitsBatch?api-version=4.1"
+    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$($targetRepo)/commitsBatch?api-version=4.1"
     $header = @{ Authorization = "Bearer $env:System_AccessToken" }
     $body = @{
         '$top'           = 101
@@ -380,6 +394,7 @@ function SetAutoComplete {
     [CmdletBinding()]
     Param
     (
+        [string]$targetRepo,
         [string]$pullRequestId,
         [string]$mergeStrategy,
         [bool]$deleteSourch,
@@ -402,7 +417,7 @@ function SetAutoComplete {
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
-    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$env:Build_Repository_Name/pullrequests/$($pullRequestId)?api-version=5.0"
+    $url = "$env:System_TeamFoundationCollectionUri$env:System_TeamProject/_apis/git/repositories/$($targetRepo)/pullrequests/$($pullRequestId)?api-version=5.0"
     Write-Debug $url
     try {
         $response = Invoke-RestMethod -Uri $url -Method Patch -Headers $head -Body $jsonBody -ContentType application/json

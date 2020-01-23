@@ -49,6 +49,14 @@
       "required": true,
       "helpMarkDown": "The branch name that will be merged (for example - feature). the default is '$(Build.SourceBranch)'."
     },
+	{
+      "name": "targetRepo",
+      "type": "string",
+      "label": "Target Repository name",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The target Repository name. If left blank the current repository is used."
+    },
     {
       "name": "targetBranch",
       "type": "string",
