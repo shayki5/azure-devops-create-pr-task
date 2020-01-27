@@ -19,7 +19,13 @@
     "displayName": "Complete options",
     "isExpanded": true,
     "visibleRule": "repoType=Azure DevOps"
-  }],
+  },
+    {
+      "name": "repository",
+      "displayName": "Repository options",
+      "isExpanded": true,
+      "visibleRule": "repoType=Azure DevOps"
+    }],
   "inputs": [{
       "name": "repoType",
       "type": "radio",
