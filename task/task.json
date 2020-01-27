@@ -15,12 +15,40 @@
   },
   "instanceNameFormat": "Create Pull Request",
   "groups": [{
-    "name": "completion",
-    "displayName": "Complete options",
-    "isExpanded": true,
-    "visibleRule": "repoType=Azure DevOps"
-  }],
+      "name": "completion",
+      "displayName": "Complete options",
+      "isExpanded": true,
+      "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "repository",
+      "displayName": "Repository options",
+      "isExpanded": true,
+      "visibleRule": "repoType=Azure DevOps"
+    }
+  ],
   "inputs": [{
+      "name": "repoType",
+      "type": "radio",
+      "label": "Git repository type",
+      "required": true,
+      "defaultValue": "Azure DevOps",
+      "helpMarkDown": "Choose the git repository type, Azure DevOps (Azure Repos) or GitHub",
+      "options": {
+        "Azure DevOps": "Azure DevOps",
+        "GitHub": "GitHub"
+      }
+    },
+    {
+      "name": "githubEndpoint",
+      "type": "connectedService:github",
+      "label": "GitHub Connection (authorized with PAT)",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Select the service endpoint for your GitHub connection, must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
+      "visibleRule": "repoType=GitHub"
+    },
+    {
       "name": "repositorySelector",
       "type": "radio",
       "label": "Repository to use",
@@ -60,27 +88,6 @@
       "helpMarkDown": "Git repository you want to create a pull request for",
       "groupName": "repository",
       "visibleRule": "repositorySelector = select"
-    },
-    {
-      "name": "repoType",
-      "type": "radio",
-      "label": "Git repository type",
-      "required": true,
-      "defaultValue": "Azure DevOps",
-      "helpMarkDown": "Choose the git repository type, Azure DevOps (Azure Repos) or GitHub",
-      "options": {
-        "Azure DevOps": "Azure DevOps",
-        "GitHub": "GitHub"
-      }
-    },
-    {
-      "name": "githubEndpoint",
-      "type": "connectedService:github",
-      "label": "GitHub Connection (authorized with PAT)",
-      "defaultValue": "",
-      "required": true,
-      "helpMarkDown": "Select the service endpoint for your GitHub connection, must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
-      "visibleRule": "repoType=GitHub"
     },
     {
       "name": "sourceBranch",
