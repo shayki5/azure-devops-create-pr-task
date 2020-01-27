@@ -59,7 +59,8 @@
         "select": "Select"
       },
       "helpMarkDown": "The method for selecting the Git repository. `Current build` will use the repository for which the current build is configured. `Select` will allow you to select an Azure Repository from your account.",
-      "groupName": "repository"
+      "groupName": "repository",
+      "visibleRule": "repoType=Azure DevOps"
     },
     {
       "name": "projectId",
