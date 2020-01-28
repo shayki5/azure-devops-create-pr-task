@@ -48,7 +48,7 @@ steps:
     connectTo: 'VsTeam'
     connectedServiceName: 'AzureDevOps Maketplace'
     method: 'vsix'
-    vsixFile: '$(Build.ArtifactStagingDirectory)/vsix/ShaykiAbramczyk.CreatePullRequest*.vsix'
+    vsixFile: '$(Build.ArtifactStagingDirectory)/vsix/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
