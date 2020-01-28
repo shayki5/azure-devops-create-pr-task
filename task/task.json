@@ -24,7 +24,7 @@
       "name": "repository",
       "displayName": "Repository options",
       "isExpanded": true,
-      "visibleRule": "repoType=Azure DevOps"
+      "visibleRule": "repoType=AzureDevOps"
     }],
   "inputs": [{
       "name": "repoType",
@@ -34,7 +34,7 @@
       "defaultValue": "Azure DevOps",
       "helpMarkDown": "Choose the git repository type, Azure DevOps (Azure Repos) or GitHub",
       "options": {
-        "Azure DevOps": "Azure DevOps",
+        "Azure DevOps": "AzureDevOps",
         "GitHub": "GitHub"
       }
     },
@@ -59,7 +59,7 @@
       },
       "helpMarkDown": "The method for selecting the Git repository. `Current build` will use the repository for which the current build is configured. `Select` will allow you to select an Azure Repository from your account.",
       "groupName": "repository",
-      "visibleRule": "repoType=Azure DevOps"
+      "visibleRule": "repoType=AzureDevOps"
     },
     {
       "name": "targetProjectId",
@@ -144,7 +144,7 @@
       "defaultValue": true,
       "required": false,
       "helpMarkDown": "If checked, all the work items that linked to the commits will be linked also to the PullRequest.",
-      "visibleRule": "repoType=Azure DevOps"
+      "visibleRule": "repoType=AzureDevOps"
     },
     {
       "name": "autoComplete",

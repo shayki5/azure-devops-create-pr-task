@@ -38,7 +38,7 @@ function RunTask {
         $linkWorkItems = Get-VstsInput -Name 'linkWorkItems' -AsBool
       
 		#If targetRepo is left empty
-		if($targetRepo -eq ""){
+		if($targetRepo -eq "" -or $targetRep -eq "currentBuild"){
 			$targetRepo = $env:Build_Repository_Name;
 		}
 	  
