@@ -41,14 +41,6 @@ steps:
     extensionPricing: free
     updateTasksVersion: false
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
-    
-- task: IsAzureDevOpsExtensionValid@2
-  displayName: 'Validate VSIX file'
-  inputs:
-    connectTo: 'VsTeam'
-    connectedServiceName: 'AzureDevOps Maketplace'
-    method: 'vsix'
-    vsixFile: '$(Build.ArtifactStagingDirectory)/vsix/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
