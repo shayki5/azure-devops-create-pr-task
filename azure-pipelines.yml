@@ -22,8 +22,6 @@ steps:
       $taskJson = $taskJson | ConvertTo-Json -Depth 10
       Set-Content -Path $jsonPath -Value $taskJson | ConvertTo-Json
 
-
-
 - task: PackageVSTSExtension@1
   displayName: 'Package Extension - Private'
   inputs:
@@ -51,7 +49,6 @@ steps:
     connectedServiceName: 'AzureDevOps Maketplace'
     method: 'vsix'
     vsixFile: '$(Build.ArtifactStagingDirectory)/vsix/ShaykiAbramczyk.CreatePullRequest*.vsix'
-    maxRetries: '1''
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
