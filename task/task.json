@@ -15,11 +15,12 @@
   },
   "instanceNameFormat": "Create Pull Request",
   "groups": [{
-    "name": "completion",
-    "displayName": "Complete options",
-    "isExpanded": true,
-    "visibleRule": "repoType=Azure DevOps"
-  }],
+      "name": "completion",
+      "displayName": "Complete options",
+      "isExpanded": true,
+      "visibleRule": "repoType=Azure DevOps"
+    }
+  ],
   "inputs": [{
       "name": "repoType",
       "type": "radio",
@@ -40,6 +41,45 @@
       "required": true,
       "helpMarkDown": "Select the service endpoint for your GitHub connection, must be authorized with PAT. <br>To create one, click the Manage link and create a new service endpoint.",
       "visibleRule": "repoType=GitHub"
+    },
+    {
+      "name": "repositorySelector",
+      "type": "radio",
+      "label": "Repository to use",
+      "required": true,
+      "defaultValue": "currentBuild",
+      "options": {
+        "currentBuild": "Current repository build",
+        "select": "Select"
+      },
+      "helpMarkDown": "The method for selecting the Git repository. `Current build` will use the repository for which the current build is configured. `Select` will allow you to select an Azure Repository from your account.",
+      "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "projectId",
+      "type": "picklist",
+      "label": "Project",
+      "defaultValue": "",
+      "properties": {
+        "EditableOptions": "True",
+        "DisableManageLink": "True"
+      },
+      "required": true,
+      "helpMarkDown": "Project that contains the git repository you want to create a pull request for.",
+      "visibleRule": "repositorySelector = select"
+    },
+    {
+      "name": "gitRepositoryId",
+      "type": "picklist",
+      "label": "Repository",
+      "defaultValue": "",
+      "properties": {
+        "EditableOptions": "True",
+        "DisableManageLink": "True"
+      },
+      "required": true,
+      "helpMarkDown": "Git repository you want to create a pull request for",
+      "visibleRule": "repositorySelector = select"
     },
     {
       "name": "sourceBranch",
@@ -152,6 +192,28 @@
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
     }
+  ],
+  "dataSourceBindings": [{
+      "endpointId": "tfs:teamfoundation",
+      "target": "projectId",
+      "endpointUrl": "{{endpoint.url}}/_apis/projects?$skip={{skip}}&$top=1000",
+      "resultSelector": "jsonpath:$.value[?(@.state=='wellFormed')]",
+      "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }",
+      "callbackContextTemplate": "{\"skip\": \"{{add skip 1000}}\"}",
+      "callbackRequiredTemplate": "{{isEqualNumber result.count 1000}}",
+      "initialContextTemplate": "{\"skip\": \"0\"}"
+    },
+    {
+      "endpointId": "tfs:teamfoundation",
+      "target": "gitRepositoryId",
+      "endpointUrl": "{{endpoint.url}}/{{project}}/_apis/git/repositories",
+      "resultSelector": "jsonpath:$.value[*]",
+      "parameters": {
+        "project": "$(projectId)"
+      },
+      "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
+    }
+
   ],
   "execution": {
     "PowerShell3": {
