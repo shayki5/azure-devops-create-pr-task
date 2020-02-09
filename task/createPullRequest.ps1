@@ -43,7 +43,7 @@ function RunTask {
         }
 
         #remove spcaes out of Repo Name
-        $targetRepo = $targetRepo.Replace(" ", "%20")
+        $repositoryName = $repositoryName.Replace(" ", "%20")
       
         # If the target branch is only one branch
         if (!$targetBranch.Contains('*')) {
