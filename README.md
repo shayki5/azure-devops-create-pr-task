@@ -48,11 +48,13 @@ Choose title, description, reviewers and more.
 
 **In the classic editor:**
 
-![Task](https://i.imgur.com/QGnrON7.png)
+![Task](https://i.imgur.com/6rKIgTK.png)
 
 - **Git repository type**: Azure DevOps (Repos) or GitHub. When you choose GitHub you need to choose from the list the GitHub service connection (that use PAT authorization.)
 
 - **GitHub Connection (authorized with PAT)**: When you choose GitHub in `Git repository type` you need to specify here the GitHub service connection.
+
+- **Repository to use**: The method for selecting the Git repository. Current build will use the repository for which the current build is configured. Select will allow you to select an Azure DevOps Repository from your account.
 
 - **Source branch name:** The source branch that will be merged. The default value is the build source branch - `$(Build.SourceBranch)`.
 
@@ -100,6 +102,12 @@ Choose title, description, reviewers and more.
   inputs:
     repoType: Azure DevOps / GitHub
     githubEndpoint: 'my-github' # When you choose GitHub in `repoType` you need to specify here the GitHub service connection
+    # By default the PR will be for the current repository
+    # You can select another repository from this project or onther project in your account
+    # For this, specify `select` in `repositorySelectionMethod` and put the project id & git repo id
+    repositorySelectionMethod: select 
+    projectId: '7fcdaf44-b831-4faa-b2fe-8k7a19a1d1af'
+    gitRepositoryId: 'a743g5c4-85ec-4a4e-bf42-78964d551234'
     sourceBranch: '$(Build.SourceBranch)'
     targetBranch: 'master'
     title: 'Test'
@@ -121,6 +129,10 @@ Choose title, description, reviewers and more.
  -  ~~In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.~~ [Fixed in version 1.2.18]
 
 ## Release Notes
+
+#### 1.2.76
+
+- Create PR for other repositories - not only for the current build repo (for Azure DevOps)
 
 #### 1.2.48
 
