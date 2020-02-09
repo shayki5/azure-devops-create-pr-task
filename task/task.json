@@ -19,12 +19,6 @@
       "displayName": "Complete options",
       "isExpanded": true,
       "visibleRule": "repoType=Azure DevOps"
-    },
-    {
-      "name": "repository",
-      "displayName": "Repository options",
-      "isExpanded": true,
-      "visibleRule": "repoType=Azure DevOps"
     }
   ],
   "inputs": [{
@@ -59,7 +53,6 @@
         "select": "Select"
       },
       "helpMarkDown": "The method for selecting the Git repository. `Current build` will use the repository for which the current build is configured. `Select` will allow you to select an Azure Repository from your account.",
-      "groupName": "repository",
       "visibleRule": "repoType=Azure DevOps"
     },
     {
@@ -73,7 +66,6 @@
       },
       "required": true,
       "helpMarkDown": "Project that contains the git repository you want to create a pull request for.",
-      "groupName": "repository",
       "visibleRule": "repositorySelector = select"
     },
     {
@@ -87,7 +79,6 @@
       },
       "required": true,
       "helpMarkDown": "Git repository you want to create a pull request for",
-      "groupName": "repository",
       "visibleRule": "repositorySelector = select"
     },
     {
