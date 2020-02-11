@@ -273,6 +273,9 @@ function CreateAzureDevOpsPullRequest() {
             Write-Host "******** Success ********"
             Write-Host "*************************"
             Write-Host "Pull Request $pullRequestId created."
+            
+            Write-Host $response.createdBy
+            Write-Host $response.createdBy.id
 
             # If set auto aomplete is true 
             if ($autoComplete) {
