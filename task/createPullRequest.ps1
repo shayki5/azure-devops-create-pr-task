@@ -274,12 +274,11 @@ function CreateAzureDevOpsPullRequest() {
             Write-Host "*************************"
             Write-Host "Pull Request $pullRequestId created."
             
-            Write-Host $response.createdBy
-            Write-Host $response.createdBy.id
+            $currentUserId = $response.createdBy.id
 
             # If set auto aomplete is true 
             if ($autoComplete) {
-                SetAutoComplete -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
+                SetAutoComplete -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
             }
         }
     }
@@ -407,13 +406,15 @@ function SetAutoComplete {
         [string]$commitMessage,
         [bool]$transitionWorkItems,
         [string]$teamProject,
-        [string]$repositoryName
+        [string]$repositoryName,
+        [string]$buildUserId
     )
-    $buildUserId = GetBuildUserId
+
     $body = @{
         autoCompleteSetBy = @{ id = "$buildUserId" }
         completionOptions = ""
-    }         
+    }    
+
     $options = @{ 
         mergeStrategy       = "$mergeStrategy" 
         deleteSourceBranch  = "$deleteSourch"
@@ -439,28 +440,6 @@ function SetAutoComplete {
         Write-Warning $_
         Write-Warning $_.Exception.Message
     }
-}
-
-function GetBuildUserId {
-    [CmdletBinding()]
-    $base_url = $env:System_TeamFoundationCollectionUri
-    if ($base_url -match "https://(.*)\.visualstudio\.com/$") {
-        $url = "https://vssps.dev.azure.com/$($Matches[1])/"
-    }
-    else {
-        $url = $base_url.Replace("//dev", "//vssps.dev")
-    }
-    $url = "$($url)_apis/graph/users?api-version=4.1-preview.1"
-    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
-    $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head
-    # If the results are more then 500 users and the Project Collection Build Service not exist in the first page
-    while ($response.Headers.Keys -contains "x-ms-continuationtoken" -and $response.Content -notmatch "Project Collection Build Service") {
-        $token = $response.Headers.'x-ms-continuationtoken'
-        $url_with_token = "$($url)&continuationToken=$($token)"
-        $response = Invoke-WebRequest -Uri $url_with_token -Method Get -ContentType application/json -Headers $head
-    }
-    $buildUserId = ($response.Content | Convertfrom-Json).value.Where( { $_.displayName -match "Project Collection Build Service" }).originId
-    return $buildUserId
 }
 
 RunTask
