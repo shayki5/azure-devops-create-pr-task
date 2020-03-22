@@ -304,36 +304,97 @@ function GetReviewerId() {
         [string]$reviewers
     )
 
-    $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=4.1-preview.1"
-    # Check if it's the old url or the new url, reltaed to issue #21
-    # And add "vsaex" to the rest api url 
-    if ($url -match "visualstudio.com") {
-        $url = $url.Replace(".visualstudio", ".vsaex.visualstudio")
-    }
-    else {
-        $url = $url.Replace("//dev", "//vsaex.dev")
-    }
-    Write-Debug $url
+    $serverUrl = $env:System_TeamFoundationCollectionUri
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
-    $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
-    $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1-preview.1"
-    $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
-    Write-Debug $reviewers
-    $split = $reviewers.Split(';')
-    $reviewersId = @()
-    ForEach ($reviewer in $split) {
-        if ($reviewer.Contains("@")) {
-            # Is user
-            $userId = $users.value.Where( { $_.user.mailAddress -eq $reviewer }).id
-            $reviewersId += @{ id = "$userId" }
+    # If it's TFS/AzureDevOps Server
+    if ($serverUrl -notmatch "visualstudio.com" -and $serverUrl -notmatch "dev.azure.com") {
+
+        $url = "$($env:System_TeamFoundationCollectionUri)_apis/projects/GitSample/teams?api-version=4.1"
+
+        $teams = Invoke-RestMethod -Method Get -Uri $url -Headers $headers  -ContentType 'application/json'
+        Write-Debug $reviewers
+        $split = $reviewers.Split(';')
+        $reviewersId = @()
+        ForEach ($reviewer in $split) {
+            # If the reviewer is user
+            if ($reviewer.Contains("@")) {
+
+                $teams.value.ForEach( {
+
+                        $teamUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/GitSample/teams/$($_.id)/members?api-version=4.1"
+                        $team = Invoke-RestMethod -Method Get -Uri $teamUrl -Headers $head -ContentType 'application/json'
+        
+                        # If the team contains only 1 user
+                        if ($team.count -eq 1) {
+                            if ($team.value.identity.uniqueName -eq $reviewer) {
+                                $userId = $team.value.identity.id
+                                Write-Host $userId -ForegroundColor Green
+                                $reviewersId += @{ id = "$userId" }
+                                break
+                            }
+                        }
+                        else { # If the team contains more than 1 user 
+                            $userId = $team.value.identity.Where( { $_.uniqueName -eq $reviewer }).id
+                            if ($userId -ne $null) {
+                                Write-Host $userId -ForegroundColor Green
+                                $reviewersId += @{ id = "$userId" }
+                                break
+                            }
+                        }
+    
+                    })
+            }
+        }
+
+        # If the reviewer is team
+        else {
+            if ($teams.count -eq 1) {
+                if ($teams.value.name -eq $u) {
+                    $teamId = $teams.value.id
+                    Write-Host $teamId -ForegroundColor Green
+                    $reviewersId += @{ id = "$userId" }
+                }
+            }
+            else {
+                $teamId = $teams.value.Where( { $_.name -eq $u }).id
+                Write-Host $teamId -ForegroundColor Green
+                $reviewersId += @{ id = "$teamId" }
+            }
+
+        }
+    }
+    
+    # If it's Azure Devops
+    else {
+        
+        $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=4.1-preview.1"
+        # Check if it's the old url or the new url, reltaed to issue #21
+        # And add "vsaex" to the rest api url 
+        if ($url -match "visualstudio.com") {
+            $url = $url.Replace(".visualstudio", ".vsaex.visualstudio")
         }
         else {
-            # Is team
-            $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
-            $reviewersId += @{ id = "$teamId" }
+            $url = $url.Replace("//dev", "//vsaex.dev")
+        }
+        $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
+        $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1-preview.1"
+        $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
+        Write-Debug $reviewers
+        $split = $reviewers.Split(';')
+        $reviewersId = @()
+        ForEach ($reviewer in $split) {
+            if ($reviewer.Contains("@")) {
+                # Is user
+                $userId = $users.value.Where( { $_.user.mailAddress -eq $reviewer }).id
+                $reviewersId += @{ id = "$userId" }
+            }
+            else {
+                # Is team
+                $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
+                $reviewersId += @{ id = "$teamId" }
+            }
         }
     }
-    Write-Host "final reviewersId: $reviewersId"
     return $reviewersId
 }
 
