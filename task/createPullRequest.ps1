@@ -309,9 +309,9 @@ function GetReviewerId() {
     # If it's TFS/AzureDevOps Server
     if ($serverUrl -notmatch "visualstudio.com" -and $serverUrl -notmatch "dev.azure.com") {
 
-        $url = "$($env:System_TeamFoundationCollectionUri)_apis/projects/GitSample/teams?api-version=4.1"
+        $url = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1"
 
-        $teams = Invoke-RestMethod -Method Get -Uri $url -Headers $headers  -ContentType 'application/json'
+        $teams = Invoke-RestMethod -Method Get -Uri $url -Headers $head -ContentType 'application/json'
         Write-Debug $reviewers
         $split = $reviewers.Split(';')
         $reviewersId = @()
@@ -335,7 +335,7 @@ function GetReviewerId() {
                         }
                         else { # If the team contains more than 1 user 
                             $userId = $team.value.identity.Where( { $_.uniqueName -eq $reviewer }).id
-                            if ($userId -ne $null) {
+                            if ($null -ne $userId) {
                                 Write-Host $userId -ForegroundColor Green
                                 $reviewersId += @{ id = "$userId" }
                                 break
