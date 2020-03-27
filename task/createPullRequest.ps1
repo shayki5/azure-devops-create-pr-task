@@ -333,7 +333,8 @@ function GetReviewerId() {
                                 break
                             }
                         }
-                        else { # If the team contains more than 1 user 
+                        else {
+                            # If the team contains more than 1 user 
                             $userId = $team.value.identity.Where( { $_.uniqueName -eq $reviewer }).id
                             if ($null -ne $userId) {
                                 Write-Host $userId -ForegroundColor Green
@@ -364,10 +365,10 @@ function GetReviewerId() {
         }
     }
     
-    # If it's Azure Devops
+    # If it's Azure DevOps
     else {
         
-        $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?api-version=4.1-preview.1"
+        $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?top=5000&api-version=4.1-preview.1"
         # Check if it's the old url or the new url, reltaed to issue #21
         # And add "vsaex" to the rest api url 
         if ($url -match "visualstudio.com") {
