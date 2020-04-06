@@ -229,8 +229,11 @@ function CreateAzureDevOpsPullRequest() {
     if (!$sourceBranch.Contains("refs")) {
         $sourceBranch = "refs/heads/$sourceBranch"
     }
+    
+    if (!$targetBranch.Contains("refs")) {
+    $targetBranch = "refs/heads/$targetBranch"
+    }
 
-    $targetBranch = "refs/heads/$targetBranch"  
     Write-Host "The Source Branch is: $sourceBranch"
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
