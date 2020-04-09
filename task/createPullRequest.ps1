@@ -148,7 +148,7 @@ function CreateGitHubPullRequest() {
     Write-Debug $jsonBody
     $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
     try {
-        $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
+        $response = Invoke-RestMethod -Uri $url -Method Post -ContentType "application/json;charset=UTF-8" -Headers $header -Body $jsonBody
         if ($Null -ne $response) {
             # If the response not null - the create PR succeeded
             Write-Host "*************************"
@@ -268,7 +268,7 @@ function CreateAzureDevOpsPullRequest() {
     Write-Debug $url
 
     try {
-        $response = Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType application/json
+        $response = Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType "application/json;charset=UTF-8"
         if ($Null -ne $response) {
             # If the response not null - the create PR succeeded
             $pullRequestId = $response.pullRequestId
