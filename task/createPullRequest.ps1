@@ -231,7 +231,7 @@ function CreateAzureDevOpsPullRequest() {
     }
     
     if (!$targetBranch.Contains("refs")) {
-    $targetBranch = "refs/heads/$targetBranch"
+        $targetBranch = "refs/heads/$targetBranch"
     }
 
     Write-Host "The Source Branch is: $sourceBranch"
@@ -348,23 +348,24 @@ function GetReviewerId() {
     
                     })
             }
-        }
+        
 
-        # If the reviewer is team
-        else {
-            if ($teams.count -eq 1) {
-                if ($teams.value.name -eq $u) {
-                    $teamId = $teams.value.id
-                    Write-Host $teamId -ForegroundColor Green
-                    $reviewersId += @{ id = "$userId" }
-                }
-            }
+            # If the reviewer is team
             else {
-                $teamId = $teams.value.Where( { $_.name -eq $u }).id
-                Write-Host $teamId -ForegroundColor Green
-                $reviewersId += @{ id = "$teamId" }
-            }
+                if ($teams.count -eq 1) {
+                    if ($teams.value.name -eq $u) {
+                        $teamId = $teams.value.id
+                        Write-Host $teamId -ForegroundColor Green
+                        $reviewersId += @{ id = "$userId" }
+                    }
+                }
+                else {
+                    $teamId = $teams.value.Where( { $_.name -eq $u }).id
+                    Write-Host $teamId -ForegroundColor Green
+                    $reviewersId += @{ id = "$teamId" }
+                }
 
+            }
         }
     }
     
