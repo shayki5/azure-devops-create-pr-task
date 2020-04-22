@@ -130,6 +130,10 @@ Choose title, description, reviewers and more.
 
 ## Release Notes
 
+#### 1.2.89
+
+- Throw a warning when there are no commits in the source branch, instaed of create a PR (for Azure DevOps).
+
 #### 1.2.76
 
 - Create PR for other repositories - not only for the current build repo (for Azure DevOps)

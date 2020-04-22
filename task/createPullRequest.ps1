@@ -315,7 +315,9 @@ function CheckIfThereAreChanges {
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
     if ($response.behindCount -eq 0) {
-        Write-Warning "There are no new commits in the source branch, no PR is needed"
+        Write-Warning "***************************************************************"
+        Write-Warning "There are no new commits in the source branch, no PR is needed!"
+        Write-Warning "***************************************************************"
         exit 0
     }
     else {
