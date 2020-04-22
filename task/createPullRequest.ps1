@@ -238,7 +238,10 @@ function CreateAzureDevOpsPullRequest() {
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
+    Write-Host "Is Reviewers are: $reviewers"
     Write-Host "Is Draft Pull Request: $isDraft"
+
+    CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch
 
     $body = @{
         sourceRefName = "$sourceBranch"
@@ -263,9 +266,8 @@ function CreateAzureDevOpsPullRequest() {
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $jsonBody = ConvertTo-Json $body
-    Write-Debug $jsonBody
+    Write-Host $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests?api-version=5.0"
-    Write-Debug $url
 
     try {
         $response = Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType "application/json;charset=UTF-8"
@@ -298,6 +300,25 @@ function CreateAzureDevOpsPullRequest() {
             Write-Error $_.Exception.Message
         }
     }
+}
+
+function CheckIfThereAreChanges {
+    Param (
+        [string]$sourceBranch,
+        [string]$targetBranch
+    )
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.1" + '&$top=2'
+    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
+    if ($response.behindCount -eq 0) {
+        Write-Warning "There are no new commits in the source branch, no PR is needed"
+        exit 0
+    }
+    else {
+        Write-Host "$response.behindCount new commits! perofrm a Pull Request..."
+    }
+
+    
 }
 
 function GetReviewerId() {
