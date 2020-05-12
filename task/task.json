@@ -226,11 +226,11 @@
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     },
     {
-      "endpointId": "connectedService:github",
       "target": "githubRepository",
       "endpoint": "/$(system.teamProject)/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
-      "resultSelector": "jsonpath:$.repositories[*].id",
-      "resultTemplate": "{ \"repositories\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
+      "selector": "jsonpath:$.repositories[*].id",
+      "keySelector": "jsonpath:$.repositories[*].id",
+      "authKey": "tfs:teamfoundation"
     }
   ],
   "execution": {
