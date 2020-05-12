@@ -230,7 +230,7 @@
       "target": "githubRepository",
       "endpointUrl": "{{endpoint.url}}/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
       "resultSelector": "jsonpath:$.repositories[*].id",
-      "authKey": "tfs:teamfoundation"
+      "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     }
   ],
   "execution": {
