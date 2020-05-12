@@ -228,7 +228,7 @@
     {
       "endpointId": "$(githubEndpoint)",
       "target": "githubRepository",
-      "endpoint": "/$(system.teamProject)/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
+      "endpoint": "{{endpoint.url}}/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
       "resultSelector": "jsonpath:$.repositories[*].id",
       "authKey": "tfs:teamfoundation"
     }
