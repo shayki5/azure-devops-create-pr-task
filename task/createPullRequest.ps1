@@ -15,7 +15,8 @@ function RunTask {
         [bool]$transitionWorkItems,
         [bool]$linkWorkItems,
         [string]$teamProject,
-        [string]$repositoryName
+        [string]$repositoryName,
+        [string]$githubRepository
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -36,6 +37,7 @@ function RunTask {
         $linkWorkItems = Get-VstsInput -Name 'linkWorkItems' -AsBool
         $teamProject = Get-VstsInput -Name 'projectId' 
         $repositoryName = Get-VstsInput -Name 'gitRepositoryId'
+        $githubRepository = Get-VstsInput -Name 'githubRepository'
         
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild") {
             $teamProject = $env:System_TeamProject
@@ -47,7 +49,7 @@ function RunTask {
       
         # If the target branch is only one branch
         if (!$targetBranch.Contains('*')) {
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository
         }
 
         # If is multi-target branch, like feature/*
@@ -58,7 +60,7 @@ function RunTask {
                     if ($_ -match ($targetBranch.Split('/')[0])) {
                         $newTargetBranch = $_.Remove(0, 17)
                         $newTargetBranch = "$newTargetBranch"
-                        CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+                        CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository  
                     }
                 })
         }
@@ -87,7 +89,8 @@ function CreatePullRequest() {
         [bool]$transitionWorkItems,
         [bool]$linkWorkItems,
         [string]$teamProject,
-        [string]$repositoryName
+        [string]$repositoryName,
+        [string]$githubRepository
     )
 
     if ($repoType -eq "Azure DevOps") { 
@@ -96,7 +99,7 @@ function CreatePullRequest() {
 
     else {
         # Is GitHub repository
-        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft
+        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository
     }
 }
 
@@ -110,7 +113,8 @@ function CreateGitHubPullRequest() {
         [string]$title,
         [string]$description,
         [string]$reviewers,
-        [bool]$isDraft
+        [bool]$isDraft,
+        [string]$githubRepository
     )
 
     Write-Host "The Source Branch is: $sourceBranch"
@@ -128,9 +132,9 @@ function CreateGitHubPullRequest() {
 
     $endpoint = Get-VstsEndpoint -Name $serviceName -Require
     $token = $endpoint.Auth.Parameters.accessToken
-    $repoUrl = $env:BUILD_REPOSITORY_URI
-    $owner = $repoUrl.Split('/')[3]
-    $repo = $repoUrl.Split('/')[4]
+    $repoUrlSplitted = $githubRepository.Split('/')
+    $owner = $repoUrl.Split('/')[0]
+    $repo = $repoUrl.Split('/')[1]
     $url = "https://api.github.com/repos/$owner/$repo/pulls"
     $body = @{
         head  = "$sourceBranch"
