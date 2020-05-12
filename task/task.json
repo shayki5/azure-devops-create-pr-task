@@ -226,7 +226,7 @@
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     },
     {
-      "target": "definition",
+      "target": "githubRepository",
       "endpointId": "$(githubEndpoint)",
       "endpointUrl": "{{endpoint.url}}api/v3/user/repos",
       "resultSelector": "jsonpath:$.[*]",
