@@ -226,11 +226,11 @@
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     },
     {
+      "target": "definition",
       "endpointId": "$(githubEndpoint)",
-      "target": "githubRepository",
-      "endpointUrl": "{{endpoint.url}}/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
-      "resultSelector": "jsonpath:$.repositories[*].id",
-      "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
+      "endpointUrl": "{{endpoint.url}}api/v3/user/repos",
+      "resultSelector": "jsonpath:$.[*]",
+      "resultTemplate": "{ \"Value\" : \"{{{full_name}}}\", \"DisplayValue\" : \"{{{full_name}}}\" }"
     }
   ],
   "execution": {
