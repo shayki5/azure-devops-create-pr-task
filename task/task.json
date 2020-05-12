@@ -226,6 +226,7 @@
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     },
     {
+      "endpointId": "$(githubEndpoint)",
       "target": "githubRepository",
       "endpoint": "/$(system.teamProject)/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
       "selector": "jsonpath:$.repositories[*].id",
