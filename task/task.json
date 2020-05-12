@@ -228,8 +228,9 @@
     {
       "endpointId": "tfs:teamfoundation",
       "target": "githubRepository",
-      "endpoint": "/$(system.teamProject)/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
-      "resultSelector": "jsonpath:$.repositories[*].id"
+      "endpoint": "{{endpoint.url}}/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
+      "resultSelector": "jsonpath:$.repositories[*].id",
+      "resultTemplate": "{ \"repositories\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     }
   ],
   "execution": {
