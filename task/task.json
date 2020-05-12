@@ -226,7 +226,7 @@
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     },
     {
-      "endpointId": "tfs:teamfoundation",
+      "endpointId": "connectedService:github",
       "target": "githubRepository",
       "endpoint": "/$(system.teamProject)/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
       "resultSelector": "jsonpath:$.repositories[*].id",
