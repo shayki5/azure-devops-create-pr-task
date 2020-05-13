@@ -226,11 +226,10 @@
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     },
     {
-      "endpointId": "tfs:teamfoundation",
       "target": "githubRepository",
-      "endpointUrl": "{{endpoint.url}}/{{project.id}}/_apis/sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
-      "resultSelector": "jsonpath:$.[*]",
-      "resultTemplate": "{ \"Value\" : \"{{{full_name}}}\", \"DisplayValue\" : \"{{{full_name}}}\" }"
+      "endpointId": "$(githubEndpoint)",
+      "dataSourceName": "UserRepositories",
+      "resultTemplate": "{ \"Value\" : \"{{full_name}}\", \"DisplayValue\" : \"{{full_name}}\" }"
     }
   ],
   "execution": {
