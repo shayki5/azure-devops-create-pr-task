@@ -62,7 +62,7 @@
       "type": "pickList",
       "label": "Repository to use",
       "required": true,
-      "defaultValue": "",
+      "defaultValue": "$(Build.Repository.Name)",
       "helpMarkDown": "Name of the GitHub repository",
       "visibleRule": "repoType=GitHub "
     },
@@ -83,7 +83,7 @@
       "name": "gitRepositoryId",
       "type": "picklist",
       "label": "Repository",
-      "defaultValue": "$(Build.Repository.Name)",
+      "defaultValue": "",
       "properties": {
         "EditableOptions": "True",
         "DisableManageLink": "True"
