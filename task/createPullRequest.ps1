@@ -133,8 +133,8 @@ function CreateGitHubPullRequest() {
     $endpoint = Get-VstsEndpoint -Name $serviceName -Require
     $token = $endpoint.Auth.Parameters.accessToken
     $repoUrlSplitted = $githubRepository.Split('/')
-    $owner = $repoUrl.Split('/')[0]
-    $repo = $repoUrl.Split('/')[1]
+    $owner = $repoUrlSplitted.Split('/')[0]
+    $repo = $repoUrlSplitted.Split('/')[1]
     $url = "https://api.github.com/repos/$owner/$repo/pulls"
     $body = @{
         head  = "$sourceBranch"
