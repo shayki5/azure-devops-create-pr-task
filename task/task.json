@@ -226,9 +226,9 @@
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     },
     {
-      "target": "githubRepository",
+      "target": "tfs:teamfoundation",
       "endpointId": "$(githubEndpoint)",
-      "endpointUrl": "{{endpoint.url}}api/v3/user/repos",
+      "endpointUrl": "{{endpoint.url}}/{{project}}/_apis//sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
       "resultSelector": "jsonpath:$.[*]",
       "resultTemplate": "{ \"Value\" : \"{{{full_name}}}\", \"DisplayValue\" : \"{{{full_name}}}\" }"
     }
