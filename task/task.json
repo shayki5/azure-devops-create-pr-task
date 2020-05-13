@@ -226,10 +226,13 @@
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
     },
     {
+      "endpointId": "tfs:teamfoundation",
       "target": "githubRepository",
-      "endpointId": "$(githubEndpoint)",
-      "endpointUrl": "/$(system.teamProject)/_apis//sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
+      "endpointUrl": "{{endpoint.url}}/{{project}}/_apis//sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
       "resultSelector": "jsonpath:$.[*]",
+      "parameters": {
+        "project": "$(githubEndpoint)"
+      },
       "resultTemplate": "{ \"Value\" : \"{{{full_name}}}\", \"DisplayValue\" : \"{{{full_name}}}\" }"
     }
   ],
