@@ -83,7 +83,7 @@
       "name": "gitRepositoryId",
       "type": "picklist",
       "label": "Repository",
-      "defaultValue": "",
+      "defaultValue": "$(Build.Repository.Name)",
       "properties": {
         "EditableOptions": "True",
         "DisableManageLink": "True"
