@@ -228,10 +228,10 @@
     {
       "endpointId": "tfs:teamfoundation",
       "target": "githubRepository",
-      "endpointUrl": "{{endpoint.url}}/{{projectId}}/_apis//sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
+      "endpointUrl": "{{endpoint.url}}/{{system.projectid}}/_apis//sourceProviders/GitHub/repositories?serviceEndpointId=$(githubEndpoint)",
       "resultSelector": "jsonpath:$.[*]",
       "parameters": {
-        "project": "$(githubEndpoint)"
+        "project": "$(projectId)"
       },
       "resultTemplate": "{ \"Value\" : \"{{{full_name}}}\", \"DisplayValue\" : \"{{{full_name}}}\" }"
     }
