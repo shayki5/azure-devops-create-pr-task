@@ -14,14 +14,16 @@
     "Patch": 41
   },
   "instanceNameFormat": "Create Pull Request",
-  "groups": [{
+  "groups": [
+    {
       "name": "completion",
       "displayName": "Complete options",
       "isExpanded": true,
       "visibleRule": "repoType=Azure DevOps"
     }
   ],
-  "inputs": [{
+  "inputs": [
+    {
       "name": "repoType",
       "type": "radio",
       "label": "Git repository type",
@@ -54,6 +56,15 @@
       },
       "helpMarkDown": "The method for selecting the Git repository. `Current build` will use the repository for which the current build is configured. `Select` will allow you to select an Azure Repository from your account.",
       "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "githubRepository",
+      "type": "pickList",
+      "label": "Repository to use",
+      "required": true,
+      "defaultValue": "$(Build.Repository.Name)",
+      "helpMarkDown": "Name of the GitHub repository",
+      "visibleRule": "repoType=GitHub "
     },
     {
       "name": "projectId",
@@ -193,7 +204,8 @@
       "visibleRule": "autoComplete=true"
     }
   ],
-  "dataSourceBindings": [{
+  "dataSourceBindings": [
+    {
       "endpointId": "tfs:teamfoundation",
       "target": "projectId",
       "endpointUrl": "{{endpoint.url}}/_apis/projects?$skip={{skip}}&$top=1000",
@@ -212,8 +224,13 @@
         "project": "$(projectId)"
       },
       "resultTemplate": "{ \"Value\" : \"{{{id}}}\", \"DisplayValue\" : \"{{{name}}}\" }"
+    },
+    {
+      "target": "githubRepository",
+      "endpointId": "$(githubEndpoint)",
+      "dataSourceName": "UserRepositories",
+      "resultTemplate": "{ \"Value\" : \"{{full_name}}\", \"DisplayValue\" : \"{{full_name}}\" }"
     }
-
   ],
   "execution": {
     "PowerShell3": {
