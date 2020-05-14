@@ -1,55 +1,59 @@
 {
-	"manifestVersion": 1,
-	"id": "CreatePullRequest",
-	"version": "1.2.15",
-	"name": "Create Pull Request",
-	"description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline, supports also multi target branch.",
-	"publisher": "ShaykiAbramczyk",
-	"repository": {
-	    "type": "git",
-      	    "url": "https://github.com/shayki5/azure-devops-create-pr-task"
-	},
-	"content": {
-	    "details": {
-		"path": "README.MD"
-		},
-		"license": {
-		"path": "LICENSE"
-		}
-	},
-	"tags":[
-	    "Azure Pipelines",
-	    "Pull Request",
-	    "Git",
-	    "Azure Repos"
-	],
-	"targets": [
-		{
-			"id": "Microsoft.VisualStudio.Services"
-			}
-		],
-	"icons": {
-		"default": "icon.png"
-	 },
-	 "categories": [
-               "Azure Pipelines",
-	       "Azure Repos"
-    ],
-	"contributions": [
-		{
-			"id": "CreatePullRequest",
-			"type": "ms.vss-distributed-task.task",
-			"targets": [
-				"ms.vss-distributed-task.tasks"
-			],
-			"properties": {
-				"name": "task"
-			}
-		}
-	],
-	"files":[
-		{
-			"path": "task"			
-		}
-	]
+  "manifestVersion": 1,
+  "id": "CreatePullRequest",
+  "version": "1.2.15",
+  "name": "Create Pull Request",
+  "description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline, supports also multi target branch.",
+  "publisher": "ShaykiAbramczyk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shayki5/azure-devops-create-pr-task"
+  },
+  "content": {
+    "details": {
+      "path": "README.MD"
+    },
+    "license": {
+      "path": "LICENSE"
+    },
+    "privacy": {
+      "path": "PRIVACY.md"
+    }
+  },
+  "links": {
+    "support": {
+      "uri": "https://github.com/shayki5/azure-devops-create-pr-task/issues"
+    },
+    "license": {
+      "uri": "https://github.com/shayki5/azure-devops-create-pr-task/blob/master/LICENSE.md"
+    },
+    "privacypolicy": {
+      "uri": "https://github.com/shayki5/azure-devops-create-pr-task/blob/master/PRIVACY.md"
+    }
+  },
+  "tags": ["Azure Pipelines", "Pull Request", "Git", "Azure Repos"],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "icons": {
+    "default": "icon.png"
+  },
+  "categories": ["Azure Pipelines", "Azure Repos"],
+  "contributions": [
+    {
+      "id": "CreatePullRequest",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "task"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "task"
+    }
+  ]
 }
