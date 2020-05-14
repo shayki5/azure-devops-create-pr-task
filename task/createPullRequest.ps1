@@ -396,7 +396,7 @@ function GetReviewerId() {
                         $teamId = $teams.value.id
                         Write-Host $teamId -ForegroundColor Green
                         $reviewersId += @{ 
-                            id = "$userId"
+                            id = "$teamId"
                             isRequired = "$isRequired"
                         }
                     }
@@ -405,7 +405,7 @@ function GetReviewerId() {
                     $teamId = $teams.value.Where( { $_.name -eq $u }).id
                     Write-Host $teamId -ForegroundColor Green
                     $reviewersId += @{ 
-                        id = "$userId"
+                        id = "$teamId"
                         isRequired = "$isRequired"
                     }
                 }
@@ -448,7 +448,7 @@ function GetReviewerId() {
                 # Is team
                 $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
                 $reviewersId += @{ 
-                    id = "$userId"
+                    id = "$teamId"
                     isRequired = "$isRequired"
                 }
             }
