@@ -350,11 +350,14 @@ function GetReviewerId() {
         $split = $reviewers.Split(';')
         $reviewersId = @()
         ForEach ($reviewer in $split) {
+            $isRequired = "false"
+            if ($reviewer -match "req:") {
+                $isRequired = "true"
+            }
             # If the reviewer is user
             if ($reviewer.Contains("@")) {
 
                 $teams.value.ForEach( {
-
                         $teamUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams/$($_.id)/members?api-version=4.1"
                         $team = Invoke-RestMethod -Method Get -Uri $teamUrl -Headers $head -ContentType 'application/json'
         
@@ -363,7 +366,10 @@ function GetReviewerId() {
                             if ($team.value.identity.uniqueName -eq $reviewer) {
                                 $userId = $team.value.identity.id
                                 Write-Host $userId -ForegroundColor Green
-                                $reviewersId += @{ id = "$userId" }
+                                $reviewersId += @{ 
+                                    id = "$userId"
+                                    isRequired = "$isRequired"
+                                }
                                 break
                             }
                         }
@@ -372,14 +378,15 @@ function GetReviewerId() {
                             $userId = $team.value.identity.Where( { $_.uniqueName -eq $reviewer }).id
                             if ($null -ne $userId) {
                                 Write-Host $userId -ForegroundColor Green
-                                $reviewersId += @{ id = "$userId" }
+                                $reviewersId += @{ 
+                                    id = "$userId"
+                                    isRequired = "$isRequired"
+                                }
                                 break
                             }
                         }
-    
                     })
-            }
-        
+            }       
 
             # If the reviewer is team
             else {
@@ -387,22 +394,26 @@ function GetReviewerId() {
                     if ($teams.value.name -eq $u) {
                         $teamId = $teams.value.id
                         Write-Host $teamId -ForegroundColor Green
-                        $reviewersId += @{ id = "$userId" }
+                        $reviewersId += @{ 
+                            id = "$userId"
+                            isRequired = "$isRequired"
+                        }
                     }
                 }
                 else {
                     $teamId = $teams.value.Where( { $_.name -eq $u }).id
                     Write-Host $teamId -ForegroundColor Green
-                    $reviewersId += @{ id = "$teamId" }
+                    $reviewersId += @{ 
+                        id = "$userId"
+                        isRequired = "$isRequired"
+                    }
                 }
-
             }
         }
     }
     
     # If it's Azure DevOps
     else {
-        
         $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?top=5000&api-version=4.1-preview.1"
         # Check if it's the old url or the new url, reltaed to issue #21
         # And add "vsaex" to the rest api url 
@@ -419,15 +430,25 @@ function GetReviewerId() {
         $split = $reviewers.Split(';')
         $reviewersId = @()
         ForEach ($reviewer in $split) {
+            $isRequired = "false"
+            if ($reviewer -match "req:") {
+                $isRequired = "true"
+            }
             if ($reviewer.Contains("@")) {
                 # Is user
                 $userId = $users.value.Where( { $_.user.mailAddress -eq $reviewer }).id
-                $reviewersId += @{ id = "$userId" }
+                $reviewersId += @{ 
+                    id = "$userId"
+                    isRequired = "$isRequired"
+                }
             }
             else {
                 # Is team
                 $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
-                $reviewersId += @{ id = "$teamId" }
+                $reviewersId += @{ 
+                    id = "$userId"
+                    isRequired = "$isRequired"
+                }
             }
         }
     }

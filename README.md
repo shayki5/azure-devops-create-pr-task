@@ -71,6 +71,7 @@ Choose title, description, reviewers and more.
 
 - **Reviewers:** The Pull Request reviewers _(Optional)_ .
   <br> For Azure DevOps - one or more email address or team name separated by semicolon. For example: `test@test.com;MyTeamName`.
+  <br> To make the reviewer required in Azure DevOps add 'req:' - e.g. `req:test@test.som`
   <br> For GitHub: one or more usernames separated by semicolon. For example: `user1;user2`.
 
 - **Create Draft Pull Request**: If checekd the pull request will be a Draft Pull Request. (Default: false) <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info.
@@ -127,6 +128,7 @@ Choose title, description, reviewers and more.
     title: 'Test'
     description: 'Test' # Optional
     reviewers: For Azure DevOps: 'test@test.com;MyTeam'. For GitHub: `username;username2` # Optional
+    # To make the reviewer required in Azure DevOps add 'req:' - e.g. 'req:test@test.som'
     isDraft: false / true (Default: false)
     linkWorkItems: false / true (Default: true)
     autoComplete: false / true (Default: false)
