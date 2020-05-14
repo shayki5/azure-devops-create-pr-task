@@ -148,7 +148,7 @@ Choose title, description, reviewers and more.
 
 #### 1.2.129
 
-- Now you can add required reviewer and optional reviewers. (for Azure DevOps).
+- Now you can add optional reviewers and required reviewers. (for Azure DevOps).
 
 #### 1.2.123
 
