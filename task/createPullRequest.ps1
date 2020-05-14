@@ -352,6 +352,7 @@ function GetReviewerId() {
         ForEach ($reviewer in $split) {
             $isRequired = "false"
             if ($reviewer -match "req:") {
+                $reviewer = $reviewer.Replace("req:","")
                 $isRequired = "true"
             }
             # If the reviewer is user
@@ -432,6 +433,7 @@ function GetReviewerId() {
         ForEach ($reviewer in $split) {
             $isRequired = "false"
             if ($reviewer -match "req:") {
+                $reviewer = $reviewer.Replace("req:","")
                 $isRequired = "true"
             }
             if ($reviewer.Contains("@")) {
