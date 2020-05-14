@@ -146,6 +146,10 @@ Choose title, description, reviewers and more.
 
 ## Release Notes
 
+#### 1.2.129
+
+- Now you can add required reviewer and optional reviewers. (for Azure DevOps).
+
 #### 1.2.123
 
 - Ability to choose other repos from your GitHub account. As a result, you can also create GitHub PR from a Release pipeline.
