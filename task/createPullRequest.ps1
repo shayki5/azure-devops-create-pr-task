@@ -314,7 +314,13 @@ function CheckIfThereAreChanges {
 
     # Remove the refs/heads/ from the branchs name
     $sourceBranch = $sourceBranch.Remove(0, 11)
+    if($sourceBranch -match "#"){
+         $sourceBranch = $sourceBranch.Replace('#','%23') 
+    }
     $targetBranch = $targetBranch.Remove(0, 11)
+    if($targetBranch -match "#"){
+         $targetBranch = $targetBranch.Replace('#','%23') 
+    }
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.1" + '&$top=2'
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
