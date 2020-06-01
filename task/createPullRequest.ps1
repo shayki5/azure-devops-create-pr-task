@@ -545,7 +545,7 @@ function SetAutoComplete {
         mergeStrategy       = "$mergeStrategy" 
         deleteSourceBranch  = "$deleteSourch"
         transitionWorkItems = "$transitionWorkItems"
-        commitMessage       = "$commitMessage"
+        mergeCommitMessage  = "$commitMessage"
     }
     $body.completionOptions = $options
 
