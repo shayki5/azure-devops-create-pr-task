@@ -54,15 +54,35 @@ function RunTask {
 
         # If is multi-target branch, like feature/*
         else {
-            Set-Location $env:Build_SourcesDirectory
-            $branches = git branch -a
-            $branches.ForEach( {
-                    if ($_ -match ($targetBranch.Split('/')[0])) {
-                        $newTargetBranch = $_.Remove(0, 17)
-                        $newTargetBranch = "$newTargetBranch"
-                        CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $newTargetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository  
-                    }
-                })
+            if($repoType -eq "Azure DevOps"){
+                $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.1"
+                $header = @{ Authorization = "Bearer $env:System_AccessToken" }
+                $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
+                $targetBranches = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
+                foreach($targetBranch in $targetBranches) {
+                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository 
+                }  
+            }
+            else {
+                $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
+                $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
+                if (!$serviceName) {
+                    # Let the task SDK throw an error message if the input isn't defined.
+                    Get-VstsInput -Name $serviceNameInput -Require
+                }
+                $endpoint = Get-VstsEndpoint -Name $serviceName -Require
+                $token = $endpoint.Auth.Parameters.accessToken
+                $repoUrlSplitted = $githubRepository.Split('/')
+                $owner = $repoUrlSplitted.Split('/')[0]
+                $repo = $repoUrlSplitted.Split('/')[1]
+                $url = "https://api.github.com/repos/$owner/$repo/branches"
+                $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
+                $branches = Invoke-RestMethod -Uri $url -Method Get -ContentType "application/json" -Headers $header
+                $targetBranches = $branches.name.Where({ $_ -match "$($targetBranch.Replace('*',''))" })
+                foreach($targetBranch in $targetBranches) {
+                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository 
+                }  
+            }
         }
     }
 
