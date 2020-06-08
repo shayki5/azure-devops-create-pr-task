@@ -31,7 +31,10 @@ Choose title, description, reviewers and more.
       System_AccessToken: $(System.AccessToken)
     ```
 
-- You need to give permissions to the build user (in Microsoft hosted agnet is "Build Service (user-name)"):
+- You need to give permissions to the build users:
+  
+  In Microsoft hosted agnet is "Build Service (user-name)" and "Project Collection Build Service (Project)"
+  (Sometimes the last only show up if you type the UUID (8837...) on "Search for user or groups".)
 
   ![Permissions](https://i.imgur.com/Us401RM.png)
 
