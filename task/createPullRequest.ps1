@@ -303,6 +303,9 @@ function CreateAzureDevOpsPullRequest() {
             Write-Host "*************************"
             Write-Host "Pull Request $pullRequestId created."
             
+            # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
+            write-host "##vso[task.setvariable variable=pullRequestId]$pullRequestId"
+
             $currentUserId = $response.createdBy.id
 
             # If set auto aomplete is true 
