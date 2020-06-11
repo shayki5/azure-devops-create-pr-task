@@ -11,7 +11,7 @@
   "version": {
     "Major": 1,
     "Minor": 2,
-    "Patch": 41
+    "Patch": 42
   },
   "instanceNameFormat": "Create Pull Request",
   "groups": [
@@ -147,6 +147,15 @@
       "defaultValue": true,
       "required": false,
       "helpMarkDown": "If checked, all the work items that linked to the commits will be linked also to the PullRequest.",
+      "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "passPullRequestIdBackToADO",
+      "type": "boolean",
+      "label": "Pass Pull Request ID back to Azure DevOps as a variable",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks.  The variable can be referenced as $(pullRequestId)",
       "visibleRule": "repoType=Azure DevOps"
     },
     {
