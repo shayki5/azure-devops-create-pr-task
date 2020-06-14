@@ -1,8 +1,6 @@
 trigger:
 - master
 
-pr: none
-
 pool:
   vmImage: 'windows-2019'
 
