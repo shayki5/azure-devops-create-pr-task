@@ -151,6 +151,10 @@ Choose title, description, reviewers and more.
 
 ## Release Notes
 
+#### 1.2.140
+
+- Return the Pull Request ID as a variable for use in the sequences tasks.
+
 #### 1.2.130
 
 - Now you can add also required reviewers. (for Azure DevOps).
