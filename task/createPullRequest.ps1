@@ -16,7 +16,8 @@ function RunTask {
         [bool]$linkWorkItems,
         [string]$teamProject,
         [string]$repositoryName,
-        [string]$githubRepository
+        [string]$githubRepository,
+        [bool]$passPullRequestIdBackToADO
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -38,6 +39,7 @@ function RunTask {
         $teamProject = Get-VstsInput -Name 'projectId' 
         $repositoryName = Get-VstsInput -Name 'gitRepositoryId'
         $githubRepository = Get-VstsInput -Name 'githubRepository'
+        $passPullRequestIdBackToADO = Get-VstsInput -Name 'passPullRequestIdBackToADO' -AsBool
         
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild") {
             $teamProject = $env:System_TeamProject
@@ -49,7 +51,7 @@ function RunTask {
       
         # If the target branch is only one branch
         if (!$targetBranch.Contains('*')) {
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
         }
 
         # If is multi-target branch, like feature/*
@@ -60,7 +62,7 @@ function RunTask {
                 $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
                 $targetBranches = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
                 foreach($targetBranch in $targetBranches) {
-                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository 
+                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
                 }  
             }
             else {
@@ -80,7 +82,7 @@ function RunTask {
                 $branches = Invoke-RestMethod -Uri $url -Method Get -ContentType "application/json" -Headers $header
                 $targetBranches = $branches.name.Where({ $_ -match "$($targetBranch.Replace('*',''))" })
                 foreach($targetBranch in $targetBranches) {
-                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository 
+                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
                 }  
             }
         }
@@ -110,16 +112,17 @@ function CreatePullRequest() {
         [bool]$linkWorkItems,
         [string]$teamProject,
         [string]$repositoryName,
-        [string]$githubRepository
+        [string]$githubRepository,
+        [bool]$passPullRequestIdBackToADO
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO
     }
 
     else {
         # Is GitHub repository
-        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository
+        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
     }
 }
 
@@ -134,7 +137,8 @@ function CreateGitHubPullRequest() {
         [string]$description,
         [string]$reviewers,
         [bool]$isDraft,
-        [string]$githubRepository
+        [string]$githubRepository,
+        [bool]$passPullRequestIdBackToADO
     )
 
     Write-Host "The Source Branch is: $sourceBranch"
@@ -179,6 +183,12 @@ function CreateGitHubPullRequest() {
             Write-Host "******** Success ********"
             Write-Host "*************************"
             Write-Host "Pull Request $($response.number) created."
+
+            if ($passPullRequestIdBackToADO) {
+                # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
+                write-host "##vso[task.setvariable variable=pullRequestId]$($response.number)"
+            }
+
             # If the reviewers not null so add the reviewers to the PR
             if ($reviewers -ne "") {
                 CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number
@@ -247,7 +257,8 @@ function CreateAzureDevOpsPullRequest() {
         [bool]$transitionWorkItems,
         [bool]$linkWorkItems,
         [string]$teamProject,
-        [string]$repositoryName
+        [string]$repositoryName,
+        [bool]$passPullRequestIdBackToADO
     )
 
     if (!$sourceBranch.Contains("refs")) {
@@ -303,6 +314,11 @@ function CreateAzureDevOpsPullRequest() {
             Write-Host "*************************"
             Write-Host "Pull Request $pullRequestId created."
             
+            if ($passPullRequestIdBackToADO) {
+                # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
+                write-host "##vso[task.setvariable variable=pullRequestId]$pullRequestId"
+            }
+
             $currentUserId = $response.createdBy.id
 
             # If set auto aomplete is true 
