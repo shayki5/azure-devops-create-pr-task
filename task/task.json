@@ -155,8 +155,7 @@
       "label": "Pass Pull Request ID back to Azure DevOps as a variable",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": "If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks.  The variable can be referenced as '$(pullRequestId)'.  Note this feature is disabled if multiple target branches are specified with a wildcard (e.g. feature/*)",
-      "visibleRule": "repoType=Azure DevOps"
+      "helpMarkDown": "If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks.  The variable can be referenced as '$(pullRequestId)'.  Note this feature is disabled if multiple target branches are specified with a wildcard (e.g. feature/*)"
     },
     {
       "name": "autoComplete",
