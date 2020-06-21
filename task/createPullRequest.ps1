@@ -382,6 +382,7 @@ function GetReviewerId() {
 
     $serverUrl = $env:System_TeamFoundationCollectionUri
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+
     # If it's TFS/AzureDevOps Server
     if ($serverUrl -notmatch "visualstudio.com" -and $serverUrl -notmatch "dev.azure.com") {
 
@@ -489,6 +490,27 @@ function GetReviewerId() {
             else {
                 # Is team
                 $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
+                # If the teamId is null so maybe it's a TFS group
+                # If it's Azure DevOps (not TFS) we can get the group ID 
+                if($teamId -eq "") {
+                    $base_url = $env:System_TeamFoundationCollectionUri	
+                    if ($base_url -match "https://(.*)\.visualstudio\.com/$") {	
+                        $url = "https://vssps.dev.azure.com/$($Matches[1])/"	
+                    }	
+                    else {	
+                        $url = $base_url.Replace("//dev", "//vssps.dev")	
+                    }	
+                    $url = "$($url)_apis/graph/groups?api-version=4.1-preview.1"	
+                    $head = @{ Authorization = "Bearer $env:System_AccessToken" }	
+                    $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head	
+                    # If the results are more then 500 users and the Project Collection Build Service not exist in the first page	
+                    while ($response.Headers.Keys -contains "x-ms-continuationtoken" -and $response.value -notmatch "$reviewer") {	
+                        $token = $response.Headers.'x-ms-continuationtoken'	
+                        $url_with_token = "$($url)&continuationToken=$($token)"	
+                        $response = Invoke-WebRequest -Uri $url_with_token -Method Get -ContentType application/json -Headers $head	
+                    }	
+                    $teamId = ($response.Content | Convertfrom-Json).value.Where( { $_.value -match "$reviewer" }).originId	
+                }   
                 $reviewersId += @{ 
                     id = "$teamId"
                     isRequired = "$isRequired"
