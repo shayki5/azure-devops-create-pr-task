@@ -32,7 +32,7 @@ Choose title, description, reviewers and more.
     ```
 
 - You need to give permissions to the build users:
-  
+
   In Microsoft hosted agnet is "Build Service (user-name)" and "Project Collection Build Service (Project)"
   (Sometimes the last only show up if you type the UUID (8837...) on "Search for user or groups".)
 
@@ -82,6 +82,8 @@ Choose title, description, reviewers and more.
 - **Create Draft Pull Request**: If checekd the pull request will be a Draft Pull Request. (Default: false) <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info.
 
 - **Link Work Items**: If checked, all the work items that linked to the commits will be linked also to the PullRequest.
+
+- **Pass Pull Request ID back to Azure DevOps as a variable**: If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks. The variable can be referenced as `$(pullRequestId)`.
 
 - **Set Auto Complete**: Only for Azure DevOps. If checekd the pull request will close once all branch policies are met.
 
@@ -136,6 +138,7 @@ Choose title, description, reviewers and more.
     # To make the reviewer required in Azure DevOps add 'req:' - e.g. 'req:test@test.som'
     isDraft: false / true (Default: false)
     linkWorkItems: false / true (Default: true)
+    passPullRequestIdBackToADO: false / true (Default: false)
     autoComplete: false / true (Default: false)
     mergeStrategy: 'noFastForward (default) / squash / rebase / rebaseMerge'
     deleteSourch:  false / true (Default: false) # Optional
@@ -150,6 +153,10 @@ Choose title, description, reviewers and more.
 - ~~In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.~~ [Fixed in version 1.2.18]
 
 ## Release Notes
+
+#### 1.2.143
+
+- Support also Azure DevOps groups as reviewers (not also users and teams).
 
 #### 1.2.140
 

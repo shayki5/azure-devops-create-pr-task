@@ -492,7 +492,7 @@ function GetReviewerId() {
                 $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
                 # If the teamId is null so maybe it's a TFS group
                 # If it's Azure DevOps (not TFS) we can get the group ID 
-                if($teamId -eq "") {
+                if($Null -eq $teamId) {
                     $base_url = $env:System_TeamFoundationCollectionUri	
                     if ($base_url -match "https://(.*)\.visualstudio\.com/$") {	
                         $url = "https://vssps.dev.azure.com/$($Matches[1])/"	
@@ -547,7 +547,6 @@ function GetLinkedWorkItems {
         }
     }
     $jsonBody = $body | ConvertTo-Json
-    Write-Debug $jsonBody
     $response = Invoke-RestMethod -Method Post -Uri $url -Headers $header -Body $jsonBody -ContentType 'application/json'
     Write-Debug $response
     $commits = $response.value
