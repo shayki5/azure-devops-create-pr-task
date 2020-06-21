@@ -154,7 +154,7 @@ Choose title, description, reviewers and more.
 
 ## Release Notes
 
-#### 1.2.143
+#### 1.2.144
 
 - Support also Azure DevOps groups as reviewers (not also users and teams).
 

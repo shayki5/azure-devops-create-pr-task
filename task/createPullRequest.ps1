@@ -509,7 +509,7 @@ function GetReviewerId() {
                         $url_with_token = "$($url)&continuationToken=$($token)"	
                         $response = Invoke-WebRequest -Uri $url_with_token -Method Get -ContentType application/json -Headers $head	
                     }	
-                    $teamId = ($response.Content | Convertfrom-Json).value.Where( { $_.value -match "$reviewer" }).originId	
+                    $teamId = ($response.Content | Convertfrom-Json).value.Where( { $_ -match "$reviewer" }).originId	
                 }   
                 $reviewersId += @{ 
                     id = "$teamId"
