@@ -490,9 +490,11 @@ function GetReviewerId() {
             else {
                 # Is team
                 $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
+                Write-Debug "$teamId"
                 # If the teamId is null so maybe it's a TFS group
                 # If it's Azure DevOps (not TFS) we can get the group ID 
                 if($Null -eq $teamId) {
+                    Write-Debug "Not found team id, check if it's a group"
                     $base_url = $env:System_TeamFoundationCollectionUri	
                     if ($base_url -match "https://(.*)\.visualstudio\.com/$") {	
                         $url = "https://vssps.dev.azure.com/$($Matches[1])/"	
