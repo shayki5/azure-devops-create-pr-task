@@ -504,12 +504,12 @@ function GetReviewerId() {
                     }	
                     $url = "$($url)_apis/graph/groups?api-version=4.1-preview.1"	
                     $head = @{ Authorization = "Bearer $env:System_AccessToken" }	
-                    $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head	
+                    $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head -UseBasicParsing
                     # If the results are more then 500 users and the Project Collection Build Service not exist in the first page	
                     while ($response.Headers.Keys -contains "x-ms-continuationtoken" -and $response.Content -notmatch "$reviewer") {	
                         $token = $response.Headers.'x-ms-continuationtoken'	
                         $url_with_token = "$($url)&continuationToken=$($token)"	
-                        $response = Invoke-WebRequest -Uri $url_with_token -Method Get -ContentType application/json -Headers $head	
+                        $response = Invoke-WebRequest -Uri $url_with_token -Method Get -ContentType application/json -Headers $head	-UseBasicParsing
                     }	
                     $teamId = ($response.Content | Convertfrom-Json).value.Where( { $_ -match "$reviewer" }).originId	
                 }   
