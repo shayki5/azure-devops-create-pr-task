@@ -303,7 +303,7 @@ function CreateAzureDevOpsPullRequest() {
         $body.WorkItemRefs = @( $workItems )
     }
 
-    if($creator -ne $Null){
+    if($creator -ne ""){
         $creatorId = (GetReviewerId -reviewers $creator).id
         $body.createdBy = "$creatorId"
     }
