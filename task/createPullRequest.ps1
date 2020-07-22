@@ -53,7 +53,7 @@ function RunTask {
       
         # If the target branch is only one branch
         if (!$targetBranch.Contains('*')) {
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -creator $creator
         }
 
         # If is multi-target branch, like feature/*
@@ -303,7 +303,7 @@ function CreateAzureDevOpsPullRequest() {
         $body.WorkItemRefs = @( $workItems )
     }
 
-    Write-host "creator"
+    Write-host "$creator"
 
     if($creator -ne ""){
         Write-Host "in if"
