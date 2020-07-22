@@ -133,6 +133,15 @@
       "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email address or team name separated by semicolon. for example: test@test.com;MyTeamName <br> To make the reviewer required add 'req:', for example: 'req:test@test.com' <br> For GitHub - one or more usernames separated by semicolon. for example: username1;username2"
     },
     {
+      "name": "creator",
+      "type": "string",
+      "label": "Creator",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The pull request creator - by email address (optional). if empty, will be the default - Project Collection Build Service",
+      "visibleRule": "repoType=Azure DevOps"
+    },
+    {
       "name": "isDraft",
       "type": "boolean",
       "label": "Create Draft Pull Request",

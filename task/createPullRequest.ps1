@@ -17,7 +17,8 @@ function RunTask {
         [string]$teamProject,
         [string]$repositoryName,
         [string]$githubRepository,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [string]$creator
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -40,6 +41,7 @@ function RunTask {
         $repositoryName = Get-VstsInput -Name 'gitRepositoryId'
         $githubRepository = Get-VstsInput -Name 'githubRepository'
         $passPullRequestIdBackToADO = Get-VstsInput -Name 'passPullRequestIdBackToADO' -AsBool
+        $creator = Get-VstsInput -Name 'creator'
         
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild") {
             $teamProject = $env:System_TeamProject
@@ -62,7 +64,7 @@ function RunTask {
                 $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
                 $targetBranches = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
                 foreach($targetBranch in $targetBranches) {
-                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
+                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false -creator $creator
                 }  
             }
             else {
@@ -82,7 +84,7 @@ function RunTask {
                 $branches = Invoke-RestMethod -Uri $url -Method Get -ContentType "application/json" -Headers $header
                 $targetBranches = $branches.name.Where({ $_ -match "$($targetBranch.Replace('*',''))" })
                 foreach($targetBranch in $targetBranches) {
-                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
+                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false -creator $creator
                 }  
             }
         }
@@ -113,11 +115,12 @@ function CreatePullRequest() {
         [string]$teamProject,
         [string]$repositoryName,
         [string]$githubRepository,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [string]$creator
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -creator $creator
     }
 
     else {
@@ -258,7 +261,8 @@ function CreateAzureDevOpsPullRequest() {
         [bool]$linkWorkItems,
         [string]$teamProject,
         [string]$repositoryName,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [string]$creator
     )
 
     if (!$sourceBranch.Contains("refs")) {
@@ -297,6 +301,11 @@ function CreateAzureDevOpsPullRequest() {
     if ($linkWorkItems -eq $True) {
         $workItems = GetLinkedWorkItems -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch.Remove(0, 11) -targetBranch $targetBranch.Remove(0, 11)
         $body.WorkItemRefs = @( $workItems )
+    }
+
+    if($creator -ne $Null){
+        $creatorId = (GetReviewerId -reviewers $creator).id
+        $body.createdBy = "$creatorId"
     }
 
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
