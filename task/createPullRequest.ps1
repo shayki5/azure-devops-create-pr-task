@@ -46,24 +46,17 @@ function RunTask {
             $repositoryName = $env:Build_Repository_Name
         }
 
-        #remove spcaes out of Repo Name
+        # Remove spcaes out of Repo Name
         $repositoryName = $repositoryName.Replace(" ", "%20")
-      
-        # If the target branch is only one branch
-        if (!$targetBranch.Contains('*')) {
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
-        }
+        $targetBranches = $targetBranch
 
-        # If is multi-target branch, like feature/*
-        else {
-            if($repoType -eq "Azure DevOps"){
+        # If is multi-target branch, like release/*
+        if ($targetBranch.Contains('*')) {
+            if($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.1"
                 $header = @{ Authorization = "Bearer $env:System_AccessToken" }
                 $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
                 $targetBranches = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
-                foreach($targetBranch in $targetBranches) {
-                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
-                }  
             }
             else {
                 $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
@@ -81,11 +74,17 @@ function RunTask {
                 $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
                 $branches = Invoke-RestMethod -Uri $url -Method Get -ContentType "application/json" -Headers $header
                 $targetBranches = $branches.name.Where({ $_ -match "$($targetBranch.Replace('*',''))" })
-                foreach($targetBranch in $targetBranches) {
-                    CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
-                }  
             }
         }
+
+        # If is multi-target branch, like master;feature
+        elseif($targetBranch.Contains(';')) {
+            $targetBranches = $targetBranch.Split(';')
+        }
+
+        foreach($branch in $targetBranches) {
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
+        }  
     }
 
     finally {
