@@ -48,9 +48,10 @@ function RunTask {
 
         # Remove spcaes out of Repo Name
         $repositoryName = $repositoryName.Replace(" ", "%20")
-
+        Write-Host "$targetBranch"
         # If is multi-target branch, like release/*
         if ($targetBranch.Contains('*')) {
+            Write-Host "in *"
             if($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.1"
                 $header = @{ Authorization = "Bearer $env:System_AccessToken" }
@@ -78,11 +79,17 @@ function RunTask {
 
         # If is multi-target branch, like master;feature
         elseif($targetBranch.Contains(';')) {
+            Write-Host "in ;"
+
             $targetBranch = $targetBranch.Split(';')
+        Write-Host "$targetBranch"
 
         }
+        Write-Host "$targetBranch"
 
         foreach($branch in $targetBranch) {
+        Write-Host "$branch"
+
             CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
         }  
     }
