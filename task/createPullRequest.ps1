@@ -81,13 +81,13 @@ function RunTask {
         elseif($targetBranch.Contains(';')) {
             Write-Host "in ;"
 
-            $targetBranch = $targetBranch.Split(';')
-        Write-Host "$targetBranch"
+            $targetBranches = $targetBranch.Split(';')
+        Write-Host "$targetBranches"
 
         }
         Write-Host "$targetBranch"
 
-        foreach($branch in $targetBranch) {
+        foreach($branch in $targetBranches) {
         Write-Host "$branch"
 
             CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
