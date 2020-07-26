@@ -48,6 +48,7 @@ function RunTask {
 
         # Remove spcaes out of Repo Name
         $repositoryName = $repositoryName.Replace(" ", "%20")
+        $targetBranches = $targetBranch
 
         # If is multi-target branch, like release/*
         if ($targetBranch.Contains('*')) {

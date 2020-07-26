@@ -155,7 +155,7 @@ Choose title, description, reviewers and more.
 
 #### 1.2.158
 
-- Support also multi target branch separated with semicolon, for example: `master;release`
+- Support also multi-target branch separated with a semicolon, for example: `master;release`
 
 #### 1.2.144
 
