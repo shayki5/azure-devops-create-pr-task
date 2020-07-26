@@ -51,7 +51,7 @@ function RunTask {
 
         # If is multi-target branch, like release/*
         if ($targetBranch.Contains('*')) {
-            if($repoType -eq "Azure DevOps"){
+            if($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.1"
                 $header = @{ Authorization = "Bearer $env:System_AccessToken" }
                 $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
@@ -77,7 +77,7 @@ function RunTask {
         }
 
         # If is multi-target branch, like master;feature
-        elseif($targetBranch.Contains(';')){
+        elseif($targetBranch.Contains(';')) {
             $targetBranch = $targetBranch.Split(';')
 
         }
@@ -372,7 +372,7 @@ function CheckIfThereAreChanges {
     
 }
 
-functionGetReviewerId() {
+function GetReviewerId() {
     [CmdletBinding()]
     Param
     (
