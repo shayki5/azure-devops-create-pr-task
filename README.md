@@ -66,7 +66,8 @@ Choose title, description, reviewers and more.
 
 - **Source branch name:** The source branch that will be merged. The default value is the build source branch - `$(Build.SourceBranch)`.
 
-- **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`. Supports also multi target branch with `*`, for example: `test/*`.
+- **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`. 
+  <br> Supports also multi target branch with `*` - for example: `test/*`, or with `;` - for example: `master;test`.
 
 - **Title:** The Pull Request title.
 
@@ -129,7 +130,7 @@ Choose title, description, reviewers and more.
     projectId: '7fcdaf44-b831-4faa-b2fe-8k7a19a1d1af'
     gitRepositoryId: 'a743g5c4-85ec-4a4e-bf42-78964d551234'
     sourceBranch: '$(Build.SourceBranch)'
-    targetBranch: 'master'
+    targetBranch: 'master' # Could be also "release/*" or "master;release"
     title: 'Test'
     description: 'Test' # Optional
     reviewers: For Azure DevOps: 'test@test.com;MyTeam'. For GitHub: `username;username2` # Optional
@@ -151,6 +152,10 @@ Choose title, description, reviewers and more.
 - ~~In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.~~ [Fixed in version 1.2.18]
 
 ## Release Notes
+
+#### 1.2.158
+
+- Support also multi target branch separated with semicolon, for example: `master;release`
 
 #### 1.2.144
 

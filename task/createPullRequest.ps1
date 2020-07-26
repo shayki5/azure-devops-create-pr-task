@@ -48,15 +48,14 @@ function RunTask {
 
         # Remove spcaes out of Repo Name
         $repositoryName = $repositoryName.Replace(" ", "%20")
-        Write-Host "$targetBranch"
+
         # If is multi-target branch, like release/*
         if ($targetBranch.Contains('*')) {
-            Write-Host "in *"
             if($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.1"
                 $header = @{ Authorization = "Bearer $env:System_AccessToken" }
                 $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
-                $targetBranch = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
+                $targetBranches = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
             }
             else {
                 $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
@@ -73,23 +72,16 @@ function RunTask {
                 $url = "https://api.github.com/repos/$owner/$repo/branches"
                 $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
                 $branches = Invoke-RestMethod -Uri $url -Method Get -ContentType "application/json" -Headers $header
-                $targetBranch = $branches.name.Where({ $_ -match "$($targetBranch.Replace('*',''))" })
+                $targetBranches = $branches.name.Where({ $_ -match "$($targetBranch.Replace('*',''))" })
             }
         }
 
         # If is multi-target branch, like master;feature
         elseif($targetBranch.Contains(';')) {
-            Write-Host "in ;"
-
             $targetBranches = $targetBranch.Split(';')
-        Write-Host "$targetBranches"
-
         }
-        Write-Host "$targetBranch"
 
         foreach($branch in $targetBranches) {
-        Write-Host "$branch"
-
             CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $false
         }  
     }
