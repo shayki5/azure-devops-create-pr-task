@@ -52,6 +52,7 @@ function RunTask {
 
         # If is multi-target branch, like release/*
         if ($targetBranch.Contains('*')) {
+            $passPullRequestIdBackToADO = $false
             if($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.1"
                 $header = @{ Authorization = "Bearer $env:System_AccessToken" }
@@ -79,6 +80,7 @@ function RunTask {
 
         # If is multi-target branch, like master;feature
         elseif($targetBranch.Contains(';')) {
+            $passPullRequestIdBackToADO = $false
             $targetBranches = $targetBranch.Split(';')
         }
 
