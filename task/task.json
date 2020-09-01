@@ -230,6 +230,15 @@
       "helpMarkDown": "the reson to bypass policy.",
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "treatAsWarning",
+      "type": "boolean",
+      "label": "bypassPolicy",
+      "defaultValue": true,
+      "required": false,
+      "helpMarkDown": "If true and pr can't be set as autocompleted or pr already exist, a warning will be shown. Otherwise an error will be shown.",
+      "groupName": "completion"
     }
   ],
   "dataSourceBindings": [
