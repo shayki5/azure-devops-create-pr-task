@@ -17,7 +17,9 @@ function RunTask {
         [string]$teamProject,
         [string]$repositoryName,
         [string]$githubRepository,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [bool]$bypassPolicy,
+        [string]$bypassReason
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -39,7 +41,8 @@ function RunTask {
         $teamProject = Get-VstsInput -Name 'projectId' 
         $repositoryName = Get-VstsInput -Name 'gitRepositoryId'
         $githubRepository = Get-VstsInput -Name 'githubRepository'
-        $passPullRequestIdBackToADO = Get-VstsInput -Name 'passPullRequestIdBackToADO' -AsBool
+        $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
+        $bypassReason = Get-VstsInput -Name 'bypassReason'
         
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild") {
             $teamProject = $env:System_TeamProject
@@ -85,7 +88,7 @@ function RunTask {
         }
 
         foreach($branch in $targetBranches) {
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO $bypassPolicy $bypassReason
         }  
     }
 
@@ -114,11 +117,13 @@ function CreatePullRequest() {
         [string]$teamProject,
         [string]$repositoryName,
         [string]$githubRepository,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [bool]$bypassPolicy,
+        [string]$bypassReason
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO $bypassPolicy $bypassReason
     }
 
     else {
@@ -260,6 +265,8 @@ function CreateAzureDevOpsPullRequest() {
         [string]$teamProject,
         [string]$repositoryName,
         [bool]$passPullRequestIdBackToADO
+        [bool]$bypassPolicy,
+        [string]$bypassReason
     )
 
     if (!$sourceBranch.Contains("refs")) {
@@ -324,7 +331,7 @@ function CreateAzureDevOpsPullRequest() {
 
             # If set auto aomplete is true 
             if ($autoComplete) {
-                SetAutoComplete -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
+                SetAutoComplete -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems $bypassPolicy $bypassReason
             }
         }
     }
@@ -593,7 +600,9 @@ function SetAutoComplete {
         [bool]$transitionWorkItems,
         [string]$teamProject,
         [string]$repositoryName,
-        [string]$buildUserId
+        [string]$buildUserId,
+        [bool]$bypassPolicy,
+        [string]$bypassReason
     )
 
     $body = @{
@@ -606,6 +615,8 @@ function SetAutoComplete {
         deleteSourceBranch  = "$deleteSourch"
         transitionWorkItems = "$transitionWorkItems"
         mergeCommitMessage  = "$commitMessage"
+        bypassPolicy        = "$bypassPolicy"
+        $bypassReason       = "$bypassReason"
     }
     $body.completionOptions = $options
 

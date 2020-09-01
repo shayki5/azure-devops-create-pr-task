@@ -5,8 +5,8 @@
   "description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline, supports also multi target branch.",
   "helpMarkDown": "[More Information](https://github.com/shayki5/azure-devops-create-pr-task/blob/master/README.md)",
   "categories": "Utility",
-  "visibility": ["Build", "Release"],
-  "runsOn": ["Agent", "DeploymentGroup"],
+  "visibility": [ "Build", "Release" ],
+  "runsOn": [ "Agent", "DeploymentGroup" ],
   "author": "Shayki Abramczyk",
   "version": {
     "Major": 1,
@@ -210,6 +210,26 @@
       "helpMarkDown": "If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).",
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "bypassPolicy",
+      "type": "boolean",
+      "label": "bypassPolicy",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If true, the pull request policy will be bypassed.",
+      "groupName": "completion",
+      "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "bypassReason",
+      "type": "string",
+      "label": "bypass reason",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "the reson to bypass policy.",
+      "groupName": "completion",
+      "visibleRule": "autoComplete=true"
     }
   ],
   "dataSourceBindings": [
@@ -243,7 +263,7 @@
   "execution": {
     "PowerShell3": {
       "target": "createPullRequest.ps1",
-      "platforms": ["windows"],
+      "platforms": [ "windows" ],
       "workingDirectory": "$(currentDirectory)"
     }
   }
