@@ -234,10 +234,10 @@
     {
       "name": "treatAsWarning",
       "type": "boolean",
-      "label": "bypassPolicy",
+      "label": "treatAsWarning",
       "defaultValue": true,
       "required": false,
-      "helpMarkDown": "If true and pr can't be set as autocompleted or pr already exist, a warning will be shown. Otherwise an error will be shown.",
+      "helpMarkDown": "Devop git only. When pr can't be set as autocompleted or other pr already exists, this setting will determine if the task should return warning or error. True for warning, false for error.",
       "groupName": "completion"
     }
   ],
