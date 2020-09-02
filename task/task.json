@@ -158,6 +158,15 @@
       "helpMarkDown": "If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks.  The variable can be referenced as '$(pullRequestId)'.  Note this feature is disabled if multiple target branches are specified with a wildcard (e.g. feature/*)"
     },
     {
+      "name": "failIfexist",
+      "type": "boolean",
+      "label": "Fail if the PR is exist",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "When the same PR is already exists, this setting will determine if the task should fail the build. True for error, False for warning.",
+      "visibleRule": "repoType=Azure DevOps"
+    },
+    {
       "name": "autoComplete",
       "type": "boolean",
       "label": "Set Auto Complete",
@@ -230,15 +239,6 @@
       "helpMarkDown": "The reson to bypass policy.",
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
-    },
-    {
-      "name": "treatAsWarning",
-      "type": "boolean",
-      "label": "TreatAsWarning",
-      "defaultValue": true,
-      "required": false,
-      "helpMarkDown": "Devop git only. When pr can't be set as autocompleted or other pr already exists, this setting will determine if the task should return warning or error. True for warning, false for error.",
-      "groupName": "completion"
     }
   ],
   "dataSourceBindings": [
