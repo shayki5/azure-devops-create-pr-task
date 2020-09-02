@@ -228,7 +228,7 @@
       "required": false,
       "helpMarkDown": "If true, the pull request policy will be bypassed.",
       "groupName": "completion",
-      "visibleRule": "autoComplete=true"
+      "visibleRule": "autoComplete=false"
     },
     {
       "name": "bypassReason",
