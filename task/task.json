@@ -223,7 +223,7 @@
     {
       "name": "bypassPolicy",
       "type": "boolean",
-      "label": "BypassPolicy",
+      "label": "Bypass Policy",
       "defaultValue": false,
       "required": false,
       "helpMarkDown": "If true, the pull request policy will be bypassed.",
@@ -238,7 +238,7 @@
       "required": false,
       "helpMarkDown": "The reson to bypass policy.",
       "groupName": "completion",
-      "visibleRule": "autoComplete=true"
+      "visibleRule": "bypassPolicy=true"
     }
   ],
   "dataSourceBindings": [

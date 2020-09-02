@@ -43,7 +43,7 @@ function RunTask {
         $repositoryName = Get-VstsInput -Name 'gitRepositoryId'
         $githubRepository = Get-VstsInput -Name 'githubRepository'
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
-        $bypassReason = Get-VstsInput -Name 'bypassReason',
+        $bypassReason = Get-VstsInput -Name 'bypassReason'
         $failIfexist = Get-VstsInput -Name 'failIfexist' -AsBool
         
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild") {
