@@ -90,7 +90,7 @@ function RunTask {
         }
 
         foreach($branch in $targetBranches) {
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO $bypassPolicy $bypassReason $treatAsWarning
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -bypassPolicy $bypassPolicy -bypassReason $bypassReason -treatAsWarning $treatAsWarning
         }  
     }
 
@@ -267,7 +267,7 @@ function CreateAzureDevOpsPullRequest() {
         [bool]$linkWorkItems,
         [string]$teamProject,
         [string]$repositoryName,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
         [bool]$bypassPolicy,
         [string]$bypassReason,
         [bool]$treatAsWarning
@@ -336,7 +336,7 @@ function CreateAzureDevOpsPullRequest() {
 
             # If set auto aomplete is true 
             if ($autoComplete) {
-                SetAutoComplete -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems $bypassPolicy $bypassReason $treatAsWarning
+                SetAutoComplete -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -bypassPolicy $bypassPolicy -bypassReason $bypassReason -treatAsWarning $treatAsWarning
             }
         }
     }

@@ -214,7 +214,7 @@
     {
       "name": "bypassPolicy",
       "type": "boolean",
-      "label": "bypassPolicy",
+      "label": "BypassPolicy",
       "defaultValue": false,
       "required": false,
       "helpMarkDown": "If true, the pull request policy will be bypassed.",
@@ -224,17 +224,17 @@
     {
       "name": "bypassReason",
       "type": "string",
-      "label": "bypass reason",
+      "label": "Bypass reason",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "the reson to bypass policy.",
+      "helpMarkDown": "The reson to bypass policy.",
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
     },
     {
       "name": "treatAsWarning",
       "type": "boolean",
-      "label": "treatAsWarning",
+      "label": "TreatAsWarning",
       "defaultValue": true,
       "required": false,
       "helpMarkDown": "Devop git only. When pr can't be set as autocompleted or other pr already exists, this setting will determine if the task should return warning or error. True for warning, false for error.",
