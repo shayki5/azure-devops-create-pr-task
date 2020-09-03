@@ -304,7 +304,7 @@ function CreateAzureDevOpsPullRequest() {
   
     if($bypassPolicy) {
         $options = @{ 
-            bypassPolicy   = "$bypassPolicy"
+            bypassPolicy   =  "true"
             bypassReason   = "$bypassReason"
         }
         $body.completionOptions = $options
