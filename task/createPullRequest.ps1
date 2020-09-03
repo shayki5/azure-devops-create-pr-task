@@ -299,6 +299,15 @@ function CreateAzureDevOpsPullRequest() {
         reviewers     = ""
         isDraft       = "$isDraft"
         WorkItemRefs  = ""
+        completionOptions = ""
+    }
+  
+    if($bypassPolicy) {
+        $options = @{ 
+            bypassPolicy   = "$bypassPolicy"
+            bypassReason   = "$bypassReason"
+        }
+        $body.completionOptions = $options
     }
 
     if ($reviewers -ne "") {
@@ -336,7 +345,7 @@ function CreateAzureDevOpsPullRequest() {
 
             # If set auto aomplete is true 
             if ($autoComplete) {
-                SetAutoComplete -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -bypassPolicy $bypassPolicy -bypassReason $bypassReason
+                SetAutoComplete -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems
             }
         }
     }
@@ -605,9 +614,7 @@ function SetAutoComplete {
         [bool]$transitionWorkItems,
         [string]$teamProject,
         [string]$repositoryName,
-        [string]$buildUserId,
-        [bool]$bypassPolicy,
-        [string]$bypassReason
+        [string]$buildUserId
     )
 
     $body = @{
@@ -620,8 +627,6 @@ function SetAutoComplete {
         deleteSourceBranch  = "$deleteSourch"
         transitionWorkItems = "$transitionWorkItems"
         mergeCommitMessage  = "$commitMessage"
-        bypassPolicy        = "$bypassPolicy"
-        $bypassReason       = "$bypassReason"
     }
     $body.completionOptions = $options
 

@@ -226,7 +226,7 @@
       "label": "Bypass Policy",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": "If true, the pull request policy will be bypassed.",
+      "helpMarkDown": "If true, policies will be explicitly bypassed while the pull request is completed.",
       "groupName": "completion",
       "visibleRule": "autoComplete=false"
     },
@@ -236,7 +236,7 @@
       "label": "Bypass reason",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "The reson to bypass policy.",
+      "helpMarkDown": "If policies are bypassed, this reason is stored as to why bypass was used.",
       "groupName": "completion",
       "visibleRule": "bypassPolicy=true"
     }
