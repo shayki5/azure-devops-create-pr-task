@@ -22,7 +22,7 @@ Choose title, description, reviewers and more.
 
 - You need to enable the "Allow scripts to access the OAuth token":
 
-  - If you use the classic editor, go to the Agent job options, scroll down and check the checkbox "Allow scripts to acess the OAuth token":
+  - If you use the classic editor, go to the Agent job options, scroll down and check the checkbox "Allow scripts to access the OAuth token":
 
     ![Oauth](https://i.imgur.com/trYBvHG.png)
 
@@ -35,7 +35,7 @@ Choose title, description, reviewers and more.
 
 - You need to give permissions to the build users:
 
-  In Microsoft hosted agnet is "Build Service (user-name)" and "Project Collection Build Service (Project)"
+  In Microsoft hosted agent is "Build Service (user-name)" and "Project Collection Build Service (Project)"
   (Sometimes the last only show up if you type the UUID (8837...) on "Search for user or groups".)
 
   ![Permissions](https://i.imgur.com/Us401RM.png)
@@ -80,17 +80,17 @@ Choose title, description, reviewers and more.
   <br> To make the reviewer required in Azure DevOps add 'req:' - e.g. `req:test@test.som`
   <br> For **GitHub** - one or more usernames separated by semicolon. For example: `user1;user2`.
 
-- **Create Draft Pull Request**: If checekd the pull request will be a Draft Pull Request. (Default: false) <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info.
+- **Create Draft Pull Request**: If checked the pull request will be a Draft Pull Request. (Default: false) <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info.
 
 - **Link Work Items**: If checked, all the work items that linked to the commits will be linked also to the PullRequest.
 
 - **Pass Pull Request ID back to Azure DevOps as a variable**: If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks. The variable can be referenced as `$(pullRequestId)`.
 
-- **Set Auto Complete**: Only for Azure DevOps. If checekd the pull request will close once all branch policies are met.
+- **Set Auto Complete**: Only for Azure DevOps. If checked the pull request will close once all branch policies are met.
 
   Complete options:
 
-  - **Merge Strateg**: Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.
+  - **Merge Strategy**: Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.
 
     - Merge (No fast-forward) - `noFastForward` in yaml:
 
@@ -110,7 +110,7 @@ Choose title, description, reviewers and more.
       Rebase the source branch on top of the target branch HEAD commit, and create a two-parent, no-fast-forward merge.
       The source branch is updated during the rebase operation.
 
-  - **Delete Sourch Branch**: If true, the source branch of the pull request will be deleted after completion.
+  - **Delete Source Branch**: If true, the source branch of the pull request will be deleted after completion.
   - **Commit Message**: If set, this will be used as the commit message of the merge commit. if empty the default will be used.
   - **Complete Associated Work Items**: If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).
 
@@ -126,7 +126,7 @@ Choose title, description, reviewers and more.
     # If you not specify anything the default will be "$(Build.Repository.Name)".
     githubRepository: # Default: $(Build.Repository.Name).
     # When you choose Azure DevOps in `repoType` - by default the PR will be for the current repository
-    # You can select another repository from this project or onther project in your account
+    # You can select another repository from this project or another project in your account
     # For this, specify `select` in `repositorySelectionMethod` and put the project id & git repo id
     repositorySelectionMethod: select
     projectId: '7fcdaf44-b831-4faa-b2fe-8k7a19a1d1af'
@@ -177,7 +177,7 @@ Choose title, description, reviewers and more.
 
 #### 1.2.89
 
-- Throw a warning when there are no commits in the source branch, instaed of create a PR (for Azure DevOps).
+- Throw a warning when there are no commits in the source branch, instead of create a PR (for Azure DevOps).
 
 #### 1.2.76
 
