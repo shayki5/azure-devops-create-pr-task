@@ -12,6 +12,8 @@ Support multi target branch (PR from one source branch to many target branches) 
 
 Choose title, description, reviewers and more.
 
+[Get the extension](https://marketplace.visualstudio.com/items?itemName=ShaykiAbramczyk.CreatePullRequest) from the Azure DevOps marketplace.
+
 ## Prerequisites
 
 - **The task currently only works on Windows machines.**
@@ -66,7 +68,7 @@ Choose title, description, reviewers and more.
 
 - **Source branch name:** The source branch that will be merged. The default value is the build source branch - `$(Build.SourceBranch)`.
 
-- **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`. 
+- **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`.
   <br> Supports also multi target branch with `*` - for example: `test/*`, or with `;` - for example: `master;test`.
 
 - **Title:** The Pull Request title.
