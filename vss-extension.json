@@ -31,7 +31,7 @@
       "uri": "https://github.com/shayki5/azure-devops-create-pr-task/blob/master/PRIVACY.md"
     }
   },
-  "tags": ["Azure Pipelines", "Pull Request", "Git", "Azure Repos"],
+  "tags": ["Azure Pipelines", "Pull Request", "Git", "Azure Repos", "GitHub", "PR"],
   "targets": [
     {
       "id": "Microsoft.VisualStudio.Services"
