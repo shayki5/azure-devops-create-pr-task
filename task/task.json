@@ -93,6 +93,15 @@
       "visibleRule": "repositorySelector = select"
     },
     {
+      "name": "isForked",
+      "type": "boolean",
+      "label": "Is forked repository",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked, it means the source branch it from a forked repository and not from the original. the target repo will be the currnet build repo.",
+      "visibleRule": "repositorySelector = select"
+    },
+    {
       "name": "sourceBranch",
       "type": "string",
       "label": "Source branch name",

@@ -17,7 +17,8 @@ function RunTask {
         [string]$teamProject,
         [string]$repositoryName,
         [string]$githubRepository,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [bool]$isForked
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -40,8 +41,10 @@ function RunTask {
         $repositoryName = Get-VstsInput -Name 'gitRepositoryId'
         $githubRepository = Get-VstsInput -Name 'githubRepository'
         $passPullRequestIdBackToADO = Get-VstsInput -Name 'passPullRequestIdBackToADO' -AsBool
+        $isForked = Get-VstsInput -Name 'isForked' -AsBool
         
-        if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild") {
+        if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild" -or $isForked -eq $True) {
+            $forkedRepoName = $repositoryName 
             $teamProject = $env:System_TeamProject
             $repositoryName = $env:Build_Repository_Name
         }
@@ -85,7 +88,7 @@ function RunTask {
         }
 
         foreach($branch in $targetBranches) {
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked
         }  
     }
 
@@ -114,11 +117,12 @@ function CreatePullRequest() {
         [string]$teamProject,
         [string]$repositoryName,
         [string]$githubRepository,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [bool]$isForked
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked
     }
 
     else {
@@ -259,7 +263,8 @@ function CreateAzureDevOpsPullRequest() {
         [bool]$linkWorkItems,
         [string]$teamProject,
         [string]$repositoryName,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [bool]$isForked
     )
 
     if (!$sourceBranch.Contains("refs")) {
@@ -287,6 +292,7 @@ function CreateAzureDevOpsPullRequest() {
         reviewers     = ""
         isDraft       = "$isDraft"
         WorkItemRefs  = ""
+        forkSource = ""
     }
 
     if ($reviewers -ne "") {
@@ -300,13 +306,23 @@ function CreateAzureDevOpsPullRequest() {
         $body.WorkItemRefs = @( $workItems )
     }
 
-    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $header = @{ Authorization = "Bearer $env:System_AccessToken" }
+
+    if ($isForked -eq $True) {
+        $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)?api-version=5.0"
+        $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $header -Body $jsonBody -ContentType "application/json;charset=UTF-8"
+        $forkedRepoId = $response.id
+        $body.forkSource = @{ repository = @{
+            id = $forkedRepoId
+        } } 
+    }
+
     $jsonBody = ConvertTo-Json $body
     Write-Host $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests?api-version=5.0"
 
     try {
-        $response = Invoke-RestMethod -Uri $url -Method Post -Headers $head -Body $jsonBody -ContentType "application/json;charset=UTF-8"
+        $response = Invoke-RestMethod -Uri $url -Method Post -Headers $header -Body $jsonBody -ContentType "application/json;charset=UTF-8"
         if ($Null -ne $response) {
             # If the response not null - the create PR succeeded
             $pullRequestId = $response.pullRequestId
@@ -627,5 +643,7 @@ function SetAutoComplete {
         Write-Warning $_.Exception.Message
     }
 }
+
+
 
 RunTask
