@@ -313,8 +313,8 @@ function CreateAzureDevOpsPullRequest() {
     $header = @{ Authorization = "Bearer $env:System_AccessToken" }
 
     if ($isForked -eq $True) {
-        $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)?api-version=5.0"
-        $response =  Invoke-RestMethod -Uri $url -Method Post -Headers $header -Body $jsonBody -ContentType "application/json;charset=UTF-8"
+        $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($forkedRepoName)?api-version=5.0"
+        $response =  Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json;charset=UTF-8"
         $forkedRepoId = $response.id
         $body.forkSource = @{ repository = @{
             id = $forkedRepoId
