@@ -281,8 +281,12 @@ function CreateAzureDevOpsPullRequest() {
     Write-Host "The Description is: $description"
     Write-Host "Is Reviewers are: $reviewers"
     Write-Host "Is Draft Pull Request: $isDraft"
+    Write-Host "Auto-Complete: $autoComplete"
+    Write-Host "Link Work Items: $linkWorkItems"
 
-    CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch
+    if($isForked -eq $False) {
+        CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch
+    }
 
     $body = @{
         sourceRefName = "$sourceBranch"
