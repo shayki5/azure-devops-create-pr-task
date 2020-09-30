@@ -182,7 +182,7 @@ function CreateGitHubPullRequest() {
     $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
     try {
         $response = Invoke-RestMethod -Uri $url -Method Post -ContentType "application/json;charset=UTF-8" -Headers $header -Body $jsonBody
-        if ($Null -ne $response) {
+        if ($Null -ne $response -and $response.number -ne "") {
             # If the response not null - the create PR succeeded
             Write-Host "*************************"
             Write-Host "******** Success ********"
@@ -198,6 +198,9 @@ function CreateGitHubPullRequest() {
             if ($reviewers -ne "") {
                 CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number
             }
+        }
+        else {
+            Write-Error "Failed to create Pull Request: $response"
         }
     }
 
