@@ -57,7 +57,7 @@ function RunTask {
         if ($targetBranch.Contains('*')) {
             $passPullRequestIdBackToADO = $false
             if($repoType -eq "Azure DevOps") {
-                $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.1"
+                $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.0"
                 $header = @{ Authorization = "Bearer $env:System_AccessToken" }
                 $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
                 $targetBranches = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
@@ -381,7 +381,7 @@ function CheckIfThereAreChanges {
     if($targetBranch -match "#"){
          $targetBranch = $targetBranch.Replace('#','%23') 
     }
-    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.1" + '&$top=2'
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.0" + '&$top=2'
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
     if ($response.behindCount -eq 0) {
@@ -410,7 +410,7 @@ function GetReviewerId() {
     # If it's TFS/AzureDevOps Server
     if ($serverUrl -notmatch "visualstudio.com" -and $serverUrl -notmatch "dev.azure.com") {
 
-        $url = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1"
+        $url = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.0"
 
         $teams = Invoke-RestMethod -Method Get -Uri $url -Headers $head -ContentType 'application/json'
         Write-Debug $reviewers
@@ -426,7 +426,7 @@ function GetReviewerId() {
             if ($reviewer.Contains("@")) {
 
                 $teams.value.ForEach( {
-                        $teamUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams/$($_.id)/members?api-version=4.1"
+                        $teamUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams/$($_.id)/members?api-version=4.0"
                         $team = Invoke-RestMethod -Method Get -Uri $teamUrl -Headers $head -ContentType 'application/json'
         
                         # If the team contains only 1 user
@@ -482,7 +482,7 @@ function GetReviewerId() {
     
     # If it's Azure DevOps
     else {
-        $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?top=5000&api-version=4.1-preview.1"
+        $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?top=5000&api-version=4.0-preview.1"
         # Check if it's the old url or the new url, reltaed to issue #21
         # And add "vsaex" to the rest api url 
         if ($url -match "visualstudio.com") {
@@ -492,7 +492,7 @@ function GetReviewerId() {
             $url = $url.Replace("//dev", "//vsaex.dev")
         }
         $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
-        $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.1-preview.1"
+        $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.0-preview.1"
         $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
         Write-Debug $reviewers
         $split = $reviewers.Split(';')
@@ -526,7 +526,7 @@ function GetReviewerId() {
                     else {	
                         $url = $base_url.Replace("//dev", "//vssps.dev")	
                     }	
-                    $url = "$($url)_apis/graph/groups?api-version=4.1-preview.1"	
+                    $url = "$($url)_apis/graph/groups?api-version=4.0-preview.1"	
                     $head = @{ Authorization = "Bearer $env:System_AccessToken" }	
                     $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head -UseBasicParsing
                     # If the results are more then 500 users and the Project Collection Build Service not exist in the first page	
@@ -556,7 +556,7 @@ function GetLinkedWorkItems {
         [string]$teamProject,
         [string]$repositoryName
     )
-    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/commitsBatch?api-version=4.1"
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/commitsBatch?api-version=4.0"
     $header = @{ Authorization = "Bearer $env:System_AccessToken" }
     $body = @{
         '$top'           = 101
