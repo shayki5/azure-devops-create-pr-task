@@ -158,6 +158,10 @@ Choose title, description, reviewers and more.
 
 ## Release Notes
 
+#### 1.2.186
+
+- Support also TFS 2018 RTW + Update 1 versions.
+
 #### 1.2.180
 
 - Support also Azure DevOps **forks** repsitores (to create PR from the forked repo to the original repo)
