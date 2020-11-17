@@ -326,7 +326,7 @@ function CreateAzureDevOpsPullRequest() {
 
     $jsonBody = ConvertTo-Json $body
     Write-Host $jsonBody
-    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests?api-version=5.0"
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests?api-version=4.0"
 
     try {
         $response = Invoke-RestMethod -Uri $url -Method Post -Headers $header -Body $jsonBody -ContentType "application/json;charset=UTF-8"
