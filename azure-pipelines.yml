@@ -9,6 +9,8 @@ variables:
 
 steps:
 - task: TfxInstaller@1
+  inputs:
+    version: 'v0.8.x'
   displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.6.x'
 
 - task: PowerShell@2
