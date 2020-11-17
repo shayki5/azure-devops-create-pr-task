@@ -8,7 +8,7 @@ variables:
   version: $[ counter('revision-new',0) ]
 
 steps:
-- task: TfxInstaller@1
+- task: TfxInstaller@3
   inputs:
     version: 'v0.8.x'
   displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.6.x'
@@ -24,7 +24,7 @@ steps:
       $taskJson = $taskJson | ConvertTo-Json -Depth 10
       Set-Content -Path $jsonPath -Value $taskJson | ConvertTo-Json
 
-- task: PackageVSTSExtension@1
+- task: PackageVSTSExtension@3
   displayName: 'Package Extension - Private'
   inputs:
     rootFolder: '$(Build.SourcesDirectory)'
@@ -34,7 +34,7 @@ steps:
     extensionId: 'CreatePullRequestDev'
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
-- task: PackageVSTSExtension@1
+- task: PackageVSTSExtension@3
   displayName: 'Package Extension - Public'
   inputs:
     rootFolder: '$(Build.SourcesDirectory)'
@@ -44,7 +44,7 @@ steps:
     updateTasksVersion: false
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
-- task: PublishBuildArtifacts@1
+- task: PublishBuildArtifacts@3
   displayName: 'Publish Artifact: drop'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
