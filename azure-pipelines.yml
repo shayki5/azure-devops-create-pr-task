@@ -24,7 +24,7 @@ steps:
       $taskJson = $taskJson | ConvertTo-Json -Depth 10
       Set-Content -Path $jsonPath -Value $taskJson | ConvertTo-Json
 
-- task: PackageVSTSExtension@3
+- task: PackageAzureDevOpsExtension@3
   displayName: 'Package Extension - Private'
   inputs:
     rootFolder: '$(Build.SourcesDirectory)'
@@ -34,7 +34,7 @@ steps:
     extensionId: 'CreatePullRequestDev'
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
-- task: PackageVSTSExtension@3
+- task: PackageAzureDevOpsExtension@3
   displayName: 'Package Extension - Public'
   inputs:
     rootFolder: '$(Build.SourcesDirectory)'
@@ -44,7 +44,7 @@ steps:
     updateTasksVersion: false
     outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
-- task: PublishBuildArtifacts@3
+- task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
