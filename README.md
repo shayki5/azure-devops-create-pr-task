@@ -154,7 +154,7 @@ Choose title, description, reviewers and more.
 
 ## Known issue(s)
 
-- ~~In Azure DevOps Server (TFS) you can't use reviewers. still can create a PR without it.~~ [Fixed in version 1.2.18]
+- In TFS 2018 you can't use reviewers. still can create a PR without it.
 
 ## Release Notes
 
