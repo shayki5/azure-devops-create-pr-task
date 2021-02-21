@@ -372,15 +372,32 @@ function CheckIfThereAreChanges {
         [string]$targetBranch
     )
 
-    # Remove the refs/heads/ from the branchs name
-    $sourceBranch = $sourceBranch.Remove(0, 11)
+    # Remove the refs/heads/ or merge/pull from branches name (see issue #85)
+    if($sourceBranch.Contains("heads"))
+    {
+       $sourceBranch = $sourceBranch.Remove(0, 11)
+    }
+    elseif($sourceBranch.Contains("refs/pull"))
+    {
+       $sourceBranch = $sourceBranch.Remove(0, 10)
+    }
+    
+    if($targetBranch.Contains("heads"))
+    {
+       $targetBranch = $targetBranch.Remove(0, 11)
+    }
+    elseif($sourceBranch.Contains("refs/pull"))
+    {
+       $targetBranch = $targetBranch.Remove(0, 10)
+    }
+    
     if($sourceBranch -match "#"){
          $sourceBranch = $sourceBranch.Replace('#','%23') 
     }
-    $targetBranch = $targetBranch.Remove(0, 11)
     if($targetBranch -match "#"){
          $targetBranch = $targetBranch.Replace('#','%23') 
     }
+    
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.0" + '&$top=2'
     $head = @{ Authorization = "Bearer $env:System_AccessToken" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
