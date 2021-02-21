@@ -596,17 +596,10 @@ function GetLinkedWorkItems {
     $workItemsId = @()
     $commits.ForEach( { 
             if ($_.workItems.length -gt 0) {
-                $_.workItems.ForEach( {
-                        # Check if it's the old url or the new url, reltaed to issue #18
-                        if ($_.url -match "visualstudio.com") {
-                            $workItemsId += $_.url.split('/')[6]
-
-                        }
-                        else {
-                            $workItemsId += $_.url.split('/')[7]
-                        }
-                    }
-                )
+                $_.workItems.ForEach({
+                        # Get the work item id from the work item url
+                        $workItemsId += $_.url.split('/')[$_.url.split('/').count - 1]
+                    })
             }
         })
     if ($workItemsId.Count -gt 0) {
