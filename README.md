@@ -39,6 +39,8 @@ Choose title, description, reviewers and more.
   (Sometimes the last only show up if you type the UUID (8837...) on "Search for user or groups".)
 
   ![Permissions](https://i.imgur.com/Us401RM.png)
+  
+  **If you want to use Bypass you need to give also the permisison "Bypass policies when completing pull requests"**
 
 ### For GitHub Repository:
 
