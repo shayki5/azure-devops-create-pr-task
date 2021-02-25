@@ -115,6 +115,8 @@ Choose title, description, reviewers and more.
   - **Delete Source Branch**: If true, the source branch of the pull request will be deleted after completion.
   - **Commit Message**: If set, this will be used as the commit message of the merge commit. if empty the default will be used.
   - **Complete Associated Work Items**: If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).
+- **Bypass policy**: If true, policies will be explicitly bypassed while the pull request is completed.
+  - **Bypass reason**: If policies are bypassed, this reason is stored as to why bypass was used.
 
 **In yaml piepline:**
 
@@ -136,8 +138,8 @@ Choose title, description, reviewers and more.
     isForked: false / true (Default: false)
     sourceBranch: '$(Build.SourceBranch)'
     targetBranch: 'master' # Could be also "release/*" or "master;release"
-    title: 'Test'
-    description: 'Test' # Optional
+    title: 'Test PR'
+    description: 'Test PR' # Optional
     reviewers: For Azure DevOps: 'test@test.com;MyTeam'. For GitHub: `username;username2` # Optional
     # To make the reviewer required in Azure DevOps add 'req:' - e.g. 'req:test@test.som'
     isDraft: false / true (Default: false)
@@ -148,6 +150,8 @@ Choose title, description, reviewers and more.
     deleteSourch:  false / true (Default: false) # Optional
     commitMessage: 'Test Comment' # Optional
     transitionWorkItems:  false / true (Default: false) # Optional
+    bypassPolicy: false / true (can't be used with `autoComplete` -the bypass also auto complete the PR) 
+    bypassReason: 'Test ByPass' # Optional
   env:
     System_AccessToken: $(System.AccessToken)
 ```
@@ -157,6 +161,10 @@ Choose title, description, reviewers and more.
 - In TFS 2018 you can't use reviewers. still can create a PR without it.
 
 ## Release Notes
+
+#### 1.2.186
+
+- Option to Bypass policy - policies will be explicitly bypassed while the pull request is completed.
 
 #### 1.2.186
 
