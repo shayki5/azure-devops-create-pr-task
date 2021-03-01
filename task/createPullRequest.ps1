@@ -702,6 +702,12 @@ function BypassPR {
         [string]$bypassReason
     )
 
+    if (!$global:lastCommitId -or !$global:lastCommitUrl) {
+        $prData = GetPRData -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId
+        $global:lastCommitId = $prData.lastMergeSourceCommit.commitId
+        $global:lastCommitUrl = $prData.lastMergeSourceCommit.url
+        
+    }
     $body = @{
         completionOptions     = ""
         status                = "Completed"
