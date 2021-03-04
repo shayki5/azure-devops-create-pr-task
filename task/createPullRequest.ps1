@@ -46,6 +46,12 @@ function RunTask {
         $isForked = Get-VstsInput -Name 'isForked' -AsBool
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
+
+        if(!"$env:System_AccessToken")
+        {
+            Write-Error "Access Token doesn't found! please enable the access token in your pipeline. see the docs: https://github.com/shayki5/azure-devops-create-pr-task"
+        }
+
         
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild" -or $isForked -eq $True) {
             $forkedRepoName = $repositoryName 
