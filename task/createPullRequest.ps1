@@ -616,8 +616,6 @@ function GetLinkedWorkItems {
     $response = Invoke-RestMethod -Method Post -Uri $url -Headers $header -Body $jsonBody -ContentType 'application/json'
     Write-Debug $response
     $commits = $response.value
-    $global:lastCommitId = $response.value[0].commitId
-    $global:lastCommitUrl = $response.value[0].url
     $workItemsId = @()
     $commits.ForEach( { 
             if ($_.workItems.length -gt 0) {
@@ -702,18 +700,16 @@ function BypassPR {
         [string]$bypassReason
     )
 
-    if (!$global:lastCommitId -or !$global:lastCommitUrl) {
-        $prData = GetPRData -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId
-        $global:lastCommitId = $prData.lastMergeSourceCommit.commitId
-        $global:lastCommitUrl = $prData.lastMergeSourceCommit.url
-        
-    }
+    $prData = GetPRData -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId
+    $lastCommitId = $prData.lastMergeSourceCommit.commitId
+    $lastCommitUrl = $prData.lastMergeSourceCommit.url
+
     $body = @{
         completionOptions     = ""
         status                = "Completed"
         lastMergeSourceCommit = @{
-            commitId = "$global:lastCommitId"
-            url      = "$global:lastCommitUrl"
+            commitId = "$lastCommitId"
+            url      = "$lastCommitUrl"
         }
     }    
     
@@ -762,7 +758,6 @@ function GetPRData {
         if ($Null -ne $response) {
             $prData = $response
             Write-Host "Get Data PR $pullRequestId."
-            
         }
     }
     catch {
