@@ -47,7 +47,7 @@ function RunTask {
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
         
-        if(!"$env:System_AccessToken")
+        if(!"$env:System_AccessToken" -and $env:Build_Repository_Provider -eq "TfsGit")
         {
             Write-Error "Access Token doesn't found! please enable the access token in your pipeline. see the docs: https://github.com/shayki5/azure-devops-create-pr-task"
         }
