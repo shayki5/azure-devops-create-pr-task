@@ -164,6 +164,10 @@ Choose title, description, reviewers and more.
 
 ## Release Notes
 
+#### 1.2.218
+
+- No need to check the OAuth box! (or add the Access Token variable in the YAML)
+
 #### 1.2.186
 
 - Option to Bypass policy - policies will be explicitly bypassed while the pull request is completed.
