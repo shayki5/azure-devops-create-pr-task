@@ -47,12 +47,8 @@ function RunTask {
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
         
-        if(!"$env:System_AccessToken" -and $env:Build_Repository_Provider -eq "TfsGit")
-        {
-            Write-Error "Access Token doesn't found! please enable the access token in your pipeline. see the docs: https://github.com/shayki5/azure-devops-create-pr-task"
-        }
+        $global:token = (Get-VstsEndpoint -Name SystemVssConnection -Require).auth.parameters.AccessToken
 
-        
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild" -or $isForked -eq $True) {
             $forkedRepoName = $repositoryName 
             $teamProject = $env:System_TeamProject
@@ -68,7 +64,7 @@ function RunTask {
             $passPullRequestIdBackToADO = $false
             if($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.0"
-                $header = @{ Authorization = "Bearer $env:System_AccessToken" }
+                $header = @{ Authorization = "Bearer $global:token" }
                 $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
                 $targetBranches = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
             }
@@ -329,7 +325,7 @@ function CreateAzureDevOpsPullRequest() {
         $body.WorkItemRefs = @( $workItems )
     }
 
-    $header = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $header = @{ Authorization = "Bearer $global:token" }
 
     if ($isForked -eq $True) {
         $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($forkedRepoName)?api-version=5.0"
@@ -428,7 +424,7 @@ function CheckIfThereAreChanges {
     }
     
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.0" + '&$top=2'
-    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $head = @{ Authorization = "Bearer $global:token" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
     if ($response.behindCount -eq 0) {
         Write-Warning "***************************************************************"
@@ -451,7 +447,7 @@ function GetReviewerId() {
     )
 
     $serverUrl = $env:System_TeamFoundationCollectionUri
-    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $head = @{ Authorization = "Bearer $global:token" }
 
     # If it's TFS/AzureDevOps Server
     if ($serverUrl -notmatch "visualstudio.com" -and $serverUrl -notmatch "dev.azure.com") {
@@ -573,7 +569,7 @@ function GetReviewerId() {
                         $url = $base_url.Replace("//dev", "//vssps.dev")	
                     }	
                     $url = "$($url)_apis/graph/groups?api-version=4.0-preview.1"	
-                    $head = @{ Authorization = "Bearer $env:System_AccessToken" }	
+                    $head = @{ Authorization = "Bearer $global:token" }	
                     $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head -UseBasicParsing
                     # If the results are more then 500 users and the Project Collection Build Service not exist in the first page	
                     while ($response.Headers.Keys -contains "x-ms-continuationtoken" -and $response.Content -notmatch "$reviewer") {	
@@ -603,7 +599,7 @@ function GetLinkedWorkItems {
         [string]$repositoryName
     )
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/commitsBatch?api-version=4.0"
-    $header = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $header = @{ Authorization = "Bearer $global:token" }
     $body = @{
         '$top'           = 101
         includeWorkItems = "true"
@@ -671,7 +667,7 @@ function SetAutoComplete {
     }
     $body.completionOptions = $options
 
-    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $head = @{ Authorization = "Bearer $global:token" }
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests/$($pullRequestId)?api-version=4.1"
@@ -729,7 +725,7 @@ function BypassPR {
     }
     $body.completionOptions = $options
 
-    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $head = @{ Authorization = "Bearer $global:token" }
     $jsonBody = ConvertTo-Json $body
     Write-Debug $jsonBody
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests/$($pullRequestId)?api-version=4.1"
@@ -756,7 +752,7 @@ function GetPRData {
         [string]$repositoryName
     )
 
-    $head = @{ Authorization = "Bearer $env:System_AccessToken" }
+    $head = @{ Authorization = "Bearer $global:token" }
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests/$($pullRequestId)?api-version=4.1"
     Write-Debug $url
     try {
