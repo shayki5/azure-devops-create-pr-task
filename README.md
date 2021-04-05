@@ -20,19 +20,6 @@ Choose title, description, reviewers and more.
 
 ### For Azure DevOps Repository:
 
-- You need to enable the "Allow scripts to access the OAuth token":
-
-  - If you use the classic editor, go to the Agent job options, scroll down and check the checkbox "Allow scripts to access the OAuth token":
-
-    ![Oauth](https://i.imgur.com/trYBvHG.png)
-
-  - If you use `yaml` build, you need to map the variable in the task:
-
-    ```yaml
-    env:
-      System_AccessToken: $(System.AccessToken)
-    ```
-
 - You need to give permissions to the build users:
 
   In Microsoft hosted agent is "Build Service (user-name)" and "Project Collection Build Service (Project)"
@@ -164,7 +151,7 @@ Choose title, description, reviewers and more.
 
 ## Release Notes
 
-#### 1.2.218
+#### 1.2.219
 
 - No need to check the OAuth box! (or add the Access Token variable in the YAML)
 
