@@ -465,10 +465,10 @@ function GetReviewerId() {
                 $isRequired = "true"
             }
             # If the reviewer is user
-            if ($reviewer.Contains("@")) {
+            if ($reviewer.Contains("@") -or $reviewer.Contains("\")) {
 
                 $teams.value.ForEach( {
-                        $teamUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams/$($_.id)/members?api-version=4.0"
+                        $teamUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams/$($_.id)/members?api-version=4.1"
                         $team = Invoke-RestMethod -Method Get -Uri $teamUrl -Headers $head -ContentType 'application/json'
         
                         # If the team contains only 1 user
