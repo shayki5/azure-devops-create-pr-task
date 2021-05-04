@@ -480,7 +480,7 @@ function GetReviewerId() {
                                     id = "$userId"
                                     isRequired = "$isRequired"
                                 }
-                                break
+                                continue
                             }
                         }
                         else {
@@ -492,7 +492,7 @@ function GetReviewerId() {
                                     id = "$userId"
                                     isRequired = "$isRequired"
                                 }
-                                break
+                                continue
                             }
                         }
                     })
