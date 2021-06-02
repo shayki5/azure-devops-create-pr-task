@@ -98,6 +98,11 @@ function RunTask {
             $pullRequestTitle = $title.Replace('[BRANCH_NAME]', $branch.Replace('refs/heads/',''))
             CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason
         }
+
+        if ($passPullRequestIdBackToADO) {
+            # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
+            write-host "##vso[task.setvariable variable=pullRequestId]$(($global:pullRequestIds -join ';').TrimEnd(';'))"
+        }
     }
 
     finally {
