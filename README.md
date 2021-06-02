@@ -68,6 +68,7 @@ Choose title, description, reviewers and more.
 
 - **Reviewers:** The Pull Request reviewers _(Optional)_:
   <br> For **Azure DevOps** - one or more email address or team name separated by semicolon. For example: `test@test.com;MyTeamName`.
+  <br> For **TFS/Azure DevOps Server** - one or more domain\username or team name separated by semicolon. For example: `DOMAIN\username;DOMAIN\username2`.
   <br> To make the reviewer required in Azure DevOps add 'req:' - e.g. `req:test@test.som`
   <br> For **GitHub** - one or more usernames separated by semicolon. For example: `user1;user2`.
 
@@ -130,6 +131,7 @@ Choose title, description, reviewers and more.
     title: 'Test PR'
     description: 'Test PR' # Optional
     reviewers: For Azure DevOps: 'test@test.com;MyTeam'. For GitHub: `username;username2` # Optional
+    # For TFS/Azure DevOps Server: 'DOMAIN\username'
     # To make the reviewer required in Azure DevOps add 'req:' - e.g. 'req:test@test.som'
     isDraft: false / true (Default: false)
     linkWorkItems: false / true (Default: true)
@@ -145,11 +147,11 @@ Choose title, description, reviewers and more.
     System_AccessToken: $(System.AccessToken)
 ```
 
-## Known issue(s)
-
-- In TFS 2018 you can't use reviewers. still can create a PR without it.
-
 ## Release Notes
+
+#### 1.2.226
+
+- Ability to add reviewers also in TFS/Azure DevOps Server
 
 #### 1.2.214
 

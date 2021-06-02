@@ -59,9 +59,11 @@ function RunTask {
         $repositoryName = $repositoryName.Replace(" ", "%20")
         $targetBranches = $targetBranch
 
+        # Init pullRequestIds
+        [array]$global:pullRequestIds
+
         # If is multi-target branch, like release/*
         if ($targetBranch.Contains('*')) {
-            $passPullRequestIdBackToADO = $false
             if($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.0"
                 $header = @{ Authorization = "Bearer $global:token" }
@@ -89,7 +91,6 @@ function RunTask {
 
         # If is multi-target branch, like master;feature
         elseif($targetBranch.Contains(';')) {
-            $passPullRequestIdBackToADO = $false
             $targetBranches = $targetBranch.Split(';')
         }
 
@@ -199,8 +200,7 @@ function CreateGitHubPullRequest() {
             Write-Host "Pull Request $($response.number) created."
 
             if ($passPullRequestIdBackToADO) {
-                # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
-                write-host "##vso[task.setvariable variable=pullRequestId]$($response.number)"
+                $global:pullRequestIds += "$($response.number);"
             }
 
             # If the reviewers not null so add the reviewers to the PR
@@ -352,8 +352,7 @@ function CreateAzureDevOpsPullRequest() {
             Write-Host "Pull Request $pullRequestId created."
             
             if ($passPullRequestIdBackToADO) {
-                # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
-                write-host "##vso[task.setvariable variable=pullRequestId]$pullRequestId"
+                $global:pullRequestIds += "$pullRequestId;"
             }
 
             $currentUserId = $response.createdBy.id
@@ -434,7 +433,7 @@ function CheckIfThereAreChanges {
         exit 0
     }
     else {
-        Write-Host "$($response.behindCount) new commits! perofrm a Pull Request..."
+        Write-Host "$($response.behindCount) new commits! perform a Pull Request..."
     }
 
     
