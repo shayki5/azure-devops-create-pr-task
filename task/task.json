@@ -123,7 +123,7 @@
       "label": "Title",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The pull request title."
+      "helpMarkDown": "The pull request title. You can use the token [BRANCH_NAME] to dynamically reuse the current target branch name in the pull request title (for example: Merge master into [BRANCH_NAME])."
     },
     {
       "name": "description",
