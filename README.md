@@ -62,7 +62,7 @@ Choose title, description, reviewers and more.
 - **Target branch name:** The target branch name that the source branch will be merge to him. For example: `master`.
   <br> Supports also multi target branch with `*` - for example: `test/*`, or with `;` - for example: `master;test`.
 
-- **Title:** The Pull Request title.
+- **Title:** The Pull Request title. You can use the token [BRANCH_NAME] to dynamically reuse the current target branch name in the pull request title (for example: Merge master into c).
 
 - **Description:** The Pull Request description. _(Optional)_.
 
@@ -148,6 +148,10 @@ Choose title, description, reviewers and more.
 ```
 
 ## Release Notes
+
+#### 1.2.232
+
+- Can use the token `[BRANCH_NAME]` to dynamically reuse the current target branch name
 
 #### 1.2.226
 

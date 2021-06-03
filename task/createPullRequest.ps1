@@ -161,6 +161,7 @@ function CreateGitHubPullRequest() {
         [bool]$passPullRequestIdBackToADO
     )
 
+    Write-Host "The repository is: $githubRepository"
     Write-Host "The Source Branch is: $sourceBranch"
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
@@ -294,6 +295,7 @@ function CreateAzureDevOpsPullRequest() {
         $targetBranch = "refs/heads/$targetBranch"
     }
 
+    Write-Host "The repository is: $repositoryName"
     Write-Host "The Source Branch is: $sourceBranch"
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
