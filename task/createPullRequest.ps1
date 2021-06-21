@@ -308,7 +308,11 @@ function CreateAzureDevOpsPullRequest() {
     Write-Host "Bypass Reason: $bypassReason"
 
     if($isForked -eq $False) {
-        CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch
+        $changesExist = CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch
+        if($changesExist -eq "false")
+        {
+            return
+        }
     }
 
     $body = @{
@@ -437,10 +441,11 @@ function CheckIfThereAreChanges {
         Write-Warning "***************************************************************"
         Write-Warning "There are no new commits in the source branch, no PR is needed!"
         Write-Warning "***************************************************************"
-        exit 0
+        return "false"
     }
     else {
         Write-Host "$($response.behindCount) new commits! perform a Pull Request..."
+        return "true"
     }
 
     
