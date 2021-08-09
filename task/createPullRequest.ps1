@@ -10,6 +10,8 @@ function RunTask {
         [bool]$isDraft,
         [bool]$autoComplete,
         [string]$mergeStrategy,
+        [bool]$deleteSource,
+        [System.ObsoleteAttribute("Use deleteSource Parameter")]
         [bool]$deleteSourch,
         [string]$commitMessage,
         [bool]$transitionWorkItems,
@@ -36,6 +38,7 @@ function RunTask {
         $autoComplete = Get-VstsInput -Name 'autoComplete' -AsBool
         $mergeStrategy = Get-VstsInput -Name 'mergeStrategy' 
         $deleteSourch = Get-VstsInput -Name 'deleteSourch' -AsBool
+        $deleteSource = Get-VstsInput -Name 'deleteSource' -AsBool
         $commitMessage = Get-VstsInput -Name 'commitMessage' 
         $transitionWorkItems = Get-VstsInput -Name 'transitionWorkItems' -AsBool
         $linkWorkItems = Get-VstsInput -Name 'linkWorkItems' -AsBool
@@ -46,6 +49,8 @@ function RunTask {
         $isForked = Get-VstsInput -Name 'isForked' -AsBool
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
+        
+        $deleteSourch = $deleteSourch
         
         $global:token = (Get-VstsEndpoint -Name SystemVssConnection -Require).auth.parameters.AccessToken
 
@@ -306,6 +311,7 @@ function CreateAzureDevOpsPullRequest() {
     Write-Host "Link Work Items: $linkWorkItems"
     Write-Host "Bypass: $bypassPolicy"
     Write-Host "Bypass Reason: $bypassReason"
+    Write-Host "DeleteSourceBranch ist set to: $deleteSourch"
 
     if($isForked -eq $False) {
         $changesExist = CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch
