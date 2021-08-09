@@ -50,8 +50,8 @@ function RunTask {
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
         
-        $deleteSourch = $deleteSourch
-        
+        $deleteSourch = $deleteSource
+
         $global:token = (Get-VstsEndpoint -Name SystemVssConnection -Require).auth.parameters.AccessToken
 
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild" -or $isForked -eq $True) {
