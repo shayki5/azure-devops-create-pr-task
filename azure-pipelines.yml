@@ -67,15 +67,15 @@ stages:
               inputs:
                 version: v0.8.x
             - task: PublishAzureDevOpsExtension@3
-            displayName: 'Publish Extension'
-            inputs:
-              connectedServiceName: 'new marketplace'
-              fileType: vsix
-              vsixFile: '$(System.DefaultWorkingDirectory)/_shayki5.AzureDevOps-CreatePRTask/drop/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
-              updateTasksVersion: false
-              extensionVisibility: private
-              extensionPricing: free
-              shareWith: shaykia
+              displayName: 'Publish Extension'
+              inputs:
+                connectedServiceName: 'new marketplace'
+                fileType: vsix
+                vsixFile: '$(System.DefaultWorkingDirectory)/_shayki5.AzureDevOps-CreatePRTask/drop/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
+                updateTasksVersion: false
+                extensionVisibility: private
+                extensionPricing: free
+                shareWith: shaykia
 
 - stage: Publish_Public
   displayName: Publish extension to public access
