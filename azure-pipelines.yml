@@ -57,9 +57,8 @@ stages:
     - deployment: DeployPrivate
       environment: Marketplace Private
       displayName: Print variables & parameters
-      pool: 
-        vmImage: 'windows-2019'
-        strategy:
+      pool: 'windows-2019'
+      strategy:
         runOnce:
           deploy:
             steps:
@@ -85,9 +84,8 @@ stages:
     - deployment: DeployPrivate
       environment: Marketplace Public
       displayName: Print variables & parameters
-      pool: 
-        vmImage: 'windows-2019'
-        strategy:
+      pool: 'windows-2019'
+      strategy:
         runOnce:
           deploy:
             steps:
