@@ -1,50 +1,106 @@
-trigger:
-- master
+stages:
+- stage: Build
+  displayName: 'Build vsix file'
+  variables:
+    version: $[ counter('revision-new',0) ]
+  jobs:
+    - job: Debug_Print
+      displayName: Print variables & parameters
+      pool: 
+        vmImage: 'windows-2019'
+      steps:
+      - task: TfxInstaller@3
+        inputs:
+          version: 'v0.8.x'
+        displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.6.x'
 
-pool:
-  vmImage: 'windows-2019'
+      - task: PowerShell@2
+        displayName: 'Increment the task version in task.json'
+        inputs:
+          targetType: 'inline'
+          script: |
+            $jsonPath = "$(Build.SourcesDirectory)/task/task.json"
+            $taskJson = Get-Content $jsonPath | ConvertFrom-Json
+            $taskJson.version.Patch = $(Version)
+            $taskJson = $taskJson | ConvertTo-Json -Depth 10
+            Set-Content -Path $jsonPath -Value $taskJson | ConvertTo-Json
 
-variables:
-  version: $[ counter('revision-new',0) ]
+      - task: PackageAzureDevOpsExtension@3
+        displayName: 'Package Extension - Private'
+        inputs:
+          rootFolder: '$(Build.SourcesDirectory)'
+          extensionVersion: '1.2.$(Version)'
+          extensionVisibility: private
+          extensionPricing: free
+          extensionId: 'CreatePullRequestDev'
+          outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
-steps:
-- task: TfxInstaller@3
-  inputs:
-    version: 'v0.8.x'
-  displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.6.x'
+      - task: PackageAzureDevOpsExtension@3
+        displayName: 'Package Extension - Public'
+        inputs:
+          rootFolder: '$(Build.SourcesDirectory)'
+          extensionVersion: '1.2.$(Version)'
+          extensionVisibility: public
+          extensionPricing: free
+          updateTasksVersion: false
+          outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
 
-- task: PowerShell@2
-  displayName: 'Increment the task version in task.json'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $jsonPath = "$(Build.SourcesDirectory)/task/task.json"
-      $taskJson = Get-Content $jsonPath | ConvertFrom-Json
-      $taskJson.version.Patch = $(Version)
-      $taskJson = $taskJson | ConvertTo-Json -Depth 10
-      Set-Content -Path $jsonPath -Value $taskJson | ConvertTo-Json
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: drop'
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
 
-- task: PackageAzureDevOpsExtension@3
-  displayName: 'Package Extension - Private'
-  inputs:
-    rootFolder: '$(Build.SourcesDirectory)'
-    extensionVersion: '1.2.$(Version)'
-    extensionVisibility: private
-    extensionPricing: free
-    extensionId: 'CreatePullRequestDev'
-    outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
+- stage: Publish_Private
+  displayName: Publish extension to private access
+  dependsOn: Build
+  jobs:
+    - deployment: DeployPrivate
+      environment: Marketplace Private
+      displayName: Print variables & parameters
+      pool: 
+        vmImage: 'windows-2019'
+        strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: TfxInstaller@3
+              displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.8.x'
+              inputs:
+                version: v0.8.x
+            - task: PublishAzureDevOpsExtension@3
+            displayName: 'Publish Extension'
+            inputs:
+              connectedServiceName: 'new marketplace'
+              fileType: vsix
+              vsixFile: '$(System.DefaultWorkingDirectory)/_shayki5.AzureDevOps-CreatePRTask/drop/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
+              updateTasksVersion: false
+              extensionVisibility: private
+              extensionPricing: free
+              shareWith: shaykia
 
-- task: PackageAzureDevOpsExtension@3
-  displayName: 'Package Extension - Public'
-  inputs:
-    rootFolder: '$(Build.SourcesDirectory)'
-    extensionVersion: '1.2.$(Version)'
-    extensionVisibility: public
-    extensionPricing: free
-    updateTasksVersion: false
-    outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
+- stage: Publish_Public
+  displayName: Publish extension to public access
+  dependsOn: Build
+  jobs:
+    - deployment: DeployPrivate
+      environment: Marketplace Public
+      displayName: Print variables & parameters
+      pool: 
+        vmImage: 'windows-2019'
+        strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: TfxInstaller@3
+              displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.8.x'
+              inputs:
+                version: v0.8.x
+            - task: PublishAzureDevOpsExtension@3
+              displayName: 'Publish Extension'
+              inputs:
+                connectedServiceName: 'new marketplace'
+                fileType: vsix
+                vsixFile: '$(System.DefaultWorkingDirectory)/_shayki5.AzureDevOps-CreatePRTask/drop/ShaykiAbramczyk.CreatePullRequest-*.vsix'
+                updateTasksVersion: false
+                extensionVisibility: public
+                extensionPricing: free
