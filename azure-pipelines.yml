@@ -58,7 +58,7 @@ stages:
       environment: Marketplace Private
       displayName: Print variables & parameters
       pool:
-        vmImage: 'Ubuntu-latest'
+        vmImage: 'Windows-2019'
       strategy:
         runOnce:
           deploy:
@@ -86,7 +86,7 @@ stages:
       environment: Marketplace Public
       displayName: Print variables & parameters
       pool:
-        vmImage: 'Ubuntu-latest'
+        vmImage: 'Windows-2019'
       strategy:
         runOnce:
           deploy:
