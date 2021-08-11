@@ -72,7 +72,7 @@ stages:
               inputs:
                 connectedServiceName: 'new marketplace'
                 fileType: vsix
-                vsixFile: '$(Build.StagingDirectory	)/drop/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
+                vsixFile: '$(Build.StagingDirectory)/drop/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
                 updateTasksVersion: false
                 extensionVisibility: private
                 extensionPricing: free
