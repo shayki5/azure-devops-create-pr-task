@@ -638,7 +638,7 @@ function GetLinkedWorkItems {
                         Write-Debug $_
                         # Get the work item id from the work item url
                         $workItemsId += $_.url.split('/')[$_.url.split('/').count - 1]
-                        Write-Debug $workItemsId
+                        $workItemsId.ForEach({ Write-Debug $_  })
                     })
             }
         })
