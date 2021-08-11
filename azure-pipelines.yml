@@ -51,7 +51,7 @@ stages:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)\vsix'
 
 - stage: Publish_Private
-  displayName: Publish extension to private access
+  displayName: Publish to private
   dependsOn: Build
   jobs:
     - deployment: DeployPrivate
@@ -72,14 +72,14 @@ stages:
               inputs:
                 connectedServiceName: 'new marketplace'
                 fileType: vsix
-                vsixFile: '$(System.DefaultWorkingDirectory)/drop/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
+                vsixFile: '$(Build.ArtifactStagingDirectory)/drop/ShaykiAbramczyk.CreatePullRequestDev*.vsix'
                 updateTasksVersion: false
                 extensionVisibility: private
                 extensionPricing: free
                 shareWith: shaykia
 
 - stage: Publish_Public
-  displayName: Publish extension to public access
+  displayName: Publish to public 
   dependsOn: Build
   jobs:
     - deployment: DeployPrivate
@@ -100,7 +100,7 @@ stages:
               inputs:
                 connectedServiceName: 'new marketplace'
                 fileType: vsix
-                vsixFile: '$(System.DefaultWorkingDirectory)/drop/ShaykiAbramczyk.CreatePullRequest-*.vsix'
+                vsixFile: '$(Build.ArtifactStagingDirectory)/drop/ShaykiAbramczyk.CreatePullRequest-*.vsix'
                 updateTasksVersion: false
                 extensionVisibility: public
                 extensionPricing: free
