@@ -1,6 +1,6 @@
-| Build                                                                                                                                                                                                                                             | Release                                                                                                                                                                                                                             | Extension                                                                                                                                                                              |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Build Status](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_apis/build/status/shayki5.AzureDevOps-CreatePRTask?branchName=master)](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_build/latest?definitionId=34&branchName=master) | [![Release Status](https://vsrm.dev.azure.com/shaykia/_apis/public/Release/badge/3372e1d4-189a-4d9e-aa4d-0cb86eff3c2e/1/2)](https://vsrm.dev.azure.com/shaykia/_apis/public/Release/badge/3372e1d4-189a-4d9e-aa4d-0cb86eff3c2e/1/2) | [![Extnesion](https://vsmarketplacebadge.apphb.com/version/ShaykiAbramczyk.CreatePullRequest.svg)](https://vsmarketplacebadge.apphb.com/version/ShaykiAbramczyk.CreatePullRequest.svg) |
+| Build                                                                                                                                                                                                                                             | Extension                                                                                                                                                                              |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [![Build Status](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_apis/build/status/shayki5.AzureDevOps-CreatePRTask?branchName=master)](https://dev.azure.com/shaykia/AzureDevOpsExtensions/_build/latest?definitionId=34&branchName=master) | [![Extnesion](https://vsmarketplacebadge.apphb.com/version/ShaykiAbramczyk.CreatePullRequest.svg)](https://vsmarketplacebadge.apphb.com/version/ShaykiAbramczyk.CreatePullRequest.svg) |
 
 ## Azure DevOps Create Pull Request Task
 
@@ -149,90 +149,27 @@ Choose title, description, reviewers and more.
 
 ## Release Notes
 
-#### 1.2.232
-
-- Can use the token `[BRANCH_NAME]` to dynamically reuse the current target branch name
-
-#### 1.2.226
-
-- Ability to add reviewers also in TFS/Azure DevOps Server
-
-#### 1.2.214
-
-- No need to check the OAuth box! (or add the Access Token variable in the YAML)
-
-#### 1.2.186
-
-- Option to Bypass policy - policies will be explicitly bypassed while the pull request is completed.
-
-#### 1.2.186
-
-- Support also TFS 2018 RTW + Update 1 versions.
-
-#### 1.2.180
-
-- Support also Azure DevOps **forks** repsitores (to create PR from the forked repo to the original repo)
-
-#### 1.2.158
-
-- Support also multi-target branch separated with a semicolon, for example: `master;release`
-
-#### 1.2.144
-
-- Support also Azure DevOps groups as reviewers (not also users and teams).
-
-#### 1.2.140
-
-- Return the Pull Request ID as a variable for use in the sequences tasks.
-
-#### 1.2.130
-
-- Now you can add also required reviewers. (for Azure DevOps).
-
-#### 1.2.123
-
-- Ability to choose other repos from your GitHub account. As a result, you can also create GitHub PR from a Release pipeline.
-
-#### 1.2.89
-
-- Throw a warning when there are no commits in the source branch, instead of create a PR (for Azure DevOps).
-
-#### 1.2.76
-
-- Create PR for other repositories - not only for the current build repo (for Azure DevOps)
-
-#### 1.2.48
-
-- Link associated work items to the PR (for Azure DevOps)
-
-#### 1.2.36
-
-- Add complete options like Merge Strategy and more in auto completion (for Azure DevOps).
-
-#### 1.2.30
-
-- Support also a Team as reviewers (for Azure DevOps).
-
-#### 1.2.24
-
-- Set Auto Complete the Pull Request (for Azure DevOps).
-
-#### 1.2.18
-
-- Bug fix: Now you can add reviewers also in TFS 2018 and Azure DevOps Server 2019.
-
-#### 1.2.15
-
-- Draft Pull Request option.
-
-#### 1.2.0
-
-- Support also GitHub repositories!
-
-#### 1.0.31
-
-- Multi target branch (For example: `feature/*`)
-
-#### 1.0.0
-
-- First version.
+| Version | What's new |                                                                                                                                                                                                                                                                                                                                                             
+| :------ | :------------------------------------------------------------------------------------------------------------------------- |
+| 1.2.232 | Can use the token `[BRANCH_NAME]` to dynamically reuse the current target branch name |
+| 1.2.226 |  Ability to add reviewers also in TFS/Azure DevOps Server |
+| 1.2.214 | No need to check the OAuth box! (or add the Access Token variable in the YAML) |
+| 1.2.186 | Option to Bypass policy - policies will be explicitly bypassed while the pull request is completed. |
+| 1.2.184 | Support also TFS 2018 RTW + Update 1 versions |
+| 1.2.180 | Support also Azure DevOps **forks** repsitores (to create PR from the forked repo to the original repo) |
+| 1.2.158 | Support also multi-target branch separated with a semicolon, for example: `master;release` |
+| 1.2.144 | Support also Azure DevOps groups as reviewers (not also users and teams). |
+| 1.2.140 | Return the Pull Request ID as a variable for use in the sequences tasks. |
+| 1.2.130 | Now you can add also required reviewers. (for Azure DevOps). |
+| 1.2.123 | Ability to choose other repos from your GitHub account. As a result, you can also create GitHub PR from a Release pipeline.|
+| 1.2.89  | Throw a warning when there are no commits in the source branch, instead of create a PR (for Azure DevOps). |
+| 1.2.76  | Create PR for other repositories - not only for the current build repo (for Azure DevOps) |
+| 1.2.48  | Link associated work items to the PR (for Azure DevOps) |
+| 1.2.36  | Add complete options like Merge Strategy and more in auto completion (for Azure DevOps). |
+| 1.2.30  | Support also a Team as reviewers (for Azure DevOps). |
+| 1.2.24  | Set Auto Complete the Pull Request (for Azure DevOps). |
+| 1.2.18  | Bug fix: Now you can add reviewers also in TFS 2018 and Azure DevOps Server 2019. |
+| 1.2.15  | Draft Pull Request option. |
+| 1.2.0   | Support also GitHub repositories! |
+| 1.0.31  | Multi target branch (For example: `feature/*`) |
+| 1.0.0   | First version. |
