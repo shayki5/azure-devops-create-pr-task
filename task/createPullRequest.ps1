@@ -513,7 +513,7 @@ function GetReviewerId() {
             # If the reviewer is team
             else {
                 if ($teams.count -eq 1) {
-                    if ($teams.value.name -eq $u) {
+                    if ($teams.value.name -eq $reviewer) {
                         $teamId = $teams.value.id
                         Write-Host $teamId -ForegroundColor Green
                         $reviewersId += @{ 
@@ -523,7 +523,7 @@ function GetReviewerId() {
                     }
                 }
                 else {
-                    $teamId = $teams.value.Where( { $_.name -eq $u }).id
+                    $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
                     Write-Host $teamId -ForegroundColor Green
                     $reviewersId += @{ 
                         id = "$teamId"
