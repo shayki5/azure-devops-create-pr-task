@@ -439,7 +439,7 @@ function CheckIfThereAreChanges {
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
     if ($response.behindCount -eq 0 -or '' -eq $response.changeCounts) {
         Write-Warning "***************************************************************"
-        Write-Warning "There are no new commits in the source branch, no PR is needed!"
+        Write-Warning "There are no new changes in the source branch, no PR is needed!"
         Write-Warning "***************************************************************"
         return "false"
     }
