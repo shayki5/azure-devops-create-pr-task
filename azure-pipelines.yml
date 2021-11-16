@@ -4,8 +4,8 @@ stages:
   variables:
     version: $[ counter('revision-new',0) ]
   jobs:
-    - job: Debug_Print
-      displayName: Print variables & parameters
+    - job: Build
+      displayName: Package the extension
       pool: 
         vmImage: 'windows-2019'
       steps:
@@ -56,7 +56,7 @@ stages:
   jobs:
     - deployment: DeployPrivate
       environment: Marketplace Private
-      displayName: Print variables & parameters
+      displayName: Deploy the extension to private
       pool:
         vmImage: 'Windows-2019'
       strategy:
@@ -84,7 +84,7 @@ stages:
   jobs:
     - deployment: DeployPrivate
       environment: Marketplace Public
-      displayName: Print variables & parameters
+      displayName: Deploy the extension to public
       pool:
         vmImage: 'Windows-2019'
       strategy:
