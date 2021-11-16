@@ -437,7 +437,7 @@ function CheckIfThereAreChanges {
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.0" + '&$top=2'
     $head = @{ Authorization = "Bearer $global:token" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
-    if ($response.behindCount -eq 0) {
+    if ($response.behindCount -eq 0 -or $response.changeCounts -eq 0) {
         Write-Warning "***************************************************************"
         Write-Warning "There are no new commits in the source branch, no PR is needed!"
         Write-Warning "***************************************************************"
