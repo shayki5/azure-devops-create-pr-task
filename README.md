@@ -138,7 +138,7 @@ Choose title, description, reviewers and more.
     passPullRequestIdBackToADO: false / true (Default: false)
     autoComplete: false / true (Default: false)
     mergeStrategy: 'noFastForward (default) / squash / rebase / rebaseMerge'
-    deleteSourch:  false / true (Default: false) # Optional
+    deleteSource:  false / true (Default: false) # Optional
     commitMessage: 'Test Comment' # Optional
     transitionWorkItems:  false / true (Default: false) # Optional
     bypassPolicy: false / true (can't be used with `autoComplete` -the bypass also auto complete the PR) 
