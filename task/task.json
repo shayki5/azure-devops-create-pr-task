@@ -192,9 +192,12 @@
       "visibleRule": "autoComplete=true"
     },
     {
-      "name": "deleteSourch",
+      "name": "deleteSource",
+      "aliases": [
+          "deleteSourch"
+      ],
       "type": "boolean",
-      "label": "Delete Sourch Branch",
+      "label": "Delete Source Branch",
       "defaultValue": false,
       "required": false,
       "helpMarkDown": "If true, the source branch of the pull request will be deleted after completion.",
