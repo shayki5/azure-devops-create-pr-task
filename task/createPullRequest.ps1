@@ -1,3 +1,6 @@
+$TLS12Protocol = [System.Net.SecurityProtocolType] 'Ssl3 , Tls12'
+[System.Net.ServicePointManager]::SecurityProtocol = $TLS12Protocol
+
 function RunTask {
     [CmdletBinding()]
     Param
