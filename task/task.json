@@ -246,8 +246,7 @@
       "label": "Always Create Pull Request",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": "If checked, a Pull Request will always be created even if there a no changed files.",
-      "visibleRule": "alwaysCreatePr=false"
+      "helpMarkDown": "If checked, a Pull Request will always be created even if there a no changed files."
     }
   ],
   "dataSourceBindings": [
