@@ -25,7 +25,8 @@ function RunTask {
         [bool]$passPullRequestIdBackToADO,
         [bool]$isForked,
         [bool]$bypassPolicy,
-        [string]$bypassReason
+        [string]$bypassReason, 
+        [bool]$alwaysCreatePR
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -52,6 +53,7 @@ function RunTask {
         $isForked = Get-VstsInput -Name 'isForked' -AsBool
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
+        $alwaysCreatePR = Get-VstsInput -Name 'alwaysCreatePr'
         
         $deleteSourch = $deleteSource
 
@@ -104,7 +106,7 @@ function RunTask {
 
         foreach($branch in $targetBranches) {
             $pullRequestTitle = $title.Replace('[BRANCH_NAME]', $branch.Replace('refs/heads/',''))
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -alwaysCreatePR $alwaysCreatePR
         }
 
         if ($passPullRequestIdBackToADO) {
@@ -141,11 +143,12 @@ function CreatePullRequest() {
         [bool]$passPullRequestIdBackToADO,
         [bool]$isForked,
         [bool]$bypassPolicy,
-        [string]$bypassReason
+        [string]$bypassReason, 
+        [bool]$alwaysCreatePR
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -alwaysCreatePR $alwaysCreatePR
     }
 
     else {
@@ -292,7 +295,8 @@ function CreateAzureDevOpsPullRequest() {
         [bool]$passPullRequestIdBackToADO,
         [bool]$isForked,
         [bool]$bypassPolicy,
-        [string]$bypassReason
+        [string]$bypassReason, 
+        [bool]$alwaysCreatePR
     )
 
     if (!$sourceBranch.Contains("refs")) {
@@ -317,7 +321,7 @@ function CreateAzureDevOpsPullRequest() {
     Write-Host "DeleteSourceBranch ist set to: $deleteSourch"
 
     if($isForked -eq $False) {
-        $changesExist = CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch
+        $changesExist = CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch -alwaysCreatePR $alwaysCreatePR
         if($changesExist -eq "false")
         {
             return
@@ -414,7 +418,8 @@ function CreateAzureDevOpsPullRequest() {
 function CheckIfThereAreChanges {
     Param (
         [string]$sourceBranch,
-        [string]$targetBranch
+        [string]$targetBranch, 
+        [bool]$alwaysCreatePR
     )
 
     # Remove the refs/heads/ or merge/pull from branches name (see issue #85)
@@ -446,7 +451,7 @@ function CheckIfThereAreChanges {
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.0&diffCommonCommit=false" + '&$top=2'
     $head = @{ Authorization = "Bearer $global:token" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
-    if ($response.behindCount -eq 0 -or '' -eq $response.changeCounts) {
+    if ($alwaysCreatePR -eq $false -and ($response.behindCount -eq 0 -or '' -eq $response.changeCounts)) {
         Write-Warning "***************************************************************"
         Write-Warning "There are no new changes in the source branch, no PR is needed!"
         Write-Warning "***************************************************************"

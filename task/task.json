@@ -242,6 +242,14 @@
       "helpMarkDown": "If policies are bypassed, this reason is stored as to why bypass was used.",
       "groupName": "completion",
       "visibleRule": "bypassPolicy=true"
+    }, 
+    {
+      "name": "alwaysCreatePr",
+      "type": "boolean",
+      "label": "Always Create Pull Request",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked, a Pull Request will always be created even if there a no changed files."
     }
   ],
   "dataSourceBindings": [
