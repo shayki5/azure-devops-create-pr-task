@@ -53,7 +53,7 @@ function RunTask {
         $isForked = Get-VstsInput -Name 'isForked' -AsBool
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
-        $alwaysCreatePR = Get-VstsInput -Name 'alwaysCreatePr'
+        $alwaysCreatePR = Get-VstsInput -Name 'alwaysCreatePr' -AsBool
         
         $deleteSourch = $deleteSource
 
