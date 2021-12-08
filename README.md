@@ -78,6 +78,8 @@ Choose title, description, reviewers and more.
 
 - **Pass Pull Request ID back to Azure DevOps as a variable**: If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks. The variable can be referenced as `$(pullRequestId)`.
 
+- **Always Create Pull Request**: If true, a Pull Request will always be created even if there a no changed files.
+ 
 - **Set Auto Complete**: Only for Azure DevOps. If checked the pull request will close once all branch policies are met.
 
   Complete options:
@@ -105,7 +107,7 @@ Choose title, description, reviewers and more.
   - **Delete Source Branch**: If true, the source branch of the pull request will be deleted after completion.
   - **Commit Message**: If set, this will be used as the commit message of the merge commit. if empty the default will be used.
   - **Complete Associated Work Items**: If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).
-- **Bypass policy**: If true, policies will be explicitly bypassed while the pull request is completed.
+  - **Bypass policy**: If true, policies will be explicitly bypassed while the pull request is completed.
   - **Bypass reason**: If policies are bypassed, this reason is stored as to why bypass was used.
 
 **In yaml piepline:**
@@ -136,6 +138,7 @@ Choose title, description, reviewers and more.
     isDraft: false / true (Default: false)
     linkWorkItems: false / true (Default: true)
     passPullRequestIdBackToADO: false / true (Default: false)
+    alwaysCreatePr: false / true (Default: false)
     autoComplete: false / true (Default: false)
     mergeStrategy: 'noFastForward (default) / squash / rebase / rebaseMerge'
     deleteSource:  false / true (Default: false) # Optional
@@ -151,8 +154,9 @@ Choose title, description, reviewers and more.
 
 | Version | What's new |                                                                                                                                                                                                                                                                                                                                                             
 | :------ | :------------------------------------------------------------------------------------------------------------------------- |
+| 1.2.277 | Add `alwaysCreatePr` option - to create a PR even there are no changes between the branches  |
 | 1.2.232 | Can use the token `[BRANCH_NAME]` to dynamically reuse the current target branch name |
-| 1.2.226 |  Ability to add reviewers also in TFS/Azure DevOps Server |
+| 1.2.226 | Ability to add reviewers also in TFS/Azure DevOps Server |
 | 1.2.214 | No need to check the OAuth box! (or add the Access Token variable in the YAML) |
 | 1.2.186 | Option to Bypass policy - policies will be explicitly bypassed while the pull request is completed. |
 | 1.2.184 | Support also TFS 2018 RTW + Update 1 versions |
