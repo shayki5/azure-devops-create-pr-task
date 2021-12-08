@@ -451,18 +451,21 @@ function CheckIfThereAreChanges {
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($targetBranch)&targetVersion=$($sourceBranch)&api-version=4.0&diffCommonCommit=true" + '&$top=2'
     $head = @{ Authorization = "Bearer $global:token" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
-    if ($alwaysCreatePR -eq $false -and ($response.behindCount -eq 0 -or '' -eq $response.changeCounts)) {
+    if ($alwaysCreatePR -eq $true) {
+        Write-Host "Always Create PR flag is true! perform a Pull Request..."
+        return "true"
+    }
+    elseif ($response.behindCount -eq 0 -or '' -eq $response.changeCounts) {
         Write-Warning "***************************************************************"
         Write-Warning "There are no new changes in the source branch, no PR is needed!"
         Write-Warning "***************************************************************"
         return "false"
     }
     else {
+    } else {
         Write-Host "$($response.behindCount) new commits! perform a Pull Request..."
         return "true"
     }
-
-    
 }
 
 function GetReviewerId() {
