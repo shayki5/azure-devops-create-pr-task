@@ -448,21 +448,38 @@ function CheckIfThereAreChanges {
         $targetBranch = $targetBranch.Replace('#','%23') 
     }
     
-    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($targetBranch)&targetVersion=$($sourceBranch)&api-version=4.0&diffCommonCommit=false" + '&$top=2'
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($targetBranch)&targetVersion=$($sourceBranch)&api-version=4.0&diffCommonCommit=true" + '&$top=2'
     $head = @{ Authorization = "Bearer $global:token" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
-    if ($alwaysCreatePR -eq $false -and ($response.aheadCount -eq 0 -or '' -eq $response.changeCounts)) {
-        Write-Warning "***************************************************************"
-        Write-Warning "There are no new changes in the source branch, no PR is needed!"
-        Write-Warning "***************************************************************"
-        return "false"
-    }
-    else {
-        Write-Host "$($response.behindCount) new commits! perform a Pull Request..."
-        return "true"
-    }
+    if ($alwaysCreatePR -eq $true) {
+        Write-Host "AlwaysCreatePr flag is true. Trying to perform a Pull Request..."
 
-    
+        if ($response.aheadCount -gt 0) {
+            Write-Host "The source branch is ahead by $($response.aheadCount) commits. Perform a Pull Request..."
+            return "true"
+        } else {
+            Write-Warning "***************************************************************"
+            Write-Warning "There are no new commits in the source branch, no PR is needed!"
+            Write-Warning "***************************************************************"
+            return "false"
+        }
+    }
+    else  {
+        Write-Host "AlwaysCreatePr flag is false. A PR will only be created if there are actual file changes, but not if there is only a difference in commits."
+
+        if ('' -eq $response.changeCounts) {
+            Write-Warning "***************************************************************"
+            Write-Warning "There are no file changes in the source branch, so no PR will be created!"
+            if ($response.aheadCount -gt 0) {
+                Write-Warning "The source branch is ahead by $($response.aheadCount) commits. If you want to create a PR in such a case, then please set the AlwaysCreatePr flag to true."
+            }
+            Write-Warning "***************************************************************"
+            return "false"
+        } else {
+            Write-Host "File changes were found! Perform a Pull Request..."
+            return "true"
+        }
+    }
 }
 
 function GetReviewerId() {
