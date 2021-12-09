@@ -476,7 +476,7 @@ function CheckIfThereAreChanges {
             Write-Warning "***************************************************************"
             return "false"
         } else {
-            Write-Host "File changes were found! Perform a Pull Request..."
+            Write-Host "$($response.aheadCount) new commits! File changes were found! Perform a Pull Request..."
             return "true"
         }
     }
