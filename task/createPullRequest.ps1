@@ -448,10 +448,10 @@ function CheckIfThereAreChanges {
         $targetBranch = $targetBranch.Replace('#','%23') 
     }
     
-    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.0&diffCommonCommit=true" + '&$top=2'
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($targetBranch)&targetVersion=$($sourceBranch)&api-version=4.0&diffCommonCommit=false" + '&$top=2'
     $head = @{ Authorization = "Bearer $global:token" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
-    if ($alwaysCreatePR -eq $false -and ($response.behindCount -eq 0 -or '' -eq $response.changeCounts)) {
+    if ($alwaysCreatePR -eq $false -and ($response.aheadCount -eq 0 -or '' -eq $response.changeCounts)) {
         Write-Warning "***************************************************************"
         Write-Warning "There are no new changes in the source branch, no PR is needed!"
         Write-Warning "***************************************************************"
