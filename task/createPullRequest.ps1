@@ -244,7 +244,7 @@ function CreateGitHubReviewers() {
         [string]$token,
         [string]$prNumber
     )
-    $reviewers = $reviewers.Split(';')
+    $reviewers = $reviewers.Split(';').Trim()
     $repoUrl = $env:BUILD_REPOSITORY_URI
     $owner = $repoUrl.Split('/')[3]
     $repo = $repoUrl.Split('/')[4]
@@ -499,7 +499,7 @@ function GetReviewerId() {
 
         $teams = Invoke-RestMethod -Method Get -Uri $url -Headers $head -ContentType 'application/json'
         Write-Debug $reviewers
-        $split = $reviewers.Split(';')
+        $split = $reviewers.Split(';').Trim()
         $reviewersId = @()
         ForEach ($reviewer in $split) {
             $isRequired = "false"
@@ -580,7 +580,7 @@ function GetReviewerId() {
         $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.0-preview.1"
         $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
         Write-Debug $reviewers
-        $split = $reviewers.Split(';')
+        $split = $reviewers.Split(';').Trim()
         $reviewersId = @()
         ForEach ($reviewer in $split) {
             $isRequired = "false"
