@@ -357,7 +357,7 @@ function CreateAzureDevOpsPullRequest() {
         foreach($tag in $tagList)
         {
             $tagsBody += @{ 
-                mame = "$tag"
+                name = "$tag"
             }
         
         }
