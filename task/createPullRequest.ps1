@@ -152,6 +152,7 @@ function CreatePullRequest() {
 
     if ($repoType -eq "Azure DevOps") { 
         CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -tags $tags -alwaysCreatePR $alwaysCreatePR
+    }
         
     else {
         # Is GitHub repository
