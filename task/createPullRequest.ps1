@@ -10,6 +10,7 @@ function RunTask {
         [string]$title,
         [string]$description,
         [string]$reviewers,
+        [string]$tags,
         [bool]$isDraft,
         [bool]$autoComplete,
         [string]$mergeStrategy,
@@ -37,6 +38,7 @@ function RunTask {
         $title = Get-VstsInput -Name 'title' -Require
         $description = Get-VstsInput -Name 'description'
         $reviewers = Get-VstsInput -Name 'reviewers'
+        $tags = Get-VstsInput -Name 'tags'
         $repoType = Get-VstsInput -Name 'repoType' -Require
         $isDraft = Get-VstsInput -Name 'isDraft' -AsBool
         $autoComplete = Get-VstsInput -Name 'autoComplete' -AsBool
@@ -106,7 +108,7 @@ function RunTask {
 
         foreach($branch in $targetBranches) {
             $pullRequestTitle = $title.Replace('[BRANCH_NAME]', $branch.Replace('refs/heads/',''))
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -alwaysCreatePR $alwaysCreatePR
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -tags $tags -alwaysCreatePR $alwaysCreatePR
         }
 
         if ($passPullRequestIdBackToADO) {
@@ -144,13 +146,14 @@ function CreatePullRequest() {
         [bool]$isForked,
         [bool]$bypassPolicy,
         [string]$bypassReason, 
-        [bool]$alwaysCreatePR
+        [bool]$alwaysCreatePR,
+        [string]$tags
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -alwaysCreatePR $alwaysCreatePR
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -tags $tags -alwaysCreatePR $alwaysCreatePR
     }
-
+        
     else {
         # Is GitHub repository
         CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
@@ -296,7 +299,8 @@ function CreateAzureDevOpsPullRequest() {
         [bool]$isForked,
         [bool]$bypassPolicy,
         [string]$bypassReason, 
-        [bool]$alwaysCreatePR
+        [bool]$alwaysCreatePR,
+        [string]$tags
     )
 
     if (!$sourceBranch.Contains("refs")) {
@@ -313,6 +317,7 @@ function CreateAzureDevOpsPullRequest() {
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
     Write-Host "Is Reviewers are: $reviewers"
+    Write-Host "The tags are: $tags"
     Write-Host "Is Draft Pull Request: $isDraft"
     Write-Host "Auto-Complete: $autoComplete"
     Write-Host "Link Work Items: $linkWorkItems"
@@ -334,15 +339,29 @@ function CreateAzureDevOpsPullRequest() {
         title         = "$title"
         description   = "$description"
         reviewers     = ""
+        labels        = ""
         isDraft       = "$isDraft"
         WorkItemRefs  = ""
-        forkSource = ""
+        forkSource    = ""
     }
 
     if ($reviewers -ne "") {
         $usersId = GetReviewerId -reviewers $reviewers
         $body.reviewers = @( $usersId )
         Write-Host "The reviewers are: $($reviewers.Split(';'))"
+    }
+
+    if ($tags -ne "") {
+        $tagList = $tags.Split(';')
+        $tagsBody = @()
+        foreach($tag in $tagList)
+        {
+            $tagsBody += @{ 
+                name = "$tag"
+            }
+        
+        }
+        $body.labels = $tagsBody
     }
 
     if ($linkWorkItems -eq $True) {
