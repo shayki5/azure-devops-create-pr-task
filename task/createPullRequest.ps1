@@ -253,6 +253,9 @@ function CreateGitHubReviewers() {
     $repo = $repoUrl.Split('/')[4]
     $url = "https://api.github.com/repos/$owner/$repo/pulls/$prNumber/requested_reviewers"
     $body = @{
+        owner = $owner
+        repo = $repo
+        pull_number = $prNumber
         reviewers = @()
     }
     ForEach ($reviewer in $reviewers) {
