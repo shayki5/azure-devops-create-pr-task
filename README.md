@@ -72,6 +72,8 @@ Choose title, description, reviewers and more.
   <br> To make the reviewer required in Azure DevOps add 'req:' - e.g. `req:test@test.som`
   <br> For **GitHub** - one or more usernames separated by semicolon. For example: `user1;user2`.
 
+- **Tags:** The Pull Request tags _(Optional)_. tag list separated by semicolon. For example: `tag1;tag2`.
+
 - **Create Draft Pull Request**: If checked the pull request will be a Draft Pull Request. (Default: false) <br> For Azure DevOps: see [here](https://docs.microsoft.com/en-us/azure/devops/repos/git/pull-requests?view=azure-devops#draft-pull-requests) more info. <br> For GitHub: see [here](https://github.blog/2019-02-14-introducing-draft-pull-requests/) more info.
 
 - **Link Work Items**: If checked, all the work items that linked to the commits will be linked also to the PullRequest.
@@ -135,6 +137,7 @@ Choose title, description, reviewers and more.
     reviewers: For Azure DevOps: 'test@test.com;MyTeam'. For GitHub: `username;username2` # Optional
     # For TFS/Azure DevOps Server: 'DOMAIN\username'
     # To make the reviewer required in Azure DevOps add 'req:' - e.g. 'req:test@test.som'
+    tags: 'tag1;tag2'
     isDraft: false / true (Default: false)
     linkWorkItems: false / true (Default: true)
     passPullRequestIdBackToADO: false / true (Default: false)
@@ -154,6 +157,7 @@ Choose title, description, reviewers and more.
 
 | Version | What's new |                                                                                                                                                                                                                                                                                                                                                             
 | :------ | :------------------------------------------------------------------------------------------------------------------------- |
+| 1.2.296 | Ability to create a PR with tags  |
 | 1.2.277 | Add `alwaysCreatePr` option - to create a PR even there are no changes between the branches  |
 | 1.2.232 | Can use the token `[BRANCH_NAME]` to dynamically reuse the current target branch name |
 | 1.2.226 | Ability to add reviewers also in TFS/Azure DevOps Server |
