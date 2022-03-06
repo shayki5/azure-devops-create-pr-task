@@ -225,7 +225,7 @@ function CreateGitHubPullRequest() {
 
             # If the reviewers not null so add the reviewers to the PR
             if ($reviewers -ne "") {
-                CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number
+                CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number -repo $githubRepository
             }
         }
         else {
@@ -245,14 +245,18 @@ function CreateGitHubReviewers() {
     (
         [string]$reviewers,
         [string]$token,
-        [string]$prNumber
+        [string]$prNumber,
+        [string]$repo
     )
     $reviewers = $reviewers.Split(';').Trim()
-    $repoUrl = $env:BUILD_REPOSITORY_URI
-    $owner = $repoUrl.Split('/')[3]
-    $repo = $repoUrl.Split('/')[4]
+    $repoUrl = $repo
+    $owner = $repoUrl.Split('/')[0]
+    $repo = $repoUrl.Split('/')[1]
     $url = "https://api.github.com/repos/$owner/$repo/pulls/$prNumber/requested_reviewers"
     $body = @{
+        owner = $owner
+        repo = $repo
+        pull_number = $prNumber
         reviewers = @()
     }
     ForEach ($reviewer in $reviewers) {
@@ -260,7 +264,7 @@ function CreateGitHubReviewers() {
     }
     $jsonBody = $body | ConvertTo-Json
     Write-Debug $jsonBody
-    $header = @{ Authorization = ("token $token") }
+    $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
     try {
         Write-Host "Add reviewers to the Pull Request..."
         $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
