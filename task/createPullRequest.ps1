@@ -225,7 +225,6 @@ function CreateGitHubPullRequest() {
 
             # If the reviewers not null so add the reviewers to the PR
             if ($reviewers -ne "") {
-                Write-Debug "$githubRepository"
                 CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number -repo $githubRepository
             }
         }
@@ -249,11 +248,10 @@ function CreateGitHubReviewers() {
         [string]$prNumber,
         [string]$repo
     )
-    Write-Debug "$repo"
     $reviewers = $reviewers.Split(';').Trim()
     $repoUrl = $repo
-    $owner = $repoUrl.Split('/')[3]
-    $repo = $repoUrl.Split('/')[4]
+    $owner = $repoUrl.Split('/')[0]
+    $repo = $repoUrl.Split('/')[1]
     $url = "https://api.github.com/repos/$owner/$repo/pulls/$prNumber/requested_reviewers"
     $body = @{
         owner = $owner
