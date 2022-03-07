@@ -82,6 +82,7 @@ stages:
 - stage: Publish_Public
   displayName: Publish to public 
   dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
   jobs:
     - deployment: DeployPrivate
       environment: Marketplace Public
