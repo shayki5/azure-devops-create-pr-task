@@ -27,7 +27,12 @@ function RunTask {
         [bool]$isForked,
         [bool]$bypassPolicy,
         [string]$bypassReason, 
-        [bool]$alwaysCreatePR
+        [bool]$alwaysCreatePR,
+        [bool]$githubAutoMerge,
+        [string]$githubMergeCommitTitle,
+        [string]$githubMergeCommitMessage,
+        [string]$githubMergeStrategy,
+        [bool]$githubDeleteSourceBranch
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -56,7 +61,12 @@ function RunTask {
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
         $alwaysCreatePR = Get-VstsInput -Name 'alwaysCreatePr' -AsBool
-        
+        $githubAutoMerge = Get-VstsInput -Name 'githubAutoMerge' -AsBool
+        $githubMergeCommitTitle = Get-VstsInput -Name 'githubMergeCommitTitle'
+        $githubMergeCommitMessage = Get-VstsInput -Name 'githubMergeCommitMessage'
+        $githubMergeStrategy = Get-VstsInput -Name 'githubMergeStrategy'
+        $githubDeleteSourceBranch = Get-VstsInput -Name 'githubDeleteSourceBranch' -AsBool
+
         $deleteSourch = $deleteSource
 
         $global:token = (Get-VstsEndpoint -Name SystemVssConnection -Require).auth.parameters.AccessToken
@@ -108,7 +118,14 @@ function RunTask {
 
         foreach($branch in $targetBranches) {
             $pullRequestTitle = $title.Replace('[BRANCH_NAME]', $branch.Replace('refs/heads/',''))
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -tags $tags -alwaysCreatePR $alwaysCreatePR
+
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch /
+            -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft /
+            -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage /
+            -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository /
+            -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason /
+            -tags $tags -alwaysCreatePR $alwaysCreatePR -githubAutoMerge $githubAutoMerge -githubMergeCommitTitle $githubMergeCommitTitle /
+            -githubMergeCommitMessage $githubMergeCommitMessage -githubMergeStrategy $githubMergeStrategy -githubDeleteSourceBranch $githubDeleteSourceBranch
         }
 
         if ($passPullRequestIdBackToADO) {
@@ -147,16 +164,28 @@ function CreatePullRequest() {
         [bool]$bypassPolicy,
         [string]$bypassReason, 
         [bool]$alwaysCreatePR,
-        [string]$tags
+        [string]$tags,
+        [bool]$githubAutoMerge,
+        [string]$githubMergeCommitTitle,
+        [string]$githubMergeCommitMessage,
+        [string]$githubMergeStrategy,
+        [bool]$githubDeleteSourceBranch
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -tags $tags -alwaysCreatePR $alwaysCreatePR
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch /
+        -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft /
+        -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage /
+        -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO /
+        -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -tags $tags -alwaysCreatePR $alwaysCreatePR
     }
         
     else {
         # Is GitHub repository
-        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -tags $tags
+        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description /
+        -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO /
+        -tags $tags -githubAutoMerge $githubAutoMerge -githubMergeCommitTitle $githubMergeCommitTitle /
+        -githubMergeCommitMessage $githubMergeCommitMessage -githubMergeStrategy $githubMergeStrategy -githubDeleteSourceBranch $githubDeleteSourceBranch
     }
 }
 
@@ -173,7 +202,12 @@ function CreateGitHubPullRequest() {
         [bool]$isDraft,
         [string]$githubRepository,
         [bool]$passPullRequestIdBackToADO,
-        [string]$tags
+        [string]$tags,
+        [bool]$githubAutoMerge,
+        [string]$githubMergeCommitTitle,
+        [string]$githubMergeCommitMessage,
+        [string]$githubMergeStrategy,
+        [bool]$githubDeleteSourceBranch
     )
 
     Write-Host "The repository is: $githubRepository"
@@ -182,6 +216,7 @@ function CreateGitHubPullRequest() {
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
     Write-Host "Is Draft Pull Request: $isDraft"
+    Write-Host "Auto merge?: $githubAutoMerge"
 
     $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
     $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
@@ -232,6 +267,13 @@ function CreateGitHubPullRequest() {
             # If the reviewers not null so add the reviewers to the PR
             if ($tags -ne "") {
                 CreateGitHubLabels -labels $tags -token $token -prNumber $response.number -repo $githubRepository
+            }
+
+            # If the reviewers not null so add the reviewers to the PR
+            if ($githubAutoMerge) {
+                GitHubAutoMerge -token $token -prNumber $response.number -repo $githubRepository -commitMessage $githubMergeCommitMessage /
+                -commitTitle $githubMergeCommitTitle -mergeStrategy $githubMergeStrategy -deleteSource $githubDeleteSourceBranch /
+                -sourceBranch $sourceBranch
             }
         }
         else {
@@ -320,10 +362,9 @@ function CreateGitHubLabels() {
     Write-Debug $jsonBody
     $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
     try {
-        Write-Host "Add lables to the Pull Request..."
+        Write-Host "Add labels to the Pull Request..."
         $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
         if ($Null -ne $response) {
-            # If the response not null - the create PR succeeded
             Write-Host "******** Success ********"
             Write-Host "Labels were added to PR #$prNumber"
         }
@@ -332,6 +373,59 @@ function CreateGitHubLabels() {
     catch {
         Write-Error $_
         Write-Error $_.Exception.Message
+    }
+}
+
+function GitHubAutoMerge {
+    [CmdletBinding()]
+    Param
+    (
+        [string]$pullRequestId,
+        [string]$mergeStrategy,
+        [string]$commitTitle,
+        [string]$commitMessage,
+        [string]$repositoryName,
+        [string]$token,
+        [bool]$deleteSource,
+        [string]$sourceBranch
+    )
+
+    $owner = $repositoryName.Split('/')[0]
+    $repo = $repositoryName.Split('/')[1]
+    $url = "https://api.github.com/repos/$owner/$repo/pulls/$prNumber/merge"
+
+    $body = @{
+        commit_title = "$commitTitle"
+        commit_message = "$commitMessage"
+        merge_method = "$mergeStrategy"
+    }    
+
+    $jsonBody = $body | ConvertTo-Json
+    Write-Debug $jsonBody
+    $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
+    try {
+        Write-Host "Merging the Pull Request..."
+        Invoke-RestMethod -Uri $url -Method Put -ContentType application/json -Headers $header -Body $jsonBody
+        Write-Host "******** Merge is succeed ********"
+    }
+
+    catch {
+        Write-Error $_
+        Write-Error $_.Exception.Message
+    }
+    if($deleteSource)
+    {
+        Write-Host "Deleting the source branch..."
+        $url = "https://api.github.com/$owner/$repo/npm-demo/git/refs/heads/$sourceBranch"
+        try {
+        Invoke-RestMethod -Uri $url -Method DELETE -ContentType application/json -Headers $header
+        Write-Host "******** The branch $sourceBranch is deleted ********"
+        }
+
+        catch {
+            Write-Error $_
+            Write-Error $_.Exception.Message
+        }
     }
 }
 

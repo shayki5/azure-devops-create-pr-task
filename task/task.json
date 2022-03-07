@@ -20,6 +20,12 @@
       "displayName": "Complete options",
       "isExpanded": true,
       "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "githubmerge",
+      "displayName": "Complete options",
+      "isExpanded": true,
+      "visibleRule": "repoType=GitHub"
     }
   ],
   "inputs": [
@@ -184,6 +190,15 @@
       "groupName": "completion"
     },
     {
+      "name": "githubAutoMerge",
+      "type": "boolean",
+      "label": "Merge the branches after the PR opened (if there are no conflicts)",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked the pull request will be closed and the branched will merged (if there are no conflicts).",
+      "groupName": "githubmerge"
+    },
+    {
       "name": "mergeStrategy",
       "type": "picklist",
       "label": "Merge Strategy",
@@ -200,6 +215,21 @@
       "visibleRule": "autoComplete=true"
     },
     {
+      "name": "githubMergeStrategy",
+      "type": "picklist",
+      "label": "Merge Strategy",
+      "defaultValue": "Merge",
+      "required": false,
+      "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github) more info.",
+      "options": {
+        "merge": "Merge",
+        "squash": "Squash commit",
+        "rebase": "Rebase"
+      },
+      "groupName": "githubmerge",
+      "visibleRule": "githubAutoMerge=true"
+    },
+    {
       "name": "deleteSource",
       "aliases": [
           "deleteSourch"
@@ -213,6 +243,16 @@
       "visibleRule": "autoComplete=true"
     },
     {
+      "name": "githubDeleteSourceBranch",
+      "type": "boolean",
+      "label": "Delete the source branch after merge",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If true, the source branch of the pull request will be deleted after the auto merge.",
+      "groupName": "githubmerge",
+      "visibleRule": "githubAutoMerge=true"
+    },
+    {
       "name": "commitMessage",
       "type": "string",
       "label": "Commit Message",
@@ -220,6 +260,24 @@
       "helpMarkDown": "If set, this will be used as the commit message of the merge commit.  If empty the default will be used.",
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "githubMergeCommitTitle",
+      "type": "string",
+      "label": "Commit Title",
+      "required": false,
+      "helpMarkDown": "If set, this will be used as the commit title of the merge commit.  If empty the default will be used.",
+      "groupName": "githubmerge",
+      "visibleRule": "githubAutoMerge=true"
+    },
+    {
+      "name": "githubMergeCommitMessage",
+      "type": "string",
+      "label": "Commit Message",
+      "required": false,
+      "helpMarkDown": "If set, this will be used as the commit message of the merge commit.  If empty the default will be used.",
+      "groupName": "githubmerge",
+      "visibleRule": "githubAutoMerge=true"
     },
     {
       "name": "transitionWorkItems",
