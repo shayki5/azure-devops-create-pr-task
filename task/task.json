@@ -147,8 +147,7 @@
       "label": "Tags",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Pull request tags (optional). tags list separated by semicolon. for example: tag1;tag2",
-      "visibleRule": "repoType=Azure DevOps"
+      "helpMarkDown": "Pull request tags/labels (optional). tag list separated by semicolon. for example: tag1;tag2"
     },
     {
       "name": "isDraft",
