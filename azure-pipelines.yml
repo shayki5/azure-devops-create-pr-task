@@ -44,6 +44,7 @@ stages:
           extensionPricing: free
           updateTasksVersion: false
           outputPath: '$(Build.ArtifactStagingDirectory)/vsix'
+        condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: drop'
