@@ -320,7 +320,7 @@ function CreateGitHubLabels() {
     Write-Debug $jsonBody
     $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
     try {
-        Write-Host "Add reviewers to the Pull Request..."
+        Write-Host "Add lables to the Pull Request..."
         $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
         if ($Null -ne $response) {
             # If the response not null - the create PR succeeded
