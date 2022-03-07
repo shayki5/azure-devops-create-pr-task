@@ -271,7 +271,7 @@ function CreateGitHubPullRequest() {
 
             # If the reviewers not null so add the reviewers to the PR
             if ($githubAutoMerge) {
-                GitHubAutoMerge -token $token -repo $githubRepository -commitMessage $githubMergeCommitMessage `
+                GitHubAutoMerge -token $token -prNumber $response.number -repo $githubRepository -commitMessage $githubMergeCommitMessage `
                 -commitTitle $githubMergeCommitTitle -mergeStrategy $githubMergeStrategy -deleteSource $githubDeleteSourceBranch `
                 -sourceBranch $sourceBranch
             }
@@ -380,7 +380,7 @@ function GitHubAutoMerge {
     [CmdletBinding()]
     Param
     (
-        [string]$pullRequestId,
+        [string]$prNumber,
         [string]$mergeStrategy,
         [string]$commitTitle,
         [string]$commitMessage,
