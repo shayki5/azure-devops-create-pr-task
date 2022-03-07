@@ -192,10 +192,10 @@
     {
       "name": "githubAutoMerge",
       "type": "boolean",
-      "label": "Merge the branches after the PR opened (if there are no conflicts)",
+      "label": "Auto Merge",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": "If checked the pull request will be closed and the branched will merged (if there are no conflicts).",
+      "helpMarkDown": "If checked the pull request will be closed and the branches will merged (if there are no conflicts).",
       "groupName": "githubmerge"
     },
     {

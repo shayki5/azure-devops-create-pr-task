@@ -119,12 +119,12 @@ function RunTask {
         foreach($branch in $targetBranches) {
             $pullRequestTitle = $title.Replace('[BRANCH_NAME]', $branch.Replace('refs/heads/',''))
 
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch /
-            -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft /
-            -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage /
-            -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository /
-            -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason /
-            -tags $tags -alwaysCreatePR $alwaysCreatePR -githubAutoMerge $githubAutoMerge -githubMergeCommitTitle $githubMergeCommitTitle /
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch `
+            -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft `
+            -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage `
+            -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository `
+            -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason `
+            -tags $tags -alwaysCreatePR $alwaysCreatePR -githubAutoMerge $githubAutoMerge -githubMergeCommitTitle $githubMergeCommitTitle `
             -githubMergeCommitMessage $githubMergeCommitMessage -githubMergeStrategy $githubMergeStrategy -githubDeleteSourceBranch $githubDeleteSourceBranch
         }
 
@@ -173,18 +173,18 @@ function CreatePullRequest() {
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch /
-        -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft /
-        -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage /
-        -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO /
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch `
+        -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft `
+        -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage `
+        -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO `
         -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -tags $tags -alwaysCreatePR $alwaysCreatePR
     }
         
     else {
         # Is GitHub repository
-        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description /
-        -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO /
-        -tags $tags -githubAutoMerge $githubAutoMerge -githubMergeCommitTitle $githubMergeCommitTitle /
+        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description `
+        -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO `
+        -tags $tags -githubAutoMerge $githubAutoMerge -githubMergeCommitTitle $githubMergeCommitTitle `
         -githubMergeCommitMessage $githubMergeCommitMessage -githubMergeStrategy $githubMergeStrategy -githubDeleteSourceBranch $githubDeleteSourceBranch
     }
 }
@@ -271,8 +271,8 @@ function CreateGitHubPullRequest() {
 
             # If the reviewers not null so add the reviewers to the PR
             if ($githubAutoMerge) {
-                GitHubAutoMerge -token $token -prNumber $response.number -repo $githubRepository -commitMessage $githubMergeCommitMessage /
-                -commitTitle $githubMergeCommitTitle -mergeStrategy $githubMergeStrategy -deleteSource $githubDeleteSourceBranch /
+                GitHubAutoMerge -token $token -prNumber $response.number -repo $githubRepository -commitMessage $githubMergeCommitMessage `
+                -commitTitle $githubMergeCommitTitle -mergeStrategy $githubMergeStrategy -deleteSource $githubDeleteSourceBranch `
                 -sourceBranch $sourceBranch
             }
         }
