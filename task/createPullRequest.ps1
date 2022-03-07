@@ -201,25 +201,11 @@ function CreateGitHubPullRequest() {
         base   = "$targetBranch"
         title  = "$title"
         body   = "$description"
-        labels = ""
     }
 
     # Add the draft property only if is true and not add draft=false when it's false because there are github repos that doesn't support draft PR. see github issue #13
     if ($isDraft -eq $True) {
         $body.Add("draft" , $isDraft)
-    }
-
-    if ($tags -ne "") {
-        $tagList = $tags.Split(';')
-        $tagsBody = @()
-        foreach($tag in $tagList)
-        {
-            $tagsBody += @{ 
-                name = "$tag"
-            }
-        
-        }
-        $body.labels = $tagsBody
     }
 
     $jsonBody = ConvertTo-Json $body
@@ -241,6 +227,11 @@ function CreateGitHubPullRequest() {
             # If the reviewers not null so add the reviewers to the PR
             if ($reviewers -ne "") {
                 CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number -repo $githubRepository
+            }
+
+            # If the reviewers not null so add the reviewers to the PR
+            if ($tags -ne "") {
+                CreateGitHubLabels -labels $tags -token $token -prNumber $response.number -repo $githubRepository
             }
         }
         else {
@@ -295,6 +286,55 @@ function CreateGitHubReviewers() {
         Write-Error $_.Exception.Message
     }
 }
+
+function CreateGitHubLabels() {
+    [CmdletBinding()]
+    Param
+    (
+        [string]$labels,
+        [string]$token,
+        [string]$prNumber,
+        [string]$repo
+    )
+    $labels = $labels.Split(';').Trim()
+    $repoUrl = $repo
+    $owner = $repoUrl.Split('/')[0]
+    $repo = $repoUrl.Split('/')[1]
+    $url = "https://api.github.com/repos/$owner/$repo/issues/$prNumber/labels"
+    
+    $body = @{
+        labels = ""
+    }
+    
+    if ($tags -ne "") {
+        $tagList = $tags.Split(';')
+        $tagsBody = @()
+        foreach($tag in $tagList)
+        {
+            $tagsBody += $tag
+            
+        }
+        $body.labels = $tagsBody
+    }
+    $jsonBody = $body | ConvertTo-Json
+    Write-Debug $jsonBody
+    $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
+    try {
+        Write-Host "Add reviewers to the Pull Request..."
+        $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
+        if ($Null -ne $response) {
+            # If the response not null - the create PR succeeded
+            Write-Host "******** Success ********"
+            Write-Host "Labels were added to PR #$prNumber"
+        }
+    }
+
+    catch {
+        Write-Error $_
+        Write-Error $_.Exception.Message
+    }
+}
+
 
 function CreateAzureDevOpsPullRequest() {
     [CmdletBinding()]
