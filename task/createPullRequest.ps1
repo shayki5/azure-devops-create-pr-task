@@ -156,7 +156,7 @@ function CreatePullRequest() {
         
     else {
         # Is GitHub repository
-        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
+        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -tags $tags
     }
 }
 
@@ -172,7 +172,8 @@ function CreateGitHubPullRequest() {
         [string]$reviewers,
         [bool]$isDraft,
         [string]$githubRepository,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [string]$tags
     )
 
     Write-Host "The repository is: $githubRepository"
@@ -196,15 +197,29 @@ function CreateGitHubPullRequest() {
     $repo = $repoUrlSplitted.Split('/')[1]
     $url = "https://api.github.com/repos/$owner/$repo/pulls"
     $body = @{
-        head  = "$sourceBranch"
-        base  = "$targetBranch"
-        title = "$title"
-        body  = "$description"
+        head   = "$sourceBranch"
+        base   = "$targetBranch"
+        title  = "$title"
+        body   = "$description"
+        labels = ""
     }
 
     # Add the draft property only if is true and not add draft=false when it's false because there are github repos that doesn't support draft PR. see github issue #13
     if ($isDraft -eq $True) {
         $body.Add("draft" , $isDraft)
+    }
+
+    if ($tags -ne "") {
+        $tagList = $tags.Split(';')
+        $tagsBody = @()
+        foreach($tag in $tagList)
+        {
+            $tagsBody += @{ 
+                name = "$tag"
+            }
+        
+        }
+        $body.labels = $tagsBody
     }
 
     $jsonBody = ConvertTo-Json $body
