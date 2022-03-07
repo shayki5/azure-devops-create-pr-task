@@ -416,7 +416,7 @@ function GitHubAutoMerge {
     if($deleteSource)
     {
         Write-Host "Deleting the source branch..."
-        $url = "https://api.github.com/$owner/$repo/git/refs/heads/$sourceBranch"
+        $url = "https://api.github.com/repos/$owner/$repo/git/refs/heads/$sourceBranch"
         try {
         Invoke-RestMethod -Uri $url -Method DELETE -ContentType application/json -Headers $header
         Write-Host "******** The branch $sourceBranch is deleted ********"

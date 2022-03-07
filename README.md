@@ -84,13 +84,13 @@ Choose title, description, reviewers and more.
  
 - **Set Auto Complete**: Only for Azure DevOps. If checked the pull request will close once all branch policies are met.
 
-  Complete options:
+  Complete options (for Azure DevOps):
 
   - **Merge Strategy**: Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.
 
     - Merge (No fast-forward) - `noFastForward` in yaml:
 
-      A two-parent, no-fast-forward merge. The source branch is unchanged. This is the default behavior.
+      A two-parent, no-fast-forward merge. The source branch is unchanged. **This is the default behavior**.
 
     - Squash commit - `squash` in yaml:
 
@@ -111,6 +111,27 @@ Choose title, description, reviewers and more.
   - **Complete Associated Work Items**: If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).
   - **Bypass policy**: If true, policies will be explicitly bypassed while the pull request is completed.
   - **Bypass reason**: If policies are bypassed, this reason is stored as to why bypass was used.
+
+  Auto Merge options (for GitHub):
+
+  - **Merge Strategy**: Specify the strategy used to merge the pull request during completion, see [here](https://devblogs.microsoft.com/devops/pull-requests-with-rebase/) more info.
+
+    - Merge (No fast-forward) - `merge` in yaml:
+
+      A two-parent, no-fast-forward merge. The source branch is unchanged. **This is the default behavior**.
+
+    - Squash commit - `squash` in yaml:
+
+      Put all changes from the pull request into a single-parent commit.
+
+    - Rebase and fast-forward - `rebase` in yaml:
+
+      Rebase the source branch on top of the target branch HEAD commit, and fast-forward the target branch.
+      The source branch is updated during the rebase operation.
+
+  - **Delete Source Branch**: If true, the source branch of the pull request will be deleted after the merge.
+  - **Commit Title**: If set, this will be used as the commit title of the merge commit. if empty the default will be used.
+  - **Commit Message**: If set, this will be used as the commit message of the merge commit. if empty the default will be used.
 
 **In yaml piepline:**
 
@@ -142,6 +163,7 @@ Choose title, description, reviewers and more.
     linkWorkItems: false / true (Default: true)
     passPullRequestIdBackToADO: false / true (Default: false)
     alwaysCreatePr: false / true (Default: false)
+    # For Azure DevOps
     autoComplete: false / true (Default: false)
     mergeStrategy: 'noFastForward (default) / squash / rebase / rebaseMerge'
     deleteSource:  false / true (Default: false) # Optional
@@ -149,6 +171,12 @@ Choose title, description, reviewers and more.
     transitionWorkItems:  false / true (Default: false) # Optional
     bypassPolicy: false / true (can't be used with `autoComplete` -the bypass also auto complete the PR) 
     bypassReason: 'Test ByPass' # Optional
+    # For GitHub
+    githubAutoMerge: false / true (Default: false)
+    githubMergeStrategy: 'merge (default) / squash / rebase'
+    githubMergeCommitTitle: 'test title' # Optional
+    githubMergeCommitMessage: 'test message' # Optional
+    githubDeleteSourceBranch: false / true (Default: false) # Optional
   env:
     System_AccessToken: $(System.AccessToken)
 ```
