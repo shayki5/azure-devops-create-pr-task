@@ -185,6 +185,7 @@ Choose title, description, reviewers and more.
 
 | Version | What's new |                                                                                                                                                                                                                                                                                                                                                             
 | :------ | :------------------------------------------------------------------------------------------------------------------------- |
+| 1.2.318 | Auto merge for GitHub repos  |
 | 1.2.296 | Ability to create a PR with tags/labels  |
 | 1.2.277 | Add `alwaysCreatePr` option - to create a PR even there are no changes between the branches  |
 | 1.2.232 | Can use the token `[BRANCH_NAME]` to dynamically reuse the current target branch name |
