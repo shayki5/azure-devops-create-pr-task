@@ -218,13 +218,13 @@
       "name": "githubMergeStrategy",
       "type": "picklist",
       "label": "Merge Strategy",
-      "defaultValue": "Merge",
+      "defaultValue": "merge",
       "required": false,
       "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github) more info.",
       "options": {
-        "merge": "Merge",
-        "squash": "Squash commit",
-        "rebase": "Rebase"
+        "merge": "merge",
+        "squash": "squash",
+        "rebase": "rebase"
       },
       "groupName": "githubmerge",
       "visibleRule": "githubAutoMerge=true"
