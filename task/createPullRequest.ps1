@@ -296,7 +296,9 @@ function CreateGitHubReviewers() {
         [string]$prNumber,
         [string]$repo
     )
+    Write-Debug $reviewers
     $reviewers = $reviewers.Split(';').Trim()
+    Write-Debug $reviewers
     $repoUrl = $repo
     $owner = $repoUrl.Split('/')[0]
     $repo = $repoUrl.Split('/')[1]
@@ -309,9 +311,13 @@ function CreateGitHubReviewers() {
     }
     Write-Debug $body
     ForEach ($reviewer in $reviewers) {
+        Write-Debug $reviewers
+        Write-Debug $reviewer
         $body.reviewers += $reviewer
-        Write-Debug $jsonBody
+        Write-Debug $body
     }
+    Write-Debug $body
+    Write-Debug $reviewers
     Write-Debug $jsonBody
     $jsonBody = $body | ConvertTo-Json
     Write-Debug $jsonBody
