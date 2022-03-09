@@ -297,8 +297,9 @@ function CreateGitHubReviewers() {
         [string]$repo
     )
     Write-Debug $reviewers
-    [array]$reviewers = $reviewers.Split(';').Trim()
-    Write-Debug $reviewers
+    Write-Debug $reviewers.GetType()
+    $split = $reviewers.Split(';').Trim()
+    Write-Debug $split
     $repoUrl = $repo
     $owner = $repoUrl.Split('/')[0]
     $repo = $repoUrl.Split('/')[1]
@@ -310,15 +311,10 @@ function CreateGitHubReviewers() {
         reviewers = @()
     }
     Write-Debug $body
-    ForEach ($reviewer in $reviewers) {
-        Write-Debug $reviewers
+    ForEach ($reviewer in $split) {
         Write-Debug $reviewer
         $body.reviewers += $reviewer
-        Write-Debug $body
     }
-    Write-Debug $body
-    Write-Debug $reviewers
-    Write-Debug $jsonBody
     $jsonBody = $body | ConvertTo-Json
     Write-Debug $jsonBody
     $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
