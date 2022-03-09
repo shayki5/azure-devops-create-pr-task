@@ -215,6 +215,7 @@ function CreateGitHubPullRequest() {
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
+    Write-Host "The reviewers are: $reviewers"
     Write-Host "Is Draft Pull Request: $isDraft"
     Write-Host "Auto merge?: $githubAutoMerge"
 
@@ -264,12 +265,11 @@ function CreateGitHubPullRequest() {
                 CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number -repo $githubRepository
             }
 
-            # If the reviewers not null so add the reviewers to the PR
+            # If the tags not null so add the reviewers to the PR
             if ($tags -ne "") {
                 CreateGitHubLabels -labels $tags -token $token -prNumber $response.number -repo $githubRepository
             }
 
-            # If the reviewers not null so add the reviewers to the PR
             if ($githubAutoMerge) {
                 GitHubAutoMerge -token $token -prNumber $response.number -repo $githubRepository -commitMessage $githubMergeCommitMessage `
                 -commitTitle $githubMergeCommitTitle -mergeStrategy $githubMergeStrategy -deleteSource $githubDeleteSourceBranch `
@@ -307,9 +307,12 @@ function CreateGitHubReviewers() {
         pull_number = $prNumber
         reviewers = @()
     }
+    Write-Debug $body
     ForEach ($reviewer in $reviewers) {
         $body.reviewers += $reviewer
+        Write-Debug $jsonBody
     }
+    Write-Debug $jsonBody
     $jsonBody = $body | ConvertTo-Json
     Write-Debug $jsonBody
     $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
@@ -353,8 +356,7 @@ function CreateGitHubLabels() {
         $tagsBody = @()
         foreach($tag in $tagList)
         {
-            $tagsBody += $tag
-            
+            $tagsBody += $tag  
         }
         $body.labels = $tagsBody
     }
