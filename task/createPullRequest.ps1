@@ -297,7 +297,7 @@ function CreateGitHubReviewers() {
         [string]$repo
     )
     Write-Debug $reviewers
-    $reviewers = $reviewers.Split(';').Trim()
+    [array]$reviewers = $reviewers.Split(';').Trim()
     Write-Debug $reviewers
     $repoUrl = $repo
     $owner = $repoUrl.Split('/')[0]
