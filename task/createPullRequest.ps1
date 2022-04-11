@@ -1,3 +1,6 @@
+$TLS12Protocol = [System.Net.SecurityProtocolType] 'Ssl3 , Tls12'
+[System.Net.ServicePointManager]::SecurityProtocol = $TLS12Protocol
+
 function RunTask {
     [CmdletBinding()]
     Param
@@ -7,9 +10,12 @@ function RunTask {
         [string]$title,
         [string]$description,
         [string]$reviewers,
+        [string]$tags,
         [bool]$isDraft,
         [bool]$autoComplete,
         [string]$mergeStrategy,
+        [bool]$deleteSource,
+        [System.ObsoleteAttribute("Use deleteSource Parameter")]
         [bool]$deleteSourch,
         [string]$commitMessage,
         [bool]$transitionWorkItems,
@@ -20,7 +26,13 @@ function RunTask {
         [bool]$passPullRequestIdBackToADO,
         [bool]$isForked,
         [bool]$bypassPolicy,
-        [string]$bypassReason
+        [string]$bypassReason, 
+        [bool]$alwaysCreatePR,
+        [bool]$githubAutoMerge,
+        [string]$githubMergeCommitTitle,
+        [string]$githubMergeCommitMessage,
+        [string]$githubMergeStrategy,
+        [bool]$githubDeleteSourceBranch
     )
 
     Trace-VstsEnteringInvocation $MyInvocation
@@ -31,11 +43,13 @@ function RunTask {
         $title = Get-VstsInput -Name 'title' -Require
         $description = Get-VstsInput -Name 'description'
         $reviewers = Get-VstsInput -Name 'reviewers'
+        $tags = Get-VstsInput -Name 'tags'
         $repoType = Get-VstsInput -Name 'repoType' -Require
         $isDraft = Get-VstsInput -Name 'isDraft' -AsBool
         $autoComplete = Get-VstsInput -Name 'autoComplete' -AsBool
         $mergeStrategy = Get-VstsInput -Name 'mergeStrategy' 
         $deleteSourch = Get-VstsInput -Name 'deleteSourch' -AsBool
+        $deleteSource = Get-VstsInput -Name 'deleteSource' -AsBool
         $commitMessage = Get-VstsInput -Name 'commitMessage' 
         $transitionWorkItems = Get-VstsInput -Name 'transitionWorkItems' -AsBool
         $linkWorkItems = Get-VstsInput -Name 'linkWorkItems' -AsBool
@@ -46,7 +60,15 @@ function RunTask {
         $isForked = Get-VstsInput -Name 'isForked' -AsBool
         $bypassPolicy = Get-VstsInput -Name 'bypassPolicy' -AsBool
         $bypassReason = Get-VstsInput -Name 'bypassReason'
-        
+        $alwaysCreatePR = Get-VstsInput -Name 'alwaysCreatePr' -AsBool
+        $githubAutoMerge = Get-VstsInput -Name 'githubAutoMerge' -AsBool
+        $githubMergeCommitTitle = Get-VstsInput -Name 'githubMergeCommitTitle'
+        $githubMergeCommitMessage = Get-VstsInput -Name 'githubMergeCommitMessage'
+        $githubMergeStrategy = Get-VstsInput -Name 'githubMergeStrategy'
+        $githubDeleteSourceBranch = Get-VstsInput -Name 'githubDeleteSourceBranch' -AsBool
+
+        $deleteSourch = $deleteSource
+
         $global:token = (Get-VstsEndpoint -Name SystemVssConnection -Require).auth.parameters.AccessToken
 
         if ($repositoryName -eq "" -or $repositoryName -eq "currentBuild" -or $isForked -eq $True) {
@@ -59,9 +81,11 @@ function RunTask {
         $repositoryName = $repositoryName.Replace(" ", "%20")
         $targetBranches = $targetBranch
 
+        # Init pullRequestIds
+        [array]$global:pullRequestIds
+
         # If is multi-target branch, like release/*
         if ($targetBranch.Contains('*')) {
-            $passPullRequestIdBackToADO = $false
             if($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.0"
                 $header = @{ Authorization = "Bearer $global:token" }
@@ -89,13 +113,25 @@ function RunTask {
 
         # If is multi-target branch, like master;feature
         elseif($targetBranch.Contains(';')) {
-            $passPullRequestIdBackToADO = $false
             $targetBranches = $targetBranch.Split(';')
         }
 
         foreach($branch in $targetBranches) {
-            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch -title $title -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason
-        }  
+            $pullRequestTitle = $title.Replace('[BRANCH_NAME]', $branch.Replace('refs/heads/',''))
+
+            CreatePullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $branch `
+            -title $pullRequestTitle -description $description -reviewers $reviewers -repoType $repoType -isDraft $isDraft `
+            -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage `
+            -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -githubRepository $githubRepository `
+            -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason `
+            -tags $tags -alwaysCreatePR $alwaysCreatePR -githubAutoMerge $githubAutoMerge -githubMergeCommitTitle $githubMergeCommitTitle `
+            -githubMergeCommitMessage $githubMergeCommitMessage -githubMergeStrategy $githubMergeStrategy -githubDeleteSourceBranch $githubDeleteSourceBranch
+        }
+
+        if ($passPullRequestIdBackToADO) {
+            # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
+            write-host "##vso[task.setvariable variable=pullRequestId]$(($global:pullRequestIds -join ';').TrimEnd(';'))"
+        }
     }
 
     finally {
@@ -126,16 +162,30 @@ function CreatePullRequest() {
         [bool]$passPullRequestIdBackToADO,
         [bool]$isForked,
         [bool]$bypassPolicy,
-        [string]$bypassReason
+        [string]$bypassReason, 
+        [bool]$alwaysCreatePR,
+        [string]$tags,
+        [bool]$githubAutoMerge,
+        [string]$githubMergeCommitTitle,
+        [string]$githubMergeCommitMessage,
+        [string]$githubMergeStrategy,
+        [bool]$githubDeleteSourceBranch
     )
 
     if ($repoType -eq "Azure DevOps") { 
-        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason
+        CreateAzureDevOpsPullRequest -teamProject $teamProject -repositoryName $repositoryName -sourceBranch $sourceBranch `
+        -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft `
+        -autoComplete $autoComplete -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage `
+        -transitionWorkItems $transitionWorkItems -linkWorkItems $linkWorkItems -passPullRequestIdBackToADO $passPullRequestIdBackToADO `
+        -isForked $isForked -bypassPolicy $bypassPolicy -bypassReason $bypassReason -tags $tags -alwaysCreatePR $alwaysCreatePR
     }
-
+        
     else {
         # Is GitHub repository
-        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO
+        CreateGitHubPullRequest -sourceBranch $sourceBranch -targetBranch $targetBranch -title $title -description $description `
+        -reviewers $reviewers -isDraft $isDraft -githubRepository $githubRepository -passPullRequestIdBackToADO $passPullRequestIdBackToADO `
+        -tags $tags -githubAutoMerge $githubAutoMerge -githubMergeCommitTitle $githubMergeCommitTitle `
+        -githubMergeCommitMessage $githubMergeCommitMessage -githubMergeStrategy $githubMergeStrategy -githubDeleteSourceBranch $githubDeleteSourceBranch
     }
 }
 
@@ -151,14 +201,23 @@ function CreateGitHubPullRequest() {
         [string]$reviewers,
         [bool]$isDraft,
         [string]$githubRepository,
-        [bool]$passPullRequestIdBackToADO
+        [bool]$passPullRequestIdBackToADO,
+        [string]$tags,
+        [bool]$githubAutoMerge,
+        [string]$githubMergeCommitTitle,
+        [string]$githubMergeCommitMessage,
+        [string]$githubMergeStrategy,
+        [bool]$githubDeleteSourceBranch
     )
 
+    Write-Host "The repository is: $githubRepository"
     Write-Host "The Source Branch is: $sourceBranch"
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
+    Write-Host "The reviewers are: $reviewers"
     Write-Host "Is Draft Pull Request: $isDraft"
+    Write-Host "Auto merge?: $githubAutoMerge"
 
     $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
     $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
@@ -174,10 +233,10 @@ function CreateGitHubPullRequest() {
     $repo = $repoUrlSplitted.Split('/')[1]
     $url = "https://api.github.com/repos/$owner/$repo/pulls"
     $body = @{
-        head  = "$sourceBranch"
-        base  = "$targetBranch"
-        title = "$title"
-        body  = "$description"
+        head   = "$sourceBranch"
+        base   = "$targetBranch"
+        title  = "$title"
+        body   = "$description"
     }
 
     # Add the draft property only if is true and not add draft=false when it's false because there are github repos that doesn't support draft PR. see github issue #13
@@ -198,13 +257,23 @@ function CreateGitHubPullRequest() {
             Write-Host "Pull Request $($response.number) created."
 
             if ($passPullRequestIdBackToADO) {
-                # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
-                write-host "##vso[task.setvariable variable=pullRequestId]$($response.number)"
+                $global:pullRequestIds += "$($response.number);"
             }
 
             # If the reviewers not null so add the reviewers to the PR
             if ($reviewers -ne "") {
-                CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number
+                CreateGitHubReviewers -reviewers $reviewers -token $token -prNumber $response.number -repo $githubRepository
+            }
+
+            # If the tags not null so add the reviewers to the PR
+            if ($tags -ne "") {
+                CreateGitHubLabels -labels $tags -token $token -prNumber $response.number -repo $githubRepository
+            }
+
+            if ($githubAutoMerge) {
+                GitHubAutoMerge -token $token -prNumber $response.number -repo $githubRepository -commitMessage $githubMergeCommitMessage `
+                -commitTitle $githubMergeCommitTitle -mergeStrategy $githubMergeStrategy -deleteSource $githubDeleteSourceBranch `
+                -sourceBranch $sourceBranch
             }
         }
         else {
@@ -224,22 +293,26 @@ function CreateGitHubReviewers() {
     (
         [string]$reviewers,
         [string]$token,
-        [string]$prNumber
+        [string]$prNumber,
+        [string]$repo
     )
-    $reviewers = $reviewers.Split(';')
-    $repoUrl = $env:BUILD_REPOSITORY_URI
-    $owner = $repoUrl.Split('/')[3]
-    $repo = $repoUrl.Split('/')[4]
+    $split = $reviewers.Split(';').Trim()
+    $repoUrl = $repo
+    $owner = $repoUrl.Split('/')[0]
+    $repo = $repoUrl.Split('/')[1]
     $url = "https://api.github.com/repos/$owner/$repo/pulls/$prNumber/requested_reviewers"
     $body = @{
+        owner = $owner
+        repo = $repo
+        pull_number = $prNumber
         reviewers = @()
     }
-    ForEach ($reviewer in $reviewers) {
+    ForEach ($reviewer in $split) {
         $body.reviewers += $reviewer
     }
     $jsonBody = $body | ConvertTo-Json
     Write-Debug $jsonBody
-    $header = @{ Authorization = ("token $token") }
+    $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
     try {
         Write-Host "Add reviewers to the Pull Request..."
         $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
@@ -255,6 +328,106 @@ function CreateGitHubReviewers() {
         Write-Error $_.Exception.Message
     }
 }
+
+function CreateGitHubLabels() {
+    [CmdletBinding()]
+    Param
+    (
+        [string]$labels,
+        [string]$token,
+        [string]$prNumber,
+        [string]$repo
+    )
+    $labels = $labels.Split(';').Trim()
+    $repoUrl = $repo
+    $owner = $repoUrl.Split('/')[0]
+    $repo = $repoUrl.Split('/')[1]
+    $url = "https://api.github.com/repos/$owner/$repo/issues/$prNumber/labels"
+    
+    $body = @{
+        labels = ""
+    }
+    
+    if ($tags -ne "") {
+        $tagList = $tags.Split(';')
+        $tagsBody = @()
+        foreach($tag in $tagList)
+        {
+            $tagsBody += $tag  
+        }
+        $body.labels = $tagsBody
+    }
+    $jsonBody = $body | ConvertTo-Json
+    Write-Debug $jsonBody
+    $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
+    try {
+        Write-Host "Add labels to the Pull Request..."
+        $response = Invoke-RestMethod -Uri $url -Method Post -ContentType application/json -Headers $header -Body $jsonBody
+        if ($Null -ne $response) {
+            Write-Host "******** Success ********"
+            Write-Host "Labels were added to PR #$prNumber"
+        }
+    }
+
+    catch {
+        Write-Error $_
+        Write-Error $_.Exception.Message
+    }
+}
+
+function GitHubAutoMerge {
+    [CmdletBinding()]
+    Param
+    (
+        [string]$prNumber,
+        [string]$mergeStrategy,
+        [string]$commitTitle,
+        [string]$commitMessage,
+        [string]$repositoryName,
+        [string]$token,
+        [bool]$deleteSource,
+        [string]$sourceBranch
+    )
+
+    $owner = $repositoryName.Split('/')[0]
+    $repo = $repositoryName.Split('/')[1]
+    $url = "https://api.github.com/repos/$owner/$repo/pulls/$prNumber/merge"
+
+    $body = @{
+        commit_title = "$commitTitle"
+        commit_message = "$commitMessage"
+        merge_method = "$mergeStrategy"
+    }    
+
+    $jsonBody = $body | ConvertTo-Json
+    Write-Debug $jsonBody
+    $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.v3+json" }
+    try {
+        Write-Host "Merging the Pull Request..."
+        Invoke-RestMethod -Uri $url -Method Put -ContentType application/json -Headers $header -Body $jsonBody
+        Write-Host "******** Merge is succeed ********"
+    }
+
+    catch {
+        Write-Error $_
+        Write-Error $_.Exception.Message
+    }
+    if($deleteSource)
+    {
+        Write-Host "Deleting the source branch..."
+        $url = "https://api.github.com/repos/$owner/$repo/git/refs/heads/$sourceBranch"
+        try {
+        Invoke-RestMethod -Uri $url -Method DELETE -ContentType application/json -Headers $header
+        Write-Host "******** The branch $sourceBranch is deleted ********"
+        }
+
+        catch {
+            Write-Error $_
+            Write-Error $_.Exception.Message
+        }
+    }
+}
+
 
 function CreateAzureDevOpsPullRequest() {
     [CmdletBinding()]
@@ -277,7 +450,9 @@ function CreateAzureDevOpsPullRequest() {
         [bool]$passPullRequestIdBackToADO,
         [bool]$isForked,
         [bool]$bypassPolicy,
-        [string]$bypassReason
+        [string]$bypassReason, 
+        [bool]$alwaysCreatePR,
+        [string]$tags
     )
 
     if (!$sourceBranch.Contains("refs")) {
@@ -288,19 +463,26 @@ function CreateAzureDevOpsPullRequest() {
         $targetBranch = "refs/heads/$targetBranch"
     }
 
+    Write-Host "The repository is: $repositoryName"
     Write-Host "The Source Branch is: $sourceBranch"
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
     Write-Host "Is Reviewers are: $reviewers"
+    Write-Host "The tags are: $tags"
     Write-Host "Is Draft Pull Request: $isDraft"
     Write-Host "Auto-Complete: $autoComplete"
     Write-Host "Link Work Items: $linkWorkItems"
     Write-Host "Bypass: $bypassPolicy"
     Write-Host "Bypass Reason: $bypassReason"
+    Write-Host "DeleteSourceBranch ist set to: $deleteSourch"
 
     if($isForked -eq $False) {
-        CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch
+        $changesExist = CheckIfThereAreChanges -sourceBranch $sourceBranch -targetBranch $targetBranch -alwaysCreatePR $alwaysCreatePR
+        if($changesExist -eq "false")
+        {
+            return
+        }
     }
 
     $body = @{
@@ -309,15 +491,29 @@ function CreateAzureDevOpsPullRequest() {
         title         = "$title"
         description   = "$description"
         reviewers     = ""
+        labels        = ""
         isDraft       = "$isDraft"
         WorkItemRefs  = ""
-        forkSource = ""
+        forkSource    = ""
     }
 
     if ($reviewers -ne "") {
         $usersId = GetReviewerId -reviewers $reviewers
         $body.reviewers = @( $usersId )
         Write-Host "The reviewers are: $($reviewers.Split(';'))"
+    }
+
+    if ($tags -ne "") {
+        $tagList = $tags.Split(';')
+        $tagsBody = @()
+        foreach($tag in $tagList)
+        {
+            $tagsBody += @{ 
+                name = "$tag"
+            }
+        
+        }
+        $body.labels = $tagsBody
     }
 
     if ($linkWorkItems -eq $True) {
@@ -351,8 +547,7 @@ function CreateAzureDevOpsPullRequest() {
             Write-Host "Pull Request $pullRequestId created."
             
             if ($passPullRequestIdBackToADO) {
-                # Pass pullRequestId back to Azure DevOps for consumption by other pipeline tasks
-                write-host "##vso[task.setvariable variable=pullRequestId]$pullRequestId"
+                $global:pullRequestIds += "$pullRequestId;"
             }
 
             $currentUserId = $response.createdBy.id
@@ -394,7 +589,8 @@ function CreateAzureDevOpsPullRequest() {
 function CheckIfThereAreChanges {
     Param (
         [string]$sourceBranch,
-        [string]$targetBranch
+        [string]$targetBranch, 
+        [bool]$alwaysCreatePR
     )
 
     # Remove the refs/heads/ or merge/pull from branches name (see issue #85)
@@ -419,20 +615,38 @@ function CheckIfThereAreChanges {
     $sourceBranch = [uri]::EscapeDataString($sourceBranch)
     $targetBranch = [uri]::EscapeDataString($targetBranch)
     
-    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($sourceBranch)&targetVersion=$($targetBranch)&api-version=4.0" + '&$top=2'
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($targetBranch)&targetVersion=$($sourceBranch)&api-version=4.0&diffCommonCommit=true" + '&$top=2'
     $head = @{ Authorization = "Bearer $global:token" }
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
-    if ($response.behindCount -eq 0) {
-        Write-Warning "***************************************************************"
-        Write-Warning "There are no new commits in the source branch, no PR is needed!"
-        Write-Warning "***************************************************************"
-        exit 0
-    }
-    else {
-        Write-Host "$($response.behindCount) new commits! perofrm a Pull Request..."
-    }
+    if ($alwaysCreatePR -eq $true) {
+        Write-Host "AlwaysCreatePr flag is true. Trying to perform a Pull Request..."
 
-    
+        if ($response.aheadCount -gt 0) {
+            Write-Host "The source branch is ahead by $($response.aheadCount) commits. Perform a Pull Request..."
+            return "true"
+        } else {
+            Write-Warning "***************************************************************"
+            Write-Warning "There are no new commits in the source branch, no PR is needed!"
+            Write-Warning "***************************************************************"
+            return "false"
+        }
+    }
+    else  {
+        Write-Host "AlwaysCreatePr flag is false. A PR will only be created if there are actual file changes, but not if there is only a difference in commits."
+
+        if ('' -eq $response.changeCounts) {
+            Write-Warning "***************************************************************"
+            Write-Warning "There are no file changes in the source branch, so no PR will be created!"
+            if ($response.aheadCount -gt 0) {
+                Write-Warning "The source branch is ahead by $($response.aheadCount) commits. If you want to create a PR in such a case, then please set the AlwaysCreatePr flag to true."
+            }
+            Write-Warning "***************************************************************"
+            return "false"
+        } else {
+            Write-Host "$($response.aheadCount) new commits! File changes were found! Perform a Pull Request..."
+            return "true"
+        }
+    }
 }
 
 function GetReviewerId() {
@@ -452,7 +666,7 @@ function GetReviewerId() {
 
         $teams = Invoke-RestMethod -Method Get -Uri $url -Headers $head -ContentType 'application/json'
         Write-Debug $reviewers
-        $split = $reviewers.Split(';')
+        $split = $reviewers.Split(';').Trim()
         $reviewersId = @()
         ForEach ($reviewer in $split) {
             $isRequired = "false"
@@ -497,7 +711,7 @@ function GetReviewerId() {
             # If the reviewer is team
             else {
                 if ($teams.count -eq 1) {
-                    if ($teams.value.name -eq $u) {
+                    if ($teams.value.name -eq $reviewer) {
                         $teamId = $teams.value.id
                         Write-Host $teamId -ForegroundColor Green
                         $reviewersId += @{ 
@@ -507,7 +721,7 @@ function GetReviewerId() {
                     }
                 }
                 else {
-                    $teamId = $teams.value.Where( { $_.name -eq $u }).id
+                    $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
                     Write-Host $teamId -ForegroundColor Green
                     $reviewersId += @{ 
                         id = "$teamId"
@@ -520,7 +734,7 @@ function GetReviewerId() {
     
     # If it's Azure DevOps
     else {
-        $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?top=5000&api-version=4.1-preview.1"
+        $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?top=10000&api-version=4.1-preview.1"
         # Check if it's the old url or the new url, reltaed to issue #21
         # And add "vsaex" to the rest api url 
         if ($url -match "visualstudio.com") {
@@ -533,7 +747,7 @@ function GetReviewerId() {
         $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.0-preview.1"
         $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
         Write-Debug $reviewers
-        $split = $reviewers.Split(';')
+        $split = $reviewers.Split(';').Trim()
         $reviewersId = @()
         ForEach ($reviewer in $split) {
             $isRequired = "false"
@@ -614,12 +828,15 @@ function GetLinkedWorkItems {
     $response = Invoke-RestMethod -Method Post -Uri $url -Headers $header -Body $jsonBody -ContentType 'application/json'
     Write-Debug $response
     $commits = $response.value
+    $commits.ForEach({ $_.workItems.ForEach({ Write-Debug $_ }) })
     $workItemsId = @()
     $commits.ForEach( { 
             if ($_.workItems.length -gt 0) {
                 $_.workItems.ForEach({
+                        Write-Debug $_
                         # Get the work item id from the work item url
                         $workItemsId += $_.url.split('/')[$_.url.split('/').count - 1]
+                        $workItemsId.ForEach({ Write-Debug $_  })
                     })
             }
         })

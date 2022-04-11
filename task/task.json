@@ -20,6 +20,12 @@
       "displayName": "Complete options",
       "isExpanded": true,
       "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "githubmerge",
+      "displayName": "Complete options",
+      "isExpanded": true,
+      "visibleRule": "repoType=GitHub"
     }
   ],
   "inputs": [
@@ -123,7 +129,7 @@
       "label": "Title",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The pull request title."
+      "helpMarkDown": "The pull request title. You can use the token [BRANCH_NAME] to dynamically reuse the current target branch name in the pull request title (for example: Merge master into [BRANCH_NAME])."
     },
     {
       "name": "description",
@@ -140,6 +146,14 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "The pull request reviewers (optional). <br> For Azure DevOps - one or more email address or team name separated by semicolon. for example: test@test.com;MyTeamName <br> To make the reviewer required add 'req:', for example: 'req:test@test.com' <br> For GitHub - one or more usernames separated by semicolon. for example: username1;username2"
+    },
+    {
+      "name": "tags",
+      "type": "string",
+      "label": "Tags",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Pull request tags/labels (optional). tag list separated by semicolon. for example: tag1;tag2"
     },
     {
       "name": "isDraft",
@@ -164,7 +178,7 @@
       "label": "Pass Pull Request ID back to Azure DevOps as a variable",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": "If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks.  The variable can be referenced as '$(pullRequestId)'.  Note this feature is disabled if multiple target branches are specified with a wildcard (e.g. feature/*)"
+      "helpMarkDown": "If checked, the Pull Request ID will be passed back to Azure DevOps for use in other pipeline tasks.  The variable can be referenced as '$(pullRequestId)'.  Note the value will be a semicolon-separated list of IDs if multiple target branches are specified (e.g. 'feature/*' or 'branch1;branch2;branch3' )"
     },
     {
       "name": "autoComplete",
@@ -174,6 +188,15 @@
       "required": false,
       "helpMarkDown": "If checked the pull request will close once all branch policies are met.",
       "groupName": "completion"
+    },
+    {
+      "name": "githubAutoMerge",
+      "type": "boolean",
+      "label": "Auto Merge",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked the pull request will be closed and the branches will merged (if there are no conflicts).",
+      "groupName": "githubmerge"
     },
     {
       "name": "mergeStrategy",
@@ -192,14 +215,42 @@
       "visibleRule": "autoComplete=true"
     },
     {
-      "name": "deleteSourch",
+      "name": "githubMergeStrategy",
+      "type": "picklist",
+      "label": "Merge Strategy",
+      "defaultValue": "merge",
+      "required": false,
+      "helpMarkDown": "Specify the strategy used to merge the pull request during completion, see [here](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github) more info.",
+      "options": {
+        "merge": "merge",
+        "squash": "squash",
+        "rebase": "rebase"
+      },
+      "groupName": "githubmerge",
+      "visibleRule": "githubAutoMerge=true"
+    },
+    {
+      "name": "deleteSource",
+      "aliases": [
+          "deleteSourch"
+      ],
       "type": "boolean",
-      "label": "Delete Sourch Branch",
+      "label": "Delete Source Branch",
       "defaultValue": false,
       "required": false,
       "helpMarkDown": "If true, the source branch of the pull request will be deleted after completion.",
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "githubDeleteSourceBranch",
+      "type": "boolean",
+      "label": "Delete the source branch after merge",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If true, the source branch of the pull request will be deleted after the auto merge.",
+      "groupName": "githubmerge",
+      "visibleRule": "githubAutoMerge=true"
     },
     {
       "name": "commitMessage",
@@ -209,6 +260,24 @@
       "helpMarkDown": "If set, this will be used as the commit message of the merge commit.  If empty the default will be used.",
       "groupName": "completion",
       "visibleRule": "autoComplete=true"
+    },
+    {
+      "name": "githubMergeCommitTitle",
+      "type": "string",
+      "label": "Commit Title",
+      "required": false,
+      "helpMarkDown": "If set, this will be used as the commit title of the merge commit.  If empty the default will be used.",
+      "groupName": "githubmerge",
+      "visibleRule": "githubAutoMerge=true"
+    },
+    {
+      "name": "githubMergeCommitMessage",
+      "type": "string",
+      "label": "Commit Message",
+      "required": false,
+      "helpMarkDown": "If set, this will be used as the commit message of the merge commit.  If empty the default will be used.",
+      "groupName": "githubmerge",
+      "visibleRule": "githubAutoMerge=true"
     },
     {
       "name": "transitionWorkItems",
@@ -239,6 +308,15 @@
       "helpMarkDown": "If policies are bypassed, this reason is stored as to why bypass was used.",
       "groupName": "completion",
       "visibleRule": "bypassPolicy=true"
+    }, 
+    {
+      "name": "alwaysCreatePr",
+      "type": "boolean",
+      "label": "Always Create Pull Request",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "If checked, a Pull Request will always be created even if there a no changed files.",
+      "visibleRule": "repoType=Azure DevOps"
     }
   ],
   "dataSourceBindings": [
