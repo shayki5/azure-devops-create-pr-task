@@ -612,12 +612,8 @@ function CheckIfThereAreChanges {
        $targetBranch = $targetBranch.Remove(0, 10)
     }
     
-    if($sourceBranch -match "#"){
-        $sourceBranch = $sourceBranch.Replace('#','%23') 
-    }
-    if($targetBranch -match "#"){
-        $targetBranch = $targetBranch.Replace('#','%23') 
-    }
+    $sourceBranch = [uri]::EscapeDataString($sourceBranch)
+    $targetBranch = [uri]::EscapeDataString($targetBranch)
     
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($targetBranch)&targetVersion=$($sourceBranch)&api-version=4.0&diffCommonCommit=true" + '&$top=2'
     $head = @{ Authorization = "Bearer $global:token" }
