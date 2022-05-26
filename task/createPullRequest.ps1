@@ -840,9 +840,16 @@ function GetLinkedWorkItems {
                     })
             }
         })
-    if ($workItemsId.Count -gt 0) {
+    if ($workItemsId.Count -eq 1) {
         $workItems = @()
-        Write-Host $workItemsId | Select-Object -Unique
+        $workItem = @{
+            id  = $workItemsId[0]
+            url = ""
+        }
+        $workItems += $workItem     
+    }
+    elseif ($workItemsId.Count -gt 0) {
+        $workItems = @()
         ($workItemsId | Select-Object -Unique).ForEach( {
                 $workItem = @{
                     id  = $_
