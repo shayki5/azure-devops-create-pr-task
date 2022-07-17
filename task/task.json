@@ -317,6 +317,15 @@
       "required": false,
       "helpMarkDown": "If checked, a Pull Request will always be created even if there a no changed files.",
       "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "usePsh",
+      "type": "boolean",
+      "label": "Use PowerShell (Windows Only)",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "On a Windows agent, if checked, 'PowerShell.exe' will be used, otherwise 'pwsh'. On non-Windows agents 'pwsh' is always used.",
+      "groupName": "advanced"
     }
   ],
   "dataSourceBindings": [
