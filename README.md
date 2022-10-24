@@ -110,6 +110,7 @@ Choose title, description, reviewers, tags and more.
   - **Commit Message**: If set, this will be used as the commit message of the merge commit. if empty the default will be used.
   - **Complete Associated Work Items**: If true, we will attempt to transition any work items linked to the pull request into the next logical state (i.e. Active -> Resolved).
   - **Bypass policy**: If true, policies will be explicitly bypassed while the pull request is completed.
+    - If you want to use Bypass you need to give also the permisison "Bypass policies when completing pull requests" (check the above **Prerequisites** section).
   - **Bypass reason**: If policies are bypassed, this reason is stored as to why bypass was used.
 
   Auto Merge options (for GitHub):
