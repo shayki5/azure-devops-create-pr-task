@@ -84,13 +84,18 @@ function RunTask {
         # Init pullRequestIds
         [array]$global:pullRequestIds
 
+        $targetBranches = $targetBranch.Split(';') # will create array with single element even if no ';'
+
         # If is multi-target branch, like release/*
-        if ($targetBranch.Contains('*')) {
-            if($repoType -eq "Azure DevOps") {
+        if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($targetBranch)) {
+            if ($repoType -eq "Azure DevOps") {
                 $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?api-version=4.0"
                 $header = @{ Authorization = "Bearer $global:token" }
                 $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $header -ContentType "application/json"
-                $targetBranches = ($refs.value.Where({ $_.name -match "$($targetBranch.Replace('*',''))" })).name
+                $targetBranches = $refs.value.name.Where({
+                    $branch = $_
+                    $targetBranches.Where({$branch -like $_ -or $branch -like "refs/heads/${_}"}).Count -ne 0
+                })
             }
             else {
                 $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'githubEndpoint'
@@ -107,7 +112,10 @@ function RunTask {
                 $url = "https://api.github.com/repos/$owner/$repo/branches"
                 $header = @{ Authorization = ("token $token") ; Accept = "application/vnd.github.shadow-cat-preview+json" }
                 $branches = Invoke-RestMethod -Uri $url -Method Get -ContentType "application/json" -Headers $header
-                $targetBranches = $branches.name.Where({ $_ -match "$($targetBranch.Replace('*',''))" })
+                $targetBranches = $branches.name.Where({
+                    $branch = $_
+                    $targetBranches.Where({$branch -like $_ -or $branch -like "refs/heads/${_}"}).Count -ne 0
+                })
             }
         }
 
