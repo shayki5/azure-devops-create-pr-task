@@ -559,15 +559,18 @@ function CreateAzureDevOpsPullRequest() {
 
             # If set bypass is true 
             if ($bypassPolicy) {
+                $maxRetry = 2
+                $retryCounter = 1
+            
                 BypassPR -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -bypassPolicy $bypassPolicy -bypassReason $bypassReason
                 
                 GetPRData -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId | Out-Null
-
-                if ($prData.status -ine "completed") {
+                while ($prData.status -ine "completed" -and $retryCounter -le $maxRetry) {
                     sleep 10
-                    Write-Host "Retry Bypass"            
+                    Write-Host "Retry Bypass: $retryCounter"
                     BypassPR -teamProject $teamProject -repositoryName $repositoryName -pullRequestId $pullRequestId -buildUserId $currentUserId -mergeStrategy $mergeStrategy -deleteSourch $deleteSourch -commitMessage $commitMessage -transitionWorkItems $transitionWorkItems -bypassPolicy $bypassPolicy -bypassReason $bypassReason
-                }
+                    $retryCounter++
+                } 
             }
         }
     }
