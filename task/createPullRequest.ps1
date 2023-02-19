@@ -84,6 +84,7 @@ function RunTask {
         # Init pullRequestIds
         [array]$global:pullRequestIds
 
+        # If is multi-target branch, like master;feature
         $targetBranches = $targetBranch.Split(';') # will create array with single element even if no ';'
 
         # If is multi-target branch, like release/*
@@ -117,11 +118,6 @@ function RunTask {
                     $targetBranches.Where({$branch -like $_ -or $branch -like "refs/heads/${_}"}).Count -ne 0
                 })
             }
-        }
-
-        # If is multi-target branch, like master;feature
-        elseif($targetBranch.Contains(';')) {
-            $targetBranches = $targetBranch.Split(';')
         }
 
         foreach($branch in $targetBranches) {
