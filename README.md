@@ -134,7 +134,7 @@ Choose title, description, reviewers, tags and more.
   - **Commit Title**: If set, this will be used as the commit title of the merge commit. if empty the default will be used.
   - **Commit Message**: If set, this will be used as the commit message of the merge commit. if empty the default will be used.
 
-**In yaml piepline:**
+**In yaml pipeline:**
 
 ```yaml
 - task: CreatePullRequest@1
