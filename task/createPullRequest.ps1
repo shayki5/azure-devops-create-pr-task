@@ -741,64 +741,29 @@ function GetReviewerId() {
     
     # If it's Azure DevOps
     else {
-        $url = "$($env:System_TeamFoundationCollectionUri)_apis/userentitlements?top=10000&api-version=4.1-preview.1"
-        # Check if it's the old url or the new url, reltaed to issue #21
-        # And add "vsaex" to the rest api url 
-        if ($url -match "visualstudio.com") {
-            $url = $url.Replace(".visualstudio", ".vsaex.visualstudio")
-        }
-        else {
-            $url = $url.Replace("//dev", "//vsaex.dev")
-        }
-        $users = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
-        $teamsUrl = "$($env:System_TeamFoundationCollectionUri)_apis/projects/$($env:System_TeamProject)/teams?api-version=4.0-preview.1"
-        $teams = Invoke-RestMethod -Uri $teamsUrl -Method Get -ContentType application/json -Headers $head
+        $url = $($env:System_TeamFoundationCollectionUri).Replace("visualstudio.com", "dev.azure.com").Replace("dev.azure.com", "vssps.dev.azure.com") + "_apis/identities?api-version=7.0"
+        # API reference: https://learn.microsoft.com/en-us/rest/api/azure/devops/ims/identities/read-identities?view=azure-devops-rest-7.0&tabs=HTTP
         Write-Debug $reviewers
-        $split = $reviewers.Split(';').Trim()
         $reviewersId = @()
-        ForEach ($reviewer in $split) {
-            $isRequired = "false"
-            if ($reviewer -match "req:") {
-                $reviewer = $reviewer.Replace("req:","")
-                $isRequired = "true"
+        foreach ($reviewer in $reviewers.Split(';').Trim().ToLower()) {
+            $isRequired = $reviewer.StartsWith("req:")
+            $reviewer = $reviewer.Replace("req:", "")
+            $searchFilter = if ($reviewer.Contains("@")) { "MailAddress" } else { "General" }
+            $url = $url, "searchFilter=$searchFilter", "filterValue=$reviewer" -join "&"
+            Write-Debug "Looking for identity of reviewer: $reviewer at $url"
+            $identities = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
+            $idCount = $identities.count
+            if ($idCount -lt 1) {
+                Write-Warning "Could not find identity for reviewer: $reviewer, will skip."
             }
-            if ($reviewer.Contains("@")) {
-                # Is user
-                $userId = $users.value.Where( { $_.user.mailAddress -eq $reviewer }).id
-                $reviewersId += @{ 
-                    id = "$userId"
-                    isRequired = "$isRequired"
-                }
+            if ($idCount -gt 1) {
+                Write-Warning "Found $idCount identities matching reviewer: $reviewer, will include all of them."
             }
-            else {
-                # Is team
-                $teamId = $teams.value.Where( { $_.name -eq $reviewer }).id
-                Write-Debug "$teamId"
-                # If the teamId is null so maybe it's a TFS group
-                # If it's Azure DevOps (not TFS) we can get the group ID 
-                if($Null -eq $teamId) {
-                    Write-Debug "Not found team id, check if it's a group"
-                    $base_url = $env:System_TeamFoundationCollectionUri	
-                    if ($base_url -match "https://(.*)\.visualstudio\.com/$") {	
-                        $url = "https://vssps.dev.azure.com/$($Matches[1])/"	
-                    }	
-                    else {	
-                        $url = $base_url.Replace("//dev", "//vssps.dev")	
-                    }	
-                    $url = "$($url)_apis/graph/groups?api-version=4.0-preview.1"	
-                    $head = @{ Authorization = "Bearer $global:token" }	
-                    $response = Invoke-WebRequest -Uri $url -Method Get -ContentType application/json -Headers $head -UseBasicParsing
-                    # If the results are more then 500 users and the Project Collection Build Service not exist in the first page	
-                    while ($response.Headers.Keys -contains "x-ms-continuationtoken" -and $response.Content -notmatch "$reviewer") {	
-                        $token = $response.Headers.'x-ms-continuationtoken'	
-                        $url_with_token = "$($url)&continuationToken=$($token)"	
-                        $response = Invoke-WebRequest -Uri $url_with_token -Method Get -ContentType application/json -Headers $head	-UseBasicParsing
-                    }	
-                    $teamId = ($response.Content | Convertfrom-Json).value.Where( { $_.displayName -eq "$reviewer" }).originId	
-                }   
-                $reviewersId += @{ 
-                    id = "$teamId"
-                    isRequired = "$isRequired"
+            foreach ($userId in $identities.value.id){
+                Write-Debug $reviewer $userId
+                $reviewersId += @{
+                    id = $userId
+                    isRequired = $isRequired
                 }
             }
         }
