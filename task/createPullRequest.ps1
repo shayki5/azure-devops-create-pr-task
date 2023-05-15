@@ -745,9 +745,9 @@ function GetReviewerId() {
         # API reference: https://learn.microsoft.com/en-us/rest/api/azure/devops/ims/identities/read-identities?view=azure-devops-rest-7.0&tabs=HTTP
         Write-Debug $reviewers
         $reviewersId = @()
-        foreach ($reviewer in $reviewers.Split(';').Trim().ToLower()) {
-            $isRequired = $reviewer.StartsWith("req:")
-            $reviewer = $reviewer.Replace("req:", "")
+        foreach ($reviewer in $reviewers.Split(';').Trim()) {
+            $isRequired = $reviewer -imatch "^req:"
+            $reviewer = $reviewer -ireplace "^req:",""
             $searchFilter = if ($reviewer.Contains("@")) { "MailAddress" } else { "General" }
             $url = $url, "searchFilter=$searchFilter", "filterValue=$reviewer" -join "&"
             Write-Debug "Looking for identity of reviewer: $reviewer at $url"
