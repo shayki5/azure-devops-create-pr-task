@@ -538,7 +538,7 @@ function CreateAzureDevOpsPullRequest() {
 
     $jsonBody = ConvertTo-Json $body
     Write-Host $jsonBody
-    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests?api-version=4.0"
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests?api-version=7.0"
 
     try {
         $response = Invoke-RestMethod -Uri $url -Method Post -Headers $header -Body $jsonBody -ContentType "application/json;charset=UTF-8"
@@ -549,6 +549,10 @@ function CreateAzureDevOpsPullRequest() {
             Write-Host "******** Success ********"
             Write-Host "*************************"
             Write-Host "Pull Request $pullRequestId created."
+            if ($response.repository.webUrl){
+                Write-Host "Web URL: $($response.repository.webUrl)/pullrequest/$pullRequestId"
+            }
+            
             
             if ($passPullRequestIdBackToADO) {
                 $global:pullRequestIds += "$pullRequestId;"
