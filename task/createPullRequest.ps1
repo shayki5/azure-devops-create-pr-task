@@ -741,7 +741,7 @@ function GetReviewerId() {
     
     # If it's Azure DevOps
     else {
-        $url = $($env:System_TeamFoundationCollectionUri).Replace("visualstudio.com", "dev.azure.com").Replace("dev.azure.com", "vssps.dev.azure.com") + "_apis/identities?api-version=7.0"
+        $urlBase = $($env:System_TeamFoundationCollectionUri).Replace("visualstudio.com", "dev.azure.com").Replace("dev.azure.com", "vssps.dev.azure.com") + "_apis/identities?api-version=7.0"
         # API reference: https://learn.microsoft.com/en-us/rest/api/azure/devops/ims/identities/read-identities?view=azure-devops-rest-7.0&tabs=HTTP
         Write-Debug $reviewers
         $reviewersId = @()
@@ -749,7 +749,7 @@ function GetReviewerId() {
             $isRequired = $reviewer -imatch "^req:"
             $reviewer = $reviewer -ireplace "^req:",""
             $searchFilter = if ($reviewer.Contains("@")) { "MailAddress" } else { "General" }
-            $url = $url, "searchFilter=$searchFilter", "filterValue=$reviewer" -join "&"
+            $url = $urlBase, "searchFilter=$searchFilter", "filterValue=$reviewer" -join "&"
             Write-Debug "Looking for identity of reviewer: $reviewer at $url"
             $identities = Invoke-RestMethod -Uri $url -Method Get -ContentType application/json -Headers $head
             $idCount = $identities.count
