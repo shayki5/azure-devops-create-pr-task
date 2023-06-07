@@ -760,7 +760,7 @@ function GetReviewerId() {
                 Write-Warning "Found $idCount identities matching reviewer: $reviewer, will include all of them."
             }
             foreach ($userId in $identities.value.id){
-                Write-Debug $reviewer $userId
+                Write-Debug "$reviewer $userId"
                 $reviewersId += @{
                     id = $userId
                     isRequired = $isRequired
