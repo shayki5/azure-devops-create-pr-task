@@ -538,7 +538,10 @@ function CreateAzureDevOpsPullRequest() {
 
     $jsonBody = ConvertTo-Json $body
     Write-Host $jsonBody
-    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests?api-version=7.0"
+    $apiVersion = if (($env:System_TeamFoundationCollectionUri -imatch "visualstudio\.com") -or ($env:System_TeamFoundationCollectionUri -imatch "dev\.azure\.com")) { "7.0" } else { "4.0" }
+    $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/pullrequests?api-version=$apiVersion"
+    # Azure DevOps API doc: https://learn.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/create?view=azure-devops-rest-7.0&tabs=HTTP
+    # TFS API doc: https://learn.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/create?view=vsts-rest-tfs-4.1&tabs=HTTP
 
     try {
         $response = Invoke-RestMethod -Uri $url -Method Post -Headers $header -Body $jsonBody -ContentType "application/json;charset=UTF-8"
