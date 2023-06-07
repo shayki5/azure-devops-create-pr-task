@@ -472,7 +472,7 @@ function CreateAzureDevOpsPullRequest() {
     Write-Host "The Target Branch is: $targetBranch"
     Write-Host "The Title is: $title"
     Write-Host "The Description is: $description"
-    Write-Host "Is Reviewers are: $reviewers"
+    Write-Host "The Reviewers are: $reviewers"
     Write-Host "The tags are: $tags"
     Write-Host "Is Draft Pull Request: $isDraft"
     Write-Host "Auto-Complete: $autoComplete"
