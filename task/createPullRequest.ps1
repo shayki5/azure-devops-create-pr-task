@@ -664,6 +664,10 @@ function GetReviewerId() {
     )
 
     $serverUrl = $env:System_TeamFoundationCollectionUri
+    if ($serverUrl -imatch '^https?://(?<org>\w+)\.visualstudio\.com') {
+        $serverUrl = "https://dev.azure.com/$($Matches.org)/"
+    }
+    Write-Host "Getting reviewer identities from TFS collection / Azure DevOps organization: $serverUrl"
     $head = @{ Authorization = "Bearer $global:token" }
 
     # If it's TFS/AzureDevOps Server
@@ -741,7 +745,7 @@ function GetReviewerId() {
     
     # If it's Azure DevOps
     else {
-        $urlBase = $($env:System_TeamFoundationCollectionUri).Replace("visualstudio.com", "dev.azure.com").Replace("dev.azure.com", "vssps.dev.azure.com") + "_apis/identities?api-version=7.0"
+        $urlBase = $serverUrl.Replace("dev.azure.com", "vssps.dev.azure.com") + "_apis/identities?api-version=7.0"
         # API reference: https://learn.microsoft.com/en-us/rest/api/azure/devops/ims/identities/read-identities?view=azure-devops-rest-7.0&tabs=HTTP
         Write-Debug $reviewers
         $reviewersId = @()
