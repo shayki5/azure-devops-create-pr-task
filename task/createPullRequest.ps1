@@ -626,23 +626,22 @@ function CheckIfThereAreChanges {
        $targetBranch = $targetBranch.Remove(0, 10)
     }
     
-    $sourceBranch = [uri]::EscapeDataString($sourceBranch)
-    $targetBranch = [uri]::EscapeDataString($targetBranch)
-
+    
     $head = @{ Authorization = "Bearer $global:token" }
-
+    
     # Verify both source and target branches exist
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/refs?filter=heads"
-        # API ref: https://learn.microsoft.com/en-us/rest/api/azure/devops/git/refs/list
+    # API ref: https://learn.microsoft.com/en-us/rest/api/azure/devops/git/refs/list
     $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
     $availableBranches = $refs.value.name
     foreach ($branch in $sourceBranch,$targetBranch){
         if ($availableBranches -notcontains "refs/heads/$($branch)") {
-            Write-Error "Branch '$($sourceBranch)' does not exist in repository '$($repositoryName)'."
-            exit
+            Write-Warning "Branch '$($sourceBranch)' not found in repository '$($repositoryName)'."
         }
     }
     
+    $sourceBranch = [uri]::EscapeDataString($sourceBranch)
+    $targetBranch = [uri]::EscapeDataString($targetBranch)
     $url = "$env:System_TeamFoundationCollectionUri$($teamProject)/_apis/git/repositories/$($repositoryName)/diffs/commits?baseVersion=$($targetBranch)&targetVersion=$($sourceBranch)&api-version=4.0&diffCommonCommit=true" + '&$top=2'
     $response = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
     if ($alwaysCreatePR -eq $true) {
