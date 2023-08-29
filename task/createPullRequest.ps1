@@ -634,9 +634,10 @@ function CheckIfThereAreChanges {
     # API ref: https://learn.microsoft.com/en-us/rest/api/azure/devops/git/refs/list
     $refs = Invoke-RestMethod -Uri $url -Method Get -Headers $head -ContentType "application/json"
     $availableBranches = $refs.value.name
+    Write-Debug "Available branches in repository '$($repositoryName)':`n$availableBranches"
     foreach ($branch in $sourceBranch,$targetBranch){
         if ($availableBranches -notcontains "refs/heads/$($branch)") {
-            Write-Warning "Branch '$($sourceBranch)' not found in repository '$($repositoryName)'."
+            Write-Warning "Branch '$($branch)' not found in repository '$($repositoryName)'."
         }
     }
     
