@@ -459,14 +459,15 @@ function CreateAzureDevOpsPullRequest() {
         [string]$tags
     )
 
-    if (!$sourceBranch.Contains("refs")) {
+    if (!$sourceBranch.StartsWith("refs/")) {
         $sourceBranch = "refs/heads/$sourceBranch"
     }
     
-    if (!$targetBranch.Contains("refs")) {
+    if (!$targetBranch.StartsWith("refs/")) {
         $targetBranch = "refs/heads/$targetBranch"
     }
 
+    Write-Host "Creating Azure DevOps Pull Request"
     Write-Host "The repository is: $repositoryName"
     Write-Host "The Source Branch is: $sourceBranch"
     Write-Host "The Target Branch is: $targetBranch"
@@ -608,24 +609,8 @@ function CheckIfThereAreChanges {
     )
 
     # Remove the refs/heads/ or merge/pull from branches name (see issue #85)
-    if($sourceBranch.Contains("heads"))
-    {
-       $sourceBranch = $sourceBranch.Remove(0, 11)
-    }
-    elseif($sourceBranch.Contains("refs/pull"))
-    {
-       $sourceBranch = $sourceBranch.Remove(0, 10)
-    }
-    
-    if($targetBranch.Contains("heads"))
-    {
-       $targetBranch = $targetBranch.Remove(0, 11)
-    }
-    elseif($sourceBranch.Contains("refs/pull"))
-    {
-       $targetBranch = $targetBranch.Remove(0, 10)
-    }
-    
+    $sourceBranch = $sourceBranch -replace "^refs/heads/", "" -replace "^refs/pull/", ""
+    $targetBranch = $targetBranch -replace "^refs/heads/", "" -replace "^refs/pull/", ""
     
     $head = @{ Authorization = "Bearer $global:token" }
     
