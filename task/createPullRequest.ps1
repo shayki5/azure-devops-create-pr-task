@@ -669,7 +669,7 @@ function GetReviewerId() {
     )
 
     $serverUrl = $env:System_TeamFoundationCollectionUri
-    if ($serverUrl -imatch '^https?://(?<org>\w+)\.visualstudio\.com') {
+    if ($serverUrl -imatch '^https?://(?<org>(\w|-)+)\.visualstudio\.com') {
         $serverUrl = "https://dev.azure.com/$($Matches.org)/"
     }
     Write-Host "Getting reviewer identities from TFS collection / Azure DevOps organization: $serverUrl"
