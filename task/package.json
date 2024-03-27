@@ -1,0 +1,31 @@
+{
+  "name": "create-pull-request-task-wrapper",
+  "version": "1.0.0",
+  "description": "CreatePullRequest wrapper to run on any platform",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "Azure Pipelines",
+    "Pull Request",
+    "Git",
+    "Azure Repos",
+    "GitHub",
+    "PR"
+  ],
+  "author": "ShaykiAbramczyk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shayki5/azure-devops-create-pr-task"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "azure-pipelines-task-lib": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/q": "^1.5.5",
+    "typescript": "^4.7.4"
+  }
+}

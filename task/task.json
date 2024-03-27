@@ -5,8 +5,14 @@
   "description": "Automatically create a Pull Request for Azure DevOps or GitHub repository from Build or Release pipeline, supports also multi target branch.",
   "helpMarkDown": "[More Information](https://github.com/shayki5/azure-devops-create-pr-task/blob/master/README.md)",
   "categories": "Utility",
-  "visibility": ["Build", "Release"],
-  "runsOn": ["Agent", "DeploymentGroup"],
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "runsOn": [
+    "Agent",
+    "DeploymentGroup"
+  ],
   "author": "Shayki Abramczyk",
   "version": {
     "Major": 1,
@@ -232,7 +238,7 @@
     {
       "name": "deleteSource",
       "aliases": [
-          "deleteSourch"
+        "deleteSourch"
       ],
       "type": "boolean",
       "label": "Delete Source Branch",
@@ -308,7 +314,7 @@
       "helpMarkDown": "If policies are bypassed, this reason is stored as to why bypass was used.",
       "groupName": "completion",
       "visibleRule": "bypassPolicy=true"
-    }, 
+    },
     {
       "name": "alwaysCreatePr",
       "type": "boolean",
@@ -317,6 +323,15 @@
       "required": false,
       "helpMarkDown": "If checked, a Pull Request will always be created even if there a no changed files.",
       "visibleRule": "repoType=Azure DevOps"
+    },
+    {
+      "name": "usePsh",
+      "type": "boolean",
+      "label": "Use PowerShell (Windows Only)",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "On a Windows agent, if checked, 'PowerShell.exe' will be used, otherwise 'pwsh'. On non-Windows agents 'pwsh' is always used.",
+      "groupName": "advanced"
     }
   ],
   "dataSourceBindings": [
@@ -348,10 +363,8 @@
     }
   ],
   "execution": {
-    "PowerShell3": {
-      "target": "createPullRequest.ps1",
-      "platforms": ["windows"],
-      "workingDirectory": "$(currentDirectory)"
+    "Node10": {
+      "target": "index.js"
     }
   }
 }
